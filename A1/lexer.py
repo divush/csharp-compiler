@@ -1,13 +1,20 @@
-#-------------------------------------------
+#------------------------------------------------------------------
 # Lexer for generating tokens in C# language
-#-------------------------------------------
+#------------------------------------------------------------------
 import ply.lex as lex1
 
-#-------------------------------------------
-# Specifying the list of tokens.
-# Begin with keywords. Do not use RE
-# for keywords.
-#-------------------------------------------
+# List of token names
+tokens = (
+   'NUMBER',
+   'PLUS',
+   'MINUS',
+   'TIMES',
+   'DIVIDE',
+   'LPAREN',
+   'RPAREN',
+)
+
+#List of reserved keywords in C#
 KEYWORDS = {
 	'abstract' : 'ABSTRACT',
 	'break' : 'BREAK',
@@ -89,3 +96,11 @@ KEYWORDS = {
 	'unchecked' : 'UNCHECKED',
 	'virtual' : 'VIRTUAL'
 }
+
+# Regular expression rules for simple tokens
+t_PLUS    = r'\+'
+t_MINUS   = r'-'
+t_TIMES   = r'\*'
+t_DIVIDE  = r'/'
+t_LPAREN  = r'\('
+t_RPAREN  = r'\)'
