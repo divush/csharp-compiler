@@ -3,19 +3,8 @@
 #------------------------------------------------------------------
 import ply.lex as lex1
 
-# List of token names
-tokens = (
-   'NUMBER',
-   'PLUS',
-   'MINUS',
-   'TIMES',
-   'DIVIDE',
-   'LPAREN',
-   'RPAREN',
-)
-
 #List of reserved keywords in C#
-KEYWORDS = {
+reserved = {
 	'abstract' : 'ABSTRACT',
 	'break' : 'BREAK',
 	'char' : 'CHAR',
@@ -96,6 +85,17 @@ KEYWORDS = {
 	'unchecked' : 'UNCHECKED',
 	'virtual' : 'VIRTUAL'
 }
+
+# List of token names
+tokens = [
+   'NUMBER',
+   'PLUS',
+   'MINUS',
+   'TIMES',
+   'DIVIDE',
+   'LPAREN',
+   'RPAREN',
+] + list(reserved.values())
 
 # Regular expression rules for simple tokens
 t_PLUS    = r'\+'
