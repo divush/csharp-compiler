@@ -86,7 +86,7 @@ reserved = {
 	'virtual' : 'VIRTUAL'
 }
 
-# List of token names
+#List of token names
 tokens = [
    'NUMBER',
    'PLUS',
@@ -95,12 +95,50 @@ tokens = [
    'DIVIDE',
    'LPAREN',
    'RPAREN',
+   'NEWLINE',
+   'ID',
+   'COMMENTS'
 ] + list(reserved.values())
 
-# Regular expression rules for simple tokens
+#Regex rules for simple tokens
 t_PLUS    = r'\+'
 t_MINUS   = r'-'
 t_TIMES   = r'\*'
 t_DIVIDE  = r'/'
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
+
+#Regex rule for identifiers
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z_0-9]*'
+    t.type = reserved.get(t.value,'ID')    # Check for reserved words
+    return t
+
+#Regex rule for integers
+def t_NUMBER(t):
+    r'\d+'
+    t.value = int(t.value)
+    return t
+
+#Define a rule so we can track line numbers
+def t_NEWLINE(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
+
+#Ignored characters (spaces and tabs)
+t_ignore  = ' \t'
+
+#Comments
+def t_COMMENT(t):
+    r'\#.*'
+    pass
+    # No return value. Token discarded
+
+#Error handling rule
+def t_ERROR(t):
+    print("Illegal character '%s'" % t.value[0])
+    t.lexer.skip(1)
+
+
+# Build the lexer
+lexer = lex.lex()
