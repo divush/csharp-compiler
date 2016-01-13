@@ -1,7 +1,7 @@
 #------------------------------------------------------------------
 # Lexer for generating tokens in C# language
 #------------------------------------------------------------------
-import ply.lex as lex1
+import ply.lex as lex
 
 #List of reserved keywords in C#
 reserved = {
@@ -88,7 +88,7 @@ reserved = {
 
 #List of token names
 tokens = [
-   'NUMBER',
+   'INTCONST',
    'PLUS',
    'MINUS',
    'TIMES',
@@ -96,8 +96,11 @@ tokens = [
    'LPAREN',
    'RPAREN',
    'NEWLINE',
-   'ID',
-   'COMMENTS'
+   'IDENTIFIER',
+   'COMMENTS',
+   'BLOCKBEGIN',
+   'BLOCKEND',
+   'STMT_TERMINATOR'
 ] + list(reserved.values())
 
 #Regex rules for simple tokens
@@ -107,15 +110,18 @@ t_TIMES   = r'\*'
 t_DIVIDE  = r'/'
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
+t_BLOCKBEGIN = r'{'
+t_BLOCKEND = r'}'
+t_STMT_TERMINATOR = r';'
 
 #Regex rule for identifiers
-def t_ID(t):
+def t_IDENTIFIER(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     t.type = reserved.get(t.value,'ID')    # Check for reserved words
     return t
 
 #Regex rule for integers
-def t_NUMBER(t):
+def t_INTCONST(t):
     r'\d+'
     t.value = int(t.value)
     return t
@@ -130,7 +136,7 @@ t_ignore  = ' \t'
 
 #Comments
 def t_COMMENT(t):
-    r'\#.*'
+    r'//'
     pass
     # No return value. Token discarded
 
