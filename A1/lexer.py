@@ -120,12 +120,6 @@ def t_IDENTIFIER(t):
     t.type = reserved.get(t.value,'ID')    # Check for reserved words
     return t
 
-#Regex rule for integers
-def t_INTCONST(t):
-    r'\d+'
-    t.value = int(t.value)
-    return t
-
 #Define a rule so we can track line numbers
 def t_NEWLINE(t):
     r'\n+'
@@ -136,9 +130,16 @@ t_ignore  = ' \t'
 
 #Comments
 def t_COMMENT(t):
-    r'//'
+    r'//.*'
     pass
     # No return value. Token discarded
+
+#Regex rule for integers.
+#Need to keep this lower than identifier and comment!! This is because it'll match the '123' in 'abc123xyz'!!
+def t_INTCONST(t):
+    r'\d+'
+    t.value = int(t.value)
+    return t
 
 #Error handling rule
 def t_ERROR(t):
