@@ -200,9 +200,8 @@ t_CHCONST = r'(L)?\'([^\\\n]|(\\.))*?\''
 
 # Comments
 def t_COMMENT(t):
-    r'//.*'
-    pass
-    #  No return value. Token discarded
+    r' /\*(.|\n)*?\*/'
+    t.lineno += t.value.count('\n')
 
 # Preprocessor directive (ignored)
 def t_PREPROCESSOR(t):
