@@ -198,7 +198,7 @@ t_STRCONST = r'\"([^\\\n]|(\\.))*?\"'
 # Character constant 'c' or L'c'
 t_CHCONST = r'(L)?\'([^\\\n]|(\\.))*?\''
 
-# Comments
+# Comments (Only delimited comments for now)
 def t_COMMENT(t):
     r' /\*(.|\n)*?\*/'
     t.lineno += t.value.count('\n')
