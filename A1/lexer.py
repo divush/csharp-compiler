@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------
 import ply.lex as lex
 import sys
-
+import itertools
 # THE LIST OF RESERVED KEYWORDS IN C# 
 reserved = {
 	'abstract' : 'ABSTRACT',
@@ -227,7 +227,7 @@ inputfile = open(strinputfile, 'r')
 lexer.input(inputfile)
 
 tokentype={}		#stores {tokentype : count_diff_lexeme} pairs
-lexeme={}			# stores {toktype : lexeme} pairs
+lexeme={}			# stores {toktype : [list of lexemes]} pairs
 #Building dictionary
 while True:
     tok = lexer.token()
@@ -237,9 +237,10 @@ while True:
    	toktype = tok.type()
    	if toktype not in tokentype:
    		tokentype[toktype] = 1
+   		lexeme[toktype]=[]
    		lexeme[toktype].append(tokname)
    	else:
-   		if tokname not in lexeme.items():
+   		if tokname not in list(itertools.chain.from_iterable(lexeme.values())):
    			lexeme[toktype].append(tokname)
    			tokentype[toktype]+= 1
    		else:
