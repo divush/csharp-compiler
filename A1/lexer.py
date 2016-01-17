@@ -1,9 +1,9 @@
-#------------------------------------------------------------------
-# Lexer for generating tokens in C# language
-#------------------------------------------------------------------
+# ------------------------------------------------------------------
+#  Lexer for generating tokens in C#  language
+# ------------------------------------------------------------------
 import ply.lex as lex
 
-#List of reserved keywords in C#
+# THE LIST OF RESERVED KEYWORDS IN C# 
 reserved = {
 	'abstract' : 'ABSTRACT',
 	'break' : 'BREAK',
@@ -86,66 +86,83 @@ reserved = {
 	'virtual' : 'VIRTUAL'
 }
 
-#List of token names
+# THE LIST OF TOKENS
 tokens = [
-   'INTCONST',
-   'PLUS',
-   'MINUS',
-   'TIMES',
-   'DIVIDE',
-   'LPAREN',
-   'RPAREN',
-   'NEWLINE',
-   'IDENTIFIER',
-   'COMMENTS',
-   'BLOCKBEGIN',
-   'BLOCKEND',
-   'STMT_TERMINATOR'
+   # Literals: Identifiers, Int-Constants, Char-Constant, String-Constant 
+   'IDENTIFIER', 'INTCONST', 'CHCONST', 'STRCONST'
+   
+   # Primary Operators: . ?. ++ -- ->
+   'MEMBERACCESS', 'CONDMEMBACCESS', 'INCREMENT', 'DECREMENT', 'ARROW',
+   # Unary Operators: ~ ! 
+   'NOT', 'LNOT',
+   # Multiplicative Operators: * / %
+   'TIMES', 'DIVIDE', 'MOD',
+   # Additive Operators + -
+   'PLUS', 'MINUS',
+   # Shift Operators: << >>
+   'LSHIFT', 'RSHIFT',
+   # Relational Operators: < > <= >=
+   'LT', 'GT', 'LE', 'GE',
+   # Equality Operators == !=
+   'EQ', 'NE',
+   # Logical Operators: & ^ | && ||
+   'AND', 'XOR', 'OR', 'CAND', 'COR',
+   # Conditional Operator: ?
+   'CONDOP',
+   # Assignment and Lambda Operators: = += -= *= /= %= &= |= ^= <<= >>= =>
+   'EQUALS', 'PLUSEQUAL', 'MINUSEQUAL', 'TIMESEQUAL', 'DIVEQUAL', 'MODEQUAL',
+   'ANDEQUAL', 'OREQUAL', 'XOREQUAL', 'LSHIFTEQUAL', 'RSHIFTEQUAL',
+   'LAMBDADEC',
+
+   # Delimiters: ( ) { } [ ] , . ; :
+   'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'PERIOD', 'STMT_TERMINATOR', 'COLON',
+   # Others
+   'NEWLINE', 'COMMENTS'
 ] + list(reserved.values())
 
-#Regex rules for simple tokens
+# Regex rules for simple tokens
 t_PLUS    = r'\+'
 t_MINUS   = r'-'
 t_TIMES   = r'\*'
 t_DIVIDE  = r'/'
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
-t_BLOCKBEGIN = r'{'
-t_BLOCKEND = r'}'
+t_LBRACE = r'{'
+t_RBRACE = r'}'
 t_STMT_TERMINATOR = r';'
 
-#Regex rule for identifiers
+# Regex rule for identifiers
 def t_IDENTIFIER(t):
-    r'[a-zA-Z_][a-zA-Z_0-9]*'
-    t.type = reserved.get(t.value,'ID')    # Check for reserved words
+    r'[a-zA-Z_@][a-zA-Z_0-9]*'
+    t.type = reserved.get(t.value,'ID')    #  Check for reserved words
     return t
 
-#Define a rule so we can track line numbers
+# Define a rule so we can track line numbers
 def t_NEWLINE(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
-#Ignored characters (spaces and tabs)
+# Ignored characters (spaces and tabs)
 t_ignore  = ' \t'
 
-#Comments
+# Comments
 def t_COMMENT(t):
     r'//.*'
     pass
-    # No return value. Token discarded
+    #  No return value. Token discarded
 
-#Regex rule for integers.
-#Need to keep this lower than identifier and comment!! This is because it'll match the '123' in 'abc123xyz'!!
+# Regex rule for integers.
+# Need to keep this lower than identifier and comment!! This is because it'll match the '123' in 'abc123xyz'!!
 def t_INTCONST(t):
     r'\d+'
     t.value = int(t.value)
     return t
 
-#Error handling rule
+# Error handling rule
 def t_ERROR(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
 
 
-# Build the lexer
+#  Build the lexer
 lexer = lex.lex()
