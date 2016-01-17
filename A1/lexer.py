@@ -237,10 +237,10 @@ while True:
    	toktype = tok.type()
    	if toktype not in tokentype:
    		tokentype[toktype] = 1
-   		lexeme[toktype] = tokname;
+   		lexeme[toktype].append(tokname)
    	else:
    		if tokname not in lexeme.items():
-   			lexeme[toktype]= tokname
+   			lexeme[toktype].append(tokname)
    			tokentype[toktype]+= 1
    		else:
    			;
