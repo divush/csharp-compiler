@@ -2,6 +2,7 @@
 #  Lexer for generating tokens in C#  language
 # ------------------------------------------------------------------
 import ply.lex as lex
+import sys
 
 # THE LIST OF RESERVED KEYWORDS IN C# 
 reserved = {
@@ -216,3 +217,35 @@ def t_ERROR(t):
 
 #  Build the lexer
 lexer = lex.lex()
+
+#File I/O
+#Input filename from terminal
+strinputfile=sys.argv[1]	
+inputfile = open(strinputfile, 'r')
+
+#Giving file as input to our lexer
+lexer.input(inputfile)
+
+tokentype={}		#stores {tokentype : count_diff_lexeme} pairs
+lexeme={}			# stores {toktype : lexeme} pairs
+#Building dictionary
+while True:
+    tok = lexer.token()
+    if not tok: 
+        break      # No more input
+    tokname = tok.value()
+   	toktype = tok.type()
+   	if toktype not in tokentype:
+   		tokentype[toktype] = 1
+   		lexeme[toktype] = tokname;
+   	else:
+   		if tokname not in lexeme.items():
+   			lexeme[toktype]= tokname
+   			tokentype[toktype]+= 1
+   		else:
+   			;
+    #print(tok)
+
+for types in tokentype:
+	for lexemename in lexeme:
+		print(types  tokentype[types] lexeme[toktype])
