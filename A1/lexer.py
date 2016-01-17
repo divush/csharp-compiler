@@ -118,7 +118,7 @@ tokens = [
    'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'PERIOD', 'STMT_TERMINATOR', 'COLON',
    
    # Others: \n // ...
-   'NEWLINE', 'COMMENT', 'ELLIPSIS'
+   'NEWLINE', 'COMMENT', 'ELLIPSIS', 'PREPROCESSOR'
 
 ] + list(reserved.values())
 
@@ -131,43 +131,43 @@ def t_NEWLINE(t):
     t.lexer.lineno += len(t.value)
 
 # Operators
-t_MEMBERACCESS				= r'\.'   
-t_CONDMEMBACCESS			= r'\?\.'     
-t_INCREMENT					= r'\+\+'     
-t_DECREMENT					= r'--'     
-t_ARROW						= r'->'    
-t_NOT 						= r'~'    
-t_LNOT						= r'!'    
+t_MEMBERACCESS				= r'\.'
+t_CONDMEMBACCESS			= r'\?\.'
+t_INCREMENT					= r'\+\+'
+t_DECREMENT					= r'--'
+t_ARROW						= r'->'
+t_NOT 						= r'~'
+t_LNOT						= r'!'
 t_TIMES						= r'\*'
-t_DIVIDE 					= r'/'    
-t_MOD   					= r'%' 
-t_PLUS  					= r'\+'   
-t_MINUS 					= r'-'   
-t_LSHIFT 					= r'<<'    
-t_RSHIFT 					= r'>>'   
+t_DIVIDE 					= r'/'
+t_MOD   					= r'%'
+t_PLUS  					= r'\+'
+t_MINUS 					= r'-'
+t_LSHIFT 					= r'<<'
+t_RSHIFT 					= r'>>'
 t_LT						= r'<'
 t_GT						= r'>'
 t_LE 						= r'<='
-t_GE  						= r'>='  
-t_EQ   						= r'=='  
-t_NE   						= r'!=' 
-t_AND  						= r'&'   
-t_XOR   					= r'\^'  
+t_GE  						= r'>='
+t_EQ   						= r'=='
+t_NE   						= r'!='
+t_AND  						= r'&'
+t_XOR   					= r'\^'
 t_OR     					= r'\|'
-t_CAND  					= r'&&'   
+t_CAND  					= r'&&'
 t_COR    					= r'\|\|'
-t_CONDOP  					= r'\?'  
+t_CONDOP  					= r'\?'
 t_EQUALS     				= r'='
-t_PLUSEQUAL   				= r'\+='  
-t_MINUSEQUAL  				= r'-='   
-t_TIMESEQUAL 				= r'\*='    
-t_DIVEQUAL  				= r'/='   
-t_MODEQUAL 					= r'%='   
-t_ANDEQUAL   				= r'&='  
-t_OREQUAL    				= r'\|=' 
-t_XOREQUAL    				= r'\^=' 
-t_LSHIFTEQUAL  				= r'<<='   
-t_RSHIFTEQUAL  				= r'>>='  
+t_PLUSEQUAL   				= r'\+='
+t_MINUSEQUAL  				= r'-='
+t_TIMESEQUAL 				= r'\*='
+t_DIVEQUAL  				= r'/='
+t_MODEQUAL 					= r'%='
+t_ANDEQUAL   				= r'&='
+t_OREQUAL    				= r'\|='
+t_XOREQUAL    				= r'\^='
+t_LSHIFTEQUAL  				= r'<<='
+t_RSHIFTEQUAL  				= r'>>='
 t_LAMBDADEC  				= r'=>'
 
 # Delimiters
@@ -204,6 +204,11 @@ def t_COMMENT(t):
     pass
     #  No return value. Token discarded
 
+# Preprocessor directive (ignored)
+def t_PREPROCESSOR(t):
+    r'\#(.)*?\n'
+    t.lineno += 1
+
 # Error handling rule
 def t_ERROR(t):
     print("Illegal character '%s'" % t.value[0])
@@ -212,7 +217,3 @@ def t_ERROR(t):
 
 #  Build the lexer
 lexer = lex.lex()
-
-# Doubt: We will see in the test runs
-# Regex rule for integers.
-# Need to keep this lower than identifier and comment!! This is because it'll match the '123' in 'abc123xyz'!!
