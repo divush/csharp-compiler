@@ -90,7 +90,7 @@ reserved = {
 # THE LIST OF TOKENS
 tokens = [
    # Literals: Identifiers, Int-Constants, Char-Constant, String-Constant 
-   'IDENTIFIER', 'INTCONST', 'CHCONST', 'STRCONST'
+   'IDENTIFIER', 'INTCONST', 'CHCONST', 'STRCONST',
 
    # Primary Operators: . ?. ++ -- ->
    'MEMBERACCESS', 'CONDMEMBACCESS', 'INCREMENT', 'DECREMENT', 'ARROW',
@@ -117,7 +117,6 @@ tokens = [
 
    # Delimiters: ( ) { } [ ] , . ; :
    'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'PERIOD', 'STMT_TERMINATOR', 'COLON',
-   
    # Others: \n // ...
    'NEWLINE', 'COMMENT', 'ELLIPSIS', 'PREPROCESSOR'
 
@@ -132,44 +131,44 @@ def t_NEWLINE(t):
     t.lexer.lineno += len(t.value)
 
 # Operators
-t_MEMBERACCESS				= r'\.'
-t_CONDMEMBACCESS			= r'\?\.'
-t_INCREMENT					= r'\+\+'
-t_DECREMENT					= r'--'
-t_ARROW						= r'->'
-t_NOT 						= r'~'
-t_LNOT						= r'!'
-t_TIMES						= r'\*'
-t_DIVIDE 					= r'/'
-t_MOD   					= r'%'
-t_PLUS  					= r'\+'
-t_MINUS 					= r'-'
-t_LSHIFT 					= r'<<'
-t_RSHIFT 					= r'>>'
-t_LT						= r'<'
-t_GT						= r'>'
-t_LE 						= r'<='
-t_GE  						= r'>='
-t_EQ   						= r'=='
-t_NE   						= r'!='
-t_AND  						= r'&'
-t_XOR   					= r'\^'
-t_OR     					= r'\|'
-t_CAND  					= r'&&'
-t_COR    					= r'\|\|'
-t_CONDOP  					= r'\?'
-t_EQUALS     				= r'='
-t_PLUSEQUAL   				= r'\+='
-t_MINUSEQUAL  				= r'-='
-t_TIMESEQUAL 				= r'\*='
-t_DIVEQUAL  				= r'/='
-t_MODEQUAL 					= r'%='
-t_ANDEQUAL   				= r'&='
-t_OREQUAL    				= r'\|='
-t_XOREQUAL    				= r'\^='
-t_LSHIFTEQUAL  				= r'<<='
-t_RSHIFTEQUAL  				= r'>>='
-t_LAMBDADEC  				= r'=>'
+t_MEMBERACCESS		= r'\.'
+t_CONDMEMBACCESS	= r'\?\.'
+t_INCREMENT		= r'\+\+'
+t_DECREMENT		= r'--'
+t_ARROW			= r'->'
+t_NOT 			= r'~'
+t_LNOT			= r'!'
+t_TIMES			= r'\*'
+t_DIVIDE 		= r'/'
+t_MOD   		= r'%'
+t_PLUS  		= r'\+'
+t_MINUS 		= r'-'
+t_LSHIFT 		= r'<<'
+t_RSHIFT 		= r'>>'
+t_LT			= r'<'
+t_GT			= r'>'
+t_LE 			= r'<='
+t_GE  			= r'>='
+t_EQ   			= r'=='
+t_NE   			= r'!='
+t_AND  			= r'&'
+t_XOR   		= r'\^'
+t_OR     		= r'\|'
+t_CAND  		= r'&&'
+t_COR    		= r'\|\|'
+t_CONDOP  		= r'\?'
+t_EQUALS     		= r'='
+t_PLUSEQUAL   		= r'\+='
+t_MINUSEQUAL  		= r'-='
+t_TIMESEQUAL 		= r'\*='
+t_DIVEQUAL  		= r'/='
+t_MODEQUAL 		= r'%='
+t_ANDEQUAL   		= r'&='
+t_OREQUAL    		= r'\|='
+t_XOREQUAL    		= r'\^='
+t_LSHIFTEQUAL  		= r'<<='
+t_RSHIFTEQUAL  		= r'>>='
+t_LAMBDADEC  		= r'=>'
 
 # Delimiters
 t_LPAREN           = r'\('
@@ -187,7 +186,7 @@ t_ELLIPSIS         = r'\.\.\.'
 # Identifiers and Keywords
 def t_IDENTIFIER(t):
     r'[a-zA-Z_@][a-zA-Z_0-9]*'
-    t.type = reserved.get(t.value,'ID')    #  Check for reserved words
+    t.type = reserved.get(t.value,'IDENTIFIER')    #  Check for reserved words
     return t
 
 # Integer literal
@@ -210,7 +209,7 @@ def t_PREPROCESSOR(t):
     t.lineno += 1
 
 # Error handling rule
-def t_ERROR(t):
+def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
 
@@ -220,33 +219,34 @@ lexer = lex.lex()
 
 #File I/O
 #Input filename from terminal
-strinputfile=sys.argv[1]	
-inputfile = open(strinputfile, 'r')
+#strinputfile = sys.argv[1]
+#inputfile = open(strinputfile, 'r')
+
+data = "using System; namespace HelloWorld"
 
 #Giving file as input to our lexer
-lexer.input(inputfile)
+lexer.input(data)
 
-tokentype={}		#stores {tokentype : count_diff_lexeme} pairs
-lexeme={}			# stores {toktype : [list of lexemes]} pairs
+tokentype = {}		#stores {tokentype : count_diff_lexeme} pairs
+lexeme = {}		# stores {toktype : [list of lexemes]} pairs
 #Building dictionary
 while True:
     tok = lexer.token()
-    if not tok: 
-        break      # No more input
-    tokname = tok.value()
-   	toktype = tok.type()
-   	if toktype not in tokentype:
-   		tokentype[toktype] = 1
-   		lexeme[toktype]=[]
+    if not tok:
+	break      # No more input
+    tokname = tok.value
+    toktype = tok.type
+    if toktype not in tokentype:
+   	tokentype[toktype] = 1
+   	lexeme[toktype]=[]
+   	lexeme[toktype].append(tokname)
+    else:
+   	if tokname not in list(itertools.chain.from_iterable(lexeme.values())):
    		lexeme[toktype].append(tokname)
+   		tokentype[toktype]+= 1
    	else:
-   		if tokname not in list(itertools.chain.from_iterable(lexeme.values())):
-   			lexeme[toktype].append(tokname)
-   			tokentype[toktype]+= 1
-   		else:
-   			;
-    #print(tok)
+    		print("knjhghfgd")
 
 for types in tokentype:
 	for lexemename in lexeme:
-		print(types  tokentype[types] lexeme[toktype])
+		print(types, tokentype[types], lexeme[toktype])
