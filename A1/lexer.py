@@ -90,7 +90,7 @@ reserved = {
 tokens = [
    # Literals: Identifiers, Int-Constants, Char-Constant, String-Constant 
    'IDENTIFIER', 'INTCONST', 'CHCONST', 'STRCONST'
-   
+
    # Primary Operators: . ?. ++ -- ->
    'MEMBERACCESS', 'CONDMEMBACCESS', 'INCREMENT', 'DECREMENT', 'ARROW',
    # Unary Operators: ~ ! 
@@ -116,47 +116,93 @@ tokens = [
 
    # Delimiters: ( ) { } [ ] , . ; :
    'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'PERIOD', 'STMT_TERMINATOR', 'COLON',
-   # Others
-   'NEWLINE', 'COMMENTS'
+   
+   # Others: \n // ...
+   'NEWLINE', 'COMMENT', 'ELLIPSIS'
+
 ] + list(reserved.values())
 
-# Regex rules for simple tokens
-t_PLUS    = r'\+'
-t_MINUS   = r'-'
-t_TIMES   = r'\*'
-t_DIVIDE  = r'/'
-t_LPAREN  = r'\('
-t_RPAREN  = r'\)'
-t_LBRACE = r'{'
-t_RBRACE = r'}'
-t_STMT_TERMINATOR = r';'
-
-# Regex rule for identifiers
-def t_IDENTIFIER(t):
-    r'[a-zA-Z_@][a-zA-Z_0-9]*'
-    t.type = reserved.get(t.value,'ID')    #  Check for reserved words
-    return t
+# Completely ignored characters
+t_ignore           = ' \t\x0c'
 
 # Define a rule so we can track line numbers
 def t_NEWLINE(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
-# Ignored characters (spaces and tabs)
-t_ignore  = ' \t'
+# Operators
+t_MEMBERACCESS				= r'\.'   
+t_CONDMEMBACCESS			= r'\?\.'     
+t_INCREMENT					= r'\+\+'     
+t_DECREMENT					= r'--'     
+t_ARROW						= r'->'    
+t_NOT 						= r'~'    
+t_LNOT						= r'!'    
+t_TIMES						= r'\*'
+t_DIVIDE 					= r'/'    
+t_MOD   					= r'%' 
+t_PLUS  					= r'\+'   
+t_MINUS 					= r'-'   
+t_LSHIFT 					= r'<<'    
+t_RSHIFT 					= r'>>'   
+t_LT						= r'<'
+t_GT						= r'>'
+t_LE 						= r'<='
+t_GE  						= r'>='  
+t_EQ   						= r'=='  
+t_NE   						= r'!=' 
+t_AND  						= r'&'   
+t_XOR   					= r'\^'  
+t_OR     					= r'\|'
+t_CAND  					= r'&&'   
+t_COR    					= r'\|\|'
+t_CONDOP  					= r'\?'  
+t_EQUALS     				= r'='
+t_PLUSEQUAL   				= r'\+='  
+t_MINUSEQUAL  				= r'-='   
+t_TIMESEQUAL 				= r'\*='    
+t_DIVEQUAL  				= r'/='   
+t_MODEQUAL 					= r'%='   
+t_ANDEQUAL   				= r'&='  
+t_OREQUAL    				= r'\|=' 
+t_XOREQUAL    				= r'\^=' 
+t_LSHIFTEQUAL  				= r'<<='   
+t_RSHIFTEQUAL  				= r'>>='  
+t_LAMBDADEC  				= r'=>'
+
+# Delimiters
+t_LPAREN           = r'\('
+t_RPAREN           = r'\)'
+t_LBRACKET         = r'\['
+t_RBRACKET         = r'\]'
+t_LBRACE           = r'\{'
+t_RBRACE           = r'\}'
+t_COMMA            = r','
+t_PERIOD           = r'\.'
+t_STMT_TERMINATOR  = r';'
+t_COLON            = r':'
+t_ELLIPSIS         = r'\.\.\.'
+
+# Identifiers and Keywords
+def t_IDENTIFIER(t):
+    r'[a-zA-Z_@][a-zA-Z_0-9]*'
+    t.type = reserved.get(t.value,'ID')    #  Check for reserved words
+    return t
+
+# Integer literal
+t_INTCONST = r'\d+([uU]|[lL]|[uU][lL]|[lL][uU])?'
+
+# String literal
+t_STRCONST = r'\"([^\\\n]|(\\.))*?\"'
+
+# Character constant 'c' or L'c'
+t_CHCONST = r'(L)?\'([^\\\n]|(\\.))*?\''
 
 # Comments
 def t_COMMENT(t):
     r'//.*'
     pass
     #  No return value. Token discarded
-
-# Regex rule for integers.
-# Need to keep this lower than identifier and comment!! This is because it'll match the '123' in 'abc123xyz'!!
-def t_INTCONST(t):
-    r'\d+'
-    t.value = int(t.value)
-    return t
 
 # Error handling rule
 def t_ERROR(t):
@@ -166,3 +212,7 @@ def t_ERROR(t):
 
 #  Build the lexer
 lexer = lex.lex()
+
+# Doubt: We will see in the test runs
+# Regex rule for integers.
+# Need to keep this lower than identifier and comment!! This is because it'll match the '123' in 'abc123xyz'!!
