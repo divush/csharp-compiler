@@ -217,12 +217,14 @@ def t_error(t):
 #  Build the lexer
 lexer = lex.lex()
 
-#File I/O
-#Input filename from terminal
-#strinputfile = sys.argv[1]
-#inputfile = open(strinputfile, 'r')
+File I/O
+Input filename from terminal
+strinputfile = sys.argv[1]
+inputfile = open(strinputfile, 'r')
 
-data = "using System; namespace HelloWorld"
+#data = "using System; namespace HelloWorld"
+data=inputfile.read()
+
 
 #Giving file as input to our lexer
 lexer.input(data)
