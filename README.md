@@ -1,7 +1,20 @@
-# IMPLEMENTING C SHARP IN PYTHON #
-Here is a summary of what we have done :
-1) The tool used for creating the lexer was PLY. It stands for Python Lex-Yacc. This tool enables us to define tokens and their matching RE's and also analyzes the input text and breaks input text into tokens.
+# LEXER FOR C SHARP IN PYTHON #
 
-2) The data structures used are as follows :-
-	a) tokentype : A dictionary. Key is type of token. Value is number of times that token is seen.
-	b) lexeme : Dictionary. Key is again type of token. Value is a list of ALL lexemes matching that token's RE.
+### Some information about PLY ###
+* tok = lex.token() returns a token. The returned token has the following fields :
+> tok.type - gives the type of token (prints from the TOKEN LIST)
+> tok.value - contains the lexeme
+> tok.lexpos, tok.line - position and line number respectively.
+
+* Sample example (printing type, value and lexpos):
+> 3 + 4 * 10 + -20 *2
+> NUMBER 3 0
+> PLUS + 2
+> NUMBER 4 4
+> TIMES * 6
+> NUMBER 10 8
+> PLUS + 11
+> MINUS - 13
+> NUMBER 20 14
+> TIMES * 17
+> NUMBER 2 18
