@@ -243,13 +243,20 @@ while True:
 		tokentype[toktype] = 1
 		lexeme[toktype]=[]
 		lexeme[toktype].append(tokname)
+		# print(tokname+"\t"+toktype+"NOT here previously")
 	else:
 		if tokname not in list(itertools.chain.from_iterable(lexeme.values())):
 			lexeme[toktype].append(tokname)
 			tokentype[toktype] += 1
 		else:
-			print("knjhghfgd")
+			tokentype[toktype] +=1
+
+# print(tokentype)
+# print(lexeme)
+
 
 for types in tokentype:
-	for lexemename in lexeme:
-		print(types, tokentype[types], lexeme[toktype])
+	print(types+"\t"+(str)(tokentype[types]), end="\t"),
+	for lexlist in lexeme[types]:
+		print(lexlist, end=', ')
+	print("\n")
