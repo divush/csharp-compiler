@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------
 import ply.lex as lex
 import sys
-import itertools
+# import itertools
 
 # THE LIST OF RESERVED KEYWORDS IN C# 
 reserved = {
@@ -224,37 +224,42 @@ strinputfile = sys.argv[1]
 inputfile = open(strinputfile, 'r')
 
 #data = "using System; namespace HelloWorld"
+#Convert file to string as lexer takes only string inputs.
 data = inputfile.read()
 
-
-#Giving file as input to our lexer
+#Giving file (in string form) as input to our lexer
 lexer.input(data)
 
-tokentype = {}		#stores {tokentype : count_diff_lexeme} pairs
-lexeme = {}		# stores {toktype : [list of lexemes]} pairs
-#Building dictionary
+#Data Structures for various counts.
+#Stores {token_type : token_count} pairs for each token
+tokentype = {}
+
+#The key here is the token_type(like IDENTIFIER, INT, etc.). Value is a LIST of lexemes that match the token.
+lexeme = {}			
+
+#Tokenize input!
 while True:
-	tok = lexer.token()
-	if not tok:
+	tok = lexer.token() #Get token
+	if not tok:			#No token?
 		break      # No more input
-	tokname = tok.value
-	toktype = tok.type
-	if toktype not in tokentype:
-		tokentype[toktype] = 1
-		lexeme[toktype]=[]
-		lexeme[toktype].append(tokname)
+	tokname = tok.value 		#store the lexeme
+	toktype = tok.type 			#stores the token_type
+	if toktype not in tokentype:		
+		tokentype[toktype] = 1			#initianlize count of token to 1
+		lexeme[toktype]=[]				#initialize the list in the lexeme dictionary
+		lexeme[toktype].append(tokname)	#append lexeme to the lexeme dictionary
 		# print(tokname+"\t"+toktype+"NOT here previously")
 	else:
-		if tokname not in list(itertools.chain.from_iterable(lexeme.values())):
-			lexeme[toktype].append(tokname)
-			tokentype[toktype] += 1
+		if tokname not in lexeme[toktype]:	
+			lexeme[toktype].append(tokname)		#if not present add. above check avoids repetitions
+			tokentype[toktype] += 1			#add another token seen of that type
 		else:
-			tokentype[toktype] +=1
+			tokentype[toktype] +=1			#add token seen.
 
 # print(tokentype)
 # print(lexeme)
 
-
+#Printing in asked fashion.
 for types in tokentype:
 	print(types+"\t"+(str)(tokentype[types]), end="\t"),
 	for lexlist in lexeme[types]:
