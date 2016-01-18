@@ -237,6 +237,8 @@ tokentype = {}
 #The key here is the token_type(like IDENTIFIER, INT, etc.). Value is a LIST of lexemes that match the token.
 lexeme = {}			
 
+#This stores those token types which are not be recounted of they occur more than once. For example, a variable name.
+non_recountable = ['IDENTIFIER']
 #Tokenize input!
 while True:
 	tok = lexer.token() #Get token
@@ -254,7 +256,8 @@ while True:
 			lexeme[toktype].append(tokname)		#if not present add. above check avoids repetitions
 			tokentype[toktype] += 1			#add another token seen of that type
 		else:
-			tokentype[toktype] +=1			#add token seen.
+			if toktype not in non_recountable:			#if this token type is not to be recounted
+				tokentype[toktype] +=1			#add token seen.
 
 # print(tokentype)
 # print(lexeme)
