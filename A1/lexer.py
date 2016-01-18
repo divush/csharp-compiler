@@ -116,8 +116,8 @@ tokens = [
 	'ANDEQUAL', 'OREQUAL', 'XOREQUAL', 'LSHIFTEQUAL', 'RSHIFTEQUAL',
 	'LAMBDADEC',
 
-	# Delimiters: ( ) { } [ ] , . ; :
-	'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'PERIOD', 'STMT_TERMINATOR', 'COLON',
+	# Delimiters: ( ) { } [ ] , . ; : "
+	'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'PERIOD', 'STMT_TERMINATOR', 'COLON', 'QUOTES',
 	# Others: \n // ...
 	'NEWLINE', 'COMMENT', 'ELLIPSIS', 'PREPROCESSOR'
 
@@ -183,6 +183,7 @@ t_PERIOD           = r'\.'
 t_STMT_TERMINATOR  = r';'
 t_COLON            = r':'
 t_ELLIPSIS         = r'\.\.\.'
+t_QUOTES		   = r'"'
 
 # Identifiers and Keywords
 def t_IDENTIFIER(t):
@@ -227,15 +228,17 @@ inputfile = open(strinputfile, 'r')
 data = inputfile.read()
 
 
-#Giving file as input to our lexer
+# Giving file as input to our lexer
 lexer.input(data)
 
-tokentype = {}		#stores {tokentype : count_diff_lexeme} pairs
-lexeme = {}		# stores {toktype : [list of lexemes]} pairs
-#Building dictionary
+# The List of lists containing info about the tokens found in the file
+# The format of this list is [tok.type, count, [lexeme1, lexeme2, lexeme3, ...]]
+tokenData = []
+
 while True:
 	tok = lexer.token()
 	if not tok:
+<<<<<<< HEAD
 		break      # No more input
 	tokname = tok.value
 	toktype = tok.type
@@ -260,3 +263,32 @@ for types in tokentype:
 	for lexlist in lexeme[types]:
 		print(lexlist, end=', ')
 	print("\n")
+=======
+		break
+	foundTokEntry = False
+	i = 0
+	while i < len(tokenData):
+		if tokenData[i][0] == tok.type:
+			foundTokEntry = True
+			update = True
+			j = 0
+			while j < len(tokenData[i][2]):
+				if tokenData[i][2][j] == tok.value:
+					update = False
+					break
+				j = j + 1
+			if update:	
+				# Updating the count and the list of lexemes
+				tokenData[i][1] = tokenData[i][1] + 1
+				tokenData[i][2].append(tok.value)
+			break
+		i = i + 1
+	if not foundTokEntry:
+		entry = [tok.type, 1, [tok.value]]
+		tokenData.append(entry)
+
+i = 0
+while i < len(tokenData):
+	print(tokenData[i])
+	i = i + 1
+>>>>>>> e966bce1408bba001ec2c1c4c720eb01f7ab2103
