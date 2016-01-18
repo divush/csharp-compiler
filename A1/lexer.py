@@ -252,16 +252,12 @@ while True:
 		lexeme[toktype].append(tokname)	#append lexeme to the lexeme dictionary
 		# print(tokname+"\t"+toktype+"NOT here previously")
 	else:
-		if toktype in non_recountable:			#if this token type is not to be recounted
-			if tokname not in lexeme[toktype]:	#if it has not occurred at least once
-				lexeme[toktype].append(tokname)	#then add it in lexeme
-				tokentype[toktype] += 1		#and increment its count
-			continue				#otherwise leave it
 		if tokname not in lexeme[toktype]:	
 			lexeme[toktype].append(tokname)		#if not present add. above check avoids repetitions
 			tokentype[toktype] += 1			#add another token seen of that type
 		else:
-			tokentype[toktype] +=1			#add token seen.
+			if toktype not in non_recountable:			#if this token type is not to be recounted
+				tokentype[toktype] +=1			#add token seen.
 
 # print(tokentype)
 # print(lexeme)
