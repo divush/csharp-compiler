@@ -1,0 +1,9 @@
+1, =, a, 2
+2, =, b, 7
+3, +, a, a, b
+4, ifgoto, leq, a, 50, 2
+5, call, foo
+6, ret
+7, label, foo
+8, print, a
+9, ret
