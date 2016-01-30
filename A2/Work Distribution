@@ -1,0 +1,8 @@
+1) Three address code to be designed simultaneously. We can start by sir's 3 address code and add to it. (All)
+2) Implementing register spilling and basic blocks - Requires construction of control flow graph and register spilling algorithm discussed in class.
+3) 3 address code to assembly - Requires direct translation.
+4) set up the data regions to handle global data and constants  - Along with (3)
+5) provide some (minimal) library support to allow for writing of useful programs - Along with (2).
+
+
+In the meeting we'll discuss about the Python data types to use for representing various data structures like symbol table, etc.
