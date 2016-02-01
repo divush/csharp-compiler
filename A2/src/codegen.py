@@ -69,3 +69,8 @@ for l in leaders:
 
 nodes[-1].append(len(instrlist))
 print(nodes)
+
+#adding edges in CFG. Adjacency list form..
+adjlist=[]
+for x in range(len(nodes)):
+	adjlist.append([])
