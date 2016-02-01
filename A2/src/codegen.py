@@ -50,27 +50,51 @@ instrlist=ircode.split('\n')
 leaders=[]
 for instr in instrlist:
 	if 'ifgoto' in instr:
-		leaders.append(instr[-1])
-		leaders.append(str(int(instr[0])+1))
+		temp=instr.split(',')
+		print("In instr : "+ instr)
+		leaders.append(temp[-1])
+		print("Appended "+temp[-1])
+		leaders.append(str(int(temp[0])+1))
+		print("Appended "+str(int(temp[0])+1))
+	if 'goto' in instr and 'ifgoto' not in instr:
+		temp=instr.split(',')
+		print("In instr : "+ instr)
+		leaders.append(temp[-1])
+		print("Appended "+temp[-1])
+		leaders.append(str(int(temp[0])+1))
+		print("Appended "+str(int(temp[0])+1))
 
-leaders.append(str(len(instrlist)))
-print("leaders = "+ str(leaders))
+flag=0
+if str(len(instrlist)) not in leaders:
+	flag=1
+	leaders.append(str(len(instrlist)))
 #converting to integer.
 for x in range(0, len(leaders)):
 	leaders[x]=int(leaders[x])	
+
+leaders = list(set(leaders))
+leaders.sort()
+print("leaders = "+ str(leaders))
 
 #nodes of the control flow graph
 preleader=1
 nodes=[]
 for l in leaders:
 	newlist=list(range(preleader, l))
+	print(str(preleader))
 	nodes.append(newlist)
 	preleader=l
 
-nodes[-1].append(len(instrlist))
-print(nodes)
+if flag==1:
+	nodes[-1].append(len(instrlist))
+else:
+	nodes.append([len(instrlist)])
 
+print(nodes)
+validleaders=list(range(1,len(instrlist)+1))
 #adding edges in CFG. Adjacency list form..
 adjlist=[]
-for x in range(len(nodes)):
-	adjlist.append([])
+for x in nodes:
+	newlist=[]
+	newlist.append(x)
+	adjlist.append(newlist)
