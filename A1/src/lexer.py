@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # ------------------------------------------------------------------
 #  Lexer for generating tokens in C#  language
 # ------------------------------------------------------------------
@@ -262,9 +263,10 @@ while True:
 # print(tokentype)
 # print(lexeme)
 
-#Printing in asked fashion.
+#printing the tokens
 for types in tokentype:
-	print(types+"\t"+(str)(tokentype[types]), end="\t"),
+	print("----------------------------------------")
+	print("{0:<20s} {1:>5s}".format(types, (str)(tokentype[types])))
 	for lexlist in lexeme[types]:
-		print(lexlist, end=', ')
-	print("\n")
+		print("{0:>40s}".format(lexlist))
+print("----------------------------------------")
