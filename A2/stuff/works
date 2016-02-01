@@ -6,7 +6,7 @@ inputstr=inputstr.strip('\n')
 #GET INSTR LIST:
 for instr in instrlist:
 	if 'ifgoto' in instr:
-        	labels.append(instr[-1])
+        labels.append(instr[-1])
 		labels.append(str(int(instr[0])+1))
 
 

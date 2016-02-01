@@ -27,7 +27,7 @@ def getreg():
 if len(sys.argv) == 2:
 	filename = str(sys.argv[1])
 else:
-	print "usage: python codegen.py irfile"
+	print("usage: python codegen.py irfile")
 	exit()
 
 # Define the list of registers
@@ -43,3 +43,29 @@ ircode = irfile.read()
 ircode = ircode.strip('\n')
 
 # Construct the basic blocks from ircode
+instrlist=[]
+instrlist=ircode.split('\n')
+
+#Get instr list
+leaders=[]
+for instr in instrlist:
+	if 'ifgoto' in instr:
+		leaders.append(instr[-1])
+		leaders.append(str(int(instr[0])+1))
+
+leaders.append(str(len(instrlist)))
+print("leaders = "+ str(leaders))
+#converting to integer.
+for x in range(0, len(leaders)):
+	leaders[x]=int(leaders[x])	
+
+#nodes of the control flow graph
+preleader=1
+nodes=[]
+for l in leaders:
+	newlist=list(range(preleader, l))
+	nodes.append(newlist)
+	preleader=l
+
+nodes[-1].append(len(instrlist))
+print(nodes)
