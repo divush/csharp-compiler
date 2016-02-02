@@ -21,8 +21,6 @@ reglist = ['rax', 'rbx', 'rcx', 'rdx', 'rbp', 'rsp', 'rsi', 'rdi', 'r8', 'r9', '
 # Construct the register descriptor table
 registers = {}
 registers = registers.fromkeys(reglist)
-#dictionary to keep track of variable values
-variables = {}
 
 # Opcodes
 mathops = ['+', '-', '*', '/']
@@ -70,27 +68,23 @@ irfile = open(filename, 'r')
 ircode = irfile.read()
 ircode = ircode.strip('\n')
 
-
-varlist = []
-tackeywords = ['ifgoto', 'goto', 'ret', 'call', 'print', 'label', 'leq', 'geq']
-
 # Consruct the instruction list
 instrlist = []
 instrlist = ircode.split('\n')
 
-#tokenize Three address code
+# Construct the variable list
+varlist = []
+variables = {}
+tackeywords = ['ifgoto', 'goto', 'ret', 'call', 'print', 'label', 'leq', 'geq', '='] + mathops
 for instr in instrlist:
-	tempstr = instr.split(',')
-	varlist = varlist + tempstr
-
-#we still have duplicates, remove duplicates
+	templist = instr.split(', ')
+	if templist[1] not in ['label', 'call']:
+		varlist = varlist + templist 
 varlist = list(set(varlist))
-variables.fromkeys{}
-
-#remove keywords to get vars list
+varlist = [x for x in varlist if not (x.isdigit() or (x[0] == '-' and x[1:].isdigit()))]
 for word in tackeywords:
-	varlist.remove(word)
-
+	if word in varlist:
+		varlist.remove(word)
 variables = variables.fromkeys(varlist)
 
 # Get the leaders
@@ -109,6 +103,8 @@ for instr in instrlist:
 		# print("Appended "+temp[-1])
 		leaders.append(int(temp[0])+1)
 		# print("Appended "+str(int(temp[0])+1))
+	elif 'label' in instr:
+		leaders.append(int(temp[0]))
 leaders = list(set(leaders))
 leaders.sort()
 # print("leaders = "+ str(leaders))
