@@ -42,59 +42,44 @@ irfile = open(filename, 'r')
 ircode = irfile.read()
 ircode = ircode.strip('\n')
 
-# Construct the basic blocks from ircode
-instrlist=[]
-instrlist=ircode.split('\n')
+# Consruct the instruction list
+instrlist = []
+instrlist = ircode.split('\n')
 
-#Get instr list
-leaders=[]
+# Get the leaders
+leaders = [1,]
 for instr in instrlist:
+	temp = instr.split(',')
 	if 'ifgoto' in instr:
-		temp=instr.split(',')
 		# print("In instr : "+ instr)
-		leaders.append(temp[-1])
+		leaders.append(int(temp[-1]))
 		# print("Appended "+temp[-1])
-		leaders.append(str(int(temp[0])+1))
+		leaders.append(int(temp[0])+1)
 		# print("Appended "+str(int(temp[0])+1))
-	if 'goto' in instr and 'ifgoto' not in instr:
-		temp=instr.split(',')
+	elif 'goto' in instr:
 		# print("In instr : "+ instr)
-		leaders.append(temp[-1])
+		leaders.append(int(temp[-1]))
 		# print("Appended "+temp[-1])
-		leaders.append(str(int(temp[0])+1))
+		leaders.append(int(temp[0])+1)
 		# print("Appended "+str(int(temp[0])+1))
-
-flag=0
-if str(len(instrlist)) not in leaders:
-	flag=1
-	leaders.append(str(len(instrlist)))
-#converting to integer.
-for x in range(0, len(leaders)):
-	leaders[x]=int(leaders[x])	
 
 leaders = list(set(leaders))
 leaders.sort()
 # print("leaders = "+ str(leaders))
 
-#nodes of the control flow graph
-preleader=1
-nodes=[]
-for l in leaders:
-	newlist=list(range(preleader, l))
-	print(str(preleader))
-	nodes.append(newlist)
-	preleader=l
+# Constructing the Basic Blocks
+nodes = []
+i = 0
+while i < len(leaders)-1:
+	nodes.append(list(range(leaders[i],leaders[i+1])))
+	i = i + 1
+nodes.append(list(range(leaders[i],len(instrlist)+1)))
 
-if flag==1:
-	nodes[-1].append(len(instrlist))
-else:
-	nodes.append([len(instrlist)])
-
-# print(nodes)
-validleaders=list(range(1,len(instrlist)+1))
-#adding edges in CFG. Adjacency list form..
-adjlist=[]
-for x in nodes:
-	newlist=[]
-	newlist.append(x)
-	adjlist.append(newlist)
+# # print(nodes)
+# validleaders=list(range(1,len(instrlist)+1))
+# #adding edges in CFG. Adjacency list form..
+# adjlist=[]
+# for x in nodes:
+# 	newlist=[]
+# 	newlist.append(x)
+# 	adjlist.append(newlist)
