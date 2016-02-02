@@ -28,7 +28,7 @@ mathops = ['+', '-', '*', '/']
 # Function definitions ----------------------------------------------------------------------------
 
 # getreg: returns a register which is currently empty
-def getreg():
+def getreg(line):
 	# Check the current instruction to see if a register is going to be freed
 
 	# Otherwise return an empty register (if available)
@@ -39,17 +39,28 @@ def getreg():
 	return None
 
 # translate: returns the x86 assembly code for a three address code
-def translate(tac):
-	# tac is the string containing the one line three address code
-	x86c = None
-	line = tac[0]
-	operator = tac[1]
+def translate():
+	# instruction is the string containing the one line three address code
+	x86c = ""
+	line = instruction[0]
+	operator = instruction[1]
 	
 	if operator in mathops:
-		result = tac[2]
-		operand1 = tac[3]
-		operand2 = tac[4]
-		# Construct the x86 code here
+		result = instruction[2]
+		operand1 = instruction[3]
+		operand2 = instruction[4]
+		if operator == '+':
+			destreg = getreg(line)
+			if destreg != None:
+				x86c = "movl " + operand1 + ", %" + destreg + "\n"
+				x86c = x86c + "addl " + operand2 + ", %" + destreg + "\n"
+		elif operator == '-':
+				x86c = "movl " + operand1 + ", %" + destreg + "\n"
+				x86c = x86c + "subl " + operand2 + ", %" + destreg + "\n"
+		elif operator == '*':
+			pass
+		elif operator == '/':
+			pass
 
 
 	elif operator == '=':
@@ -74,7 +85,7 @@ instrlist = ircode.split('\n')
 
 # Construct the variable list
 varlist = []
-variables = {}
+vardict = {}
 tackeywords = ['ifgoto', 'goto', 'ret', 'call', 'print', 'label', 'leq', 'geq', '='] + mathops
 for instr in instrlist:
 	templist = instr.split(', ')
@@ -85,7 +96,7 @@ varlist = [x for x in varlist if not (x.isdigit() or (x[0] == '-' and x[1:].isdi
 for word in tackeywords:
 	if word in varlist:
 		varlist.remove(word)
-variables = variables.fromkeys(varlist)
+vardict = vardict.fromkeys(varlist)
 
 # Get the leaders
 leaders = [1,]
@@ -123,13 +134,18 @@ nodes.append(list(range(leaders[i],len(instrlist)+1)))
 # X86 ASEMBLY CODE GENERATION BEGINS HERE
 #--------------------------------------------------------------------------------------------------
 # Generate the data section (if required) of the assembly program
-print(".section .data\n")
+print(".section .data")
+for variable in varlist:
+	print(variable + ": ")
+	print("  .int 0")
 
 # Generate the bss section (if required) of the assembly program
-print(".section .bss\n")
+print(".section .bss")
 
 # Generate the text section (if required) of the assembly program
-print(".section .text\n")
+print(".section .text")
+print(".globl _main")
+print("_main: ")
 for node in nodes:
 	for n in node:
 		print(translate(instrlist[n-1].split(', ')))
