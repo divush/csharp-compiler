@@ -20,7 +20,9 @@ reglist = ['rax', 'rbx', 'rcx', 'rdx', 'rbp', 'rsp', 'rsi', 'rdi', 'r8', 'r9', '
 
 # Construct the register descriptor table
 registers = {}
-regdict = registers.fromkeys(reglist)
+registers = registers.fromkeys(reglist)
+#dictionary to keep track of variable values
+variables = {}
 
 # Opcodes
 mathops = ['+', '-', '*', '/']
@@ -68,9 +70,28 @@ irfile = open(filename, 'r')
 ircode = irfile.read()
 ircode = ircode.strip('\n')
 
+
+varlist = []
+tackeywords = ['ifgoto', 'goto', 'ret', 'call', 'print', 'label', 'leq', 'geq']
+
 # Consruct the instruction list
 instrlist = []
 instrlist = ircode.split('\n')
+
+#tokenize Three address code
+for instr in instrlist:
+	tempstr = instr.split(',')
+	varlist = varlist + tempstr
+
+#we still have duplicates, remove duplicates
+varlist = list(set(varlist))
+variables.fromkeys{}
+
+#remove keywords to get vars list
+for word in tackeywords:
+	varlist.remove(word)
+
+variables = variables.fromkeys(varlist)
 
 # Get the leaders
 leaders = [1,]
@@ -99,6 +120,9 @@ while i < len(leaders)-1:
 	nodes.append(list(range(leaders[i],leaders[i+1])))
 	i = i + 1
 nodes.append(list(range(leaders[i],len(instrlist)+1)))
+
+
+
 
 # X86 ASEMBLY CODE GENERATION BEGINS HERE
 #--------------------------------------------------------------------------------------------------
