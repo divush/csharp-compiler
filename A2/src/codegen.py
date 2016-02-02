@@ -6,6 +6,25 @@ import sys
 
 ###################################################################################################
 
+# Initialization of Data Structures----------------------------------------------------------------
+
+# Get the intermediate code file name
+if len(sys.argv) == 2:
+	filename = str(sys.argv[1])
+else:
+	print("usage: python codegen.py irfile")
+	exit()
+
+# Define the list of registers
+reglist = ['rax', 'rbx', 'rcx', 'rdx', 'rbp', 'rsp', 'rsi', 'rdi', 'r8', 'r9', 'r10', 'r11', 'r12', 'r13', 'r14', 'r15']
+
+# Construct the register descriptor table
+registers = {}
+regdict = registers.fromkeys(reglist)
+
+# Opcodes
+mathops = ['+', '-', '*', '/']
+
 # Function definitions ----------------------------------------------------------------------------
 
 # getreg: returns a register which is currently empty
@@ -22,25 +41,26 @@ def getreg():
 # translate: returns the x86 assembly code for a three address code
 def translate(tac):
 	# tac is the string containing the one line three address code
-	# this function will use getreg and other function to generate the assembly code
-	x86c = tac				# for now
+	x86c = None
+	line = tac[0]
+	operator = tac[1]
+	
+	if operator in mathops:
+		result = tac[2]
+		operand1 = tac[3]
+		operand2 = tac[4]
+		# Construct the x86 code here
+		# ...
+	elif operator == '=':
+		pass
+	elif operator == 'ifgoto':
+		pass
+	elif operator == 'goto':
+		pass
+
 	return x86c
 
-#--------------------------------------------------------------------------------------------------
-
-# Get the intermediate code file name
-if len(sys.argv) == 2:
-	filename = str(sys.argv[1])
-else:
-	print("usage: python codegen.py irfile")
-	exit()
-
-# Define the list of registers
-reglist = ['rax','rbx','rcx','rdx','rbp','rsp','rsi','rdi','r8','r9','r10','r11','r12','r13','r14','r15']
-
-# Construct the register descriptor table
-registers = {}
-regdict = registers.fromkeys(reglist)
+###################################################################################################
 
 # Load the intermediate representation of the program from a file
 irfile = open(filename, 'r')
@@ -54,7 +74,7 @@ instrlist = ircode.split('\n')
 # Get the leaders
 leaders = [1,]
 for instr in instrlist:
-	temp = instr.split(',')
+	temp = instr.split(', ')
 	if 'ifgoto' in instr:
 		# print("In instr : "+ instr)
 		leaders.append(int(temp[-1]))
@@ -83,7 +103,7 @@ nodes.append(list(range(leaders[i],len(instrlist)+1)))
 # Generate assembly code for each node
 for node in nodes:
 	for n in node:
-		print translate(instrlist[n-1])
+		print translate(instrlist[n-1].split(', '))
 
 
 # # print(nodes)
