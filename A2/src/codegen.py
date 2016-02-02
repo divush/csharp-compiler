@@ -19,7 +19,12 @@ def getreg():
 	# Otherwise return None so that memory is allocated instead of a register
 	return None
 
-
+# translate: returns the x86 assembly code for a three address code
+def translate(tac):
+	# tac is the string containing the one line three address code
+	# this function will use getreg and other function to generate the assembly code
+	x86c = tac				# for now
+	return x86c
 
 #--------------------------------------------------------------------------------------------------
 
@@ -62,18 +67,24 @@ for instr in instrlist:
 		# print("Appended "+temp[-1])
 		leaders.append(int(temp[0])+1)
 		# print("Appended "+str(int(temp[0])+1))
-
 leaders = list(set(leaders))
 leaders.sort()
 # print("leaders = "+ str(leaders))
 
-# Constructing the Basic Blocks
+# Constructing the Basic Blocks as nodes
 nodes = []
 i = 0
 while i < len(leaders)-1:
 	nodes.append(list(range(leaders[i],leaders[i+1])))
 	i = i + 1
 nodes.append(list(range(leaders[i],len(instrlist)+1)))
+
+
+# Generate assembly code for each node
+for node in nodes:
+	for n in node:
+		print translate(instrlist[n-1])
+
 
 # # print(nodes)
 # validleaders=list(range(1,len(instrlist)+1))
