@@ -50,7 +50,8 @@ def translate(tac):
 		operand1 = tac[3]
 		operand2 = tac[4]
 		# Construct the x86 code here
-		# ...
+
+
 	elif operator == '=':
 		pass
 	elif operator == 'ifgoto':
@@ -100,10 +101,17 @@ while i < len(leaders)-1:
 nodes.append(list(range(leaders[i],len(instrlist)+1)))
 
 
-# Generate assembly code for each node
+# Generate the data section (if required) of the assembly program
+print(".section .data\n")
+
+# Generate the bss section (if required) of the assembly program
+print(".section .bss\n")
+
+# Generate the text section (if required) of the assembly program
+print(".section .text\n")
 for node in nodes:
 	for n in node:
-		print translate(instrlist[n-1].split(', '))
+		print(translate(instrlist[n-1].split(', ')))
 
 
 # # print(nodes)
