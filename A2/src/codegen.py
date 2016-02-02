@@ -100,7 +100,8 @@ while i < len(leaders)-1:
 	i = i + 1
 nodes.append(list(range(leaders[i],len(instrlist)+1)))
 
-
+# X86 ASEMBLY CODE GENERATION BEGINS HERE
+#--------------------------------------------------------------------------------------------------
 # Generate the data section (if required) of the assembly program
 print(".section .data\n")
 
@@ -113,12 +114,9 @@ for node in nodes:
 	for n in node:
 		print(translate(instrlist[n-1].split(', ')))
 
+# Generate the assembly code to cleanly exit the program
+print("movl $1, %eax")
+print("movl $0, %ebx")
+print("int 0x80")
 
-# # print(nodes)
-# validleaders=list(range(1,len(instrlist)+1))
-# #adding edges in CFG. Adjacency list form..
-# adjlist=[]
-# for x in nodes:
-# 	newlist=[]
-# 	newlist.append(x)
-# 	adjlist.append(newlist)
+#--------------------------------------------------------------------------------------------------
