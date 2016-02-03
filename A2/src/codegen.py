@@ -2,7 +2,7 @@
 # Machine Code Generation Module
 ###################################################################################################
 
-import sys
+import sys 
 
 ###################################################################################################
 
@@ -22,7 +22,29 @@ registers = registers.fromkeys(reglist)
 # Mathematical Operators
 mathops = ['+', '-', '*', '/']
 
-# The function to translate a single line tac to x8 assembly
+###################################################################################################
+
+# Sets the register descriptor entry as per the arguments
+def setregister(register, content):
+	registers[register] = content
+
+# getreg function
+def getReg():
+	pass
+
+# Returns the location of the variable from the addrss descriptor table
+def getlocation(variable):
+	return addressDescriptor[variable]
+
+# Sets the location entry in the adrdrss decriptor for a variable 
+def setlocation(variable, location):
+	addressDescriptor[variable] = location
+
+# Returns the nextuse of the variable
+def nextuse(variable):
+	pass
+
+# The function to translate a single line tac to x86 assembly
 def translate(instruction):
 	assembly = ""
 	line = instruction[0]
@@ -31,31 +53,78 @@ def translate(instruction):
 		result = instruction[2]
 		operand1 = instruction[3]
 		operand2 = instruction[4]
-		if operator == '+':
-			# Get the register to store the result
-			regdest = getReg(result)
-			# Get the locations of the operands
-			loc1 = location(operand1)
-			loc2 = location(operand2)
-			# Move the value of the first operand to the destination register
-			if loc1 != regdest:
-				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
-			# Perform the addition, the result ill be stored in the register regdest
-			assembly = assembly + "addl " + loc2 + ", " + regdest + "\n"
-			# Update the register descriptor entry for destreg to say that it contains the result
-			registers[destreg] = result
-			# Updae the address descriptor entry for result variable to say where it is stored now
-			location(result) = destreg
-			# If operand1 and operand2 have no further use, then free their respective locations
-			if nextuse(operand1) == -1:
-				loc = location(operand1)
-				if loc != "mem":
-					registers[loc] = None
-			if nextuse(operand2) == -1:
-				loc = location(operand2)
-				if loc != "mem":
-					registers[loc] = None
 
+		if operator == '+':
+			if not operand1.isdigit() and not operand2.isdigit():
+				# Get the register to store the result
+				regdest = getReg(result)
+				# Get the locations of the operands
+				loc1 = getlocation(operand1)
+				loc2 = getlocation(operand2)
+				# Move the value of the first operand to the destination register
+				if loc1 != regdest:
+					assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+				# Perform the addition, the result will be stored in the register regdest
+				assembly = assembly + "addl " + loc2 + ", " + regdest + "\n"
+				# Update the register descriptor entry for destreg to say that it contains the result
+				setregister(destreg, result)
+				# Update the address descriptor entry for result variable to say where it is stored now
+				setlocation(result, destreg)
+				# If operand1 and operand2 have no further use, then free their registers
+				if nextuse(operand1) == -1:
+					if loc1 != "mem":
+						setregister(loc1, None)
+						assembly = assembly + "movl " + regdest + ", " + operand1 + "\n"
+						setlocation(operand1, "mem")
+				if nextuse(operand2) == -1:
+					if loc2 != "mem":
+						setregister(loc2, None)
+						assembly = assembly + "movl " + regdest + ", " + operand2 + "\n"
+						setlocation(operand2, "mem")
+			elif operand1.isdigit() and not operand2.isdigit():
+				# Get the register to store the result
+				regdest = getReg(result)
+				loc2 = getlocation(operand2)
+				# Move the first operand to the destination register
+				assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
+				# Add the other operand to the register content
+				assembly = assembly + "addl " + loc2 + ", " + regdest + "\n"
+				setregister(destreg, result)
+				setlocation(result, regdest)
+				if nextuse(operand2) == -1:
+					if loc2 != "mem":
+						setregister(loc2, None)
+						assembly = assembly + "movl " + regdest + ", " + operand2 + "\n"
+						setlocation(operand2, "mem")
+			elif not operand1.isdigit() and operand2.isdigit():
+				# Get the register to store the result
+				regdest = getReg(result)
+				loc1 = getlocation(operand2)
+				# Move the first operand to the destination register
+				assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
+				# Add the other operand to the register content
+				assembly = assembly + "addl " + loc1 + ", " + regdest + "\n"
+				setregister(destreg, result)
+				setlocation(result, regdest)
+				if nextuse(operand1) == -1:
+					if loc1 != "mem":
+						setregister(loc1, None)
+						assembly = assembly + "movl " + regdest + ", " + operand1 + "\n"
+						setlocation(operand1, "mem")
+			elif operand1.isdigit() and operand2.isdigit():
+				# Get the register to store the result
+				regdest = getReg(result)
+				assembly = assembly + "movl $" + str(int(operand1)+int(operand2)) + ", " + regdest + "\n"
+				# Update the address descriptor entry for result variable to say where it is stored no
+				setregister(destreg, result)
+				setlocation(result, regdest)	
+
+		elif operator == '-':
+			pass
+
+	return x86
+
+###################################################################################################
 
 # Load the intermediate representation of the program from a file
 irfile = open(filename, 'r')
