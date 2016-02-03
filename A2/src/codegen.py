@@ -22,6 +22,13 @@ registers = registers.fromkeys(reglist)
 # Mathematical Operators
 mathops = ['+', '-', '*', '/']
 
+# Variable 
+varlist = []
+addressDescriptor = {}
+
+# Three address code keywords
+tackeywords = ['ifgoto', 'goto', 'ret', 'call', 'print', 'label', 'leq', 'geq', '='] + mathops
+
 ###################################################################################################
 
 # Sets the register descriptor entry as per the arguments
@@ -29,7 +36,7 @@ def setregister(register, content):
 	registers[register] = content
 
 # getreg function
-def getReg():
+def getReg(variable):
 	pass
 
 # Returns the location of the variable from the addrss descriptor table
@@ -49,11 +56,12 @@ def translate(instruction):
 	assembly = ""
 	line = instruction[0]
 	operator = instruction[1]
+	# Generating assembly code if the tac is a mathematical operation
 	if operator in mathops:
 		result = instruction[2]
 		operand1 = instruction[3]
 		operand2 = instruction[4]
-
+		# Addition
 		if operator == '+':
 			if not operand1.isdigit() and not operand2.isdigit():
 				# Get the register to store the result
@@ -118,11 +126,42 @@ def translate(instruction):
 				# Update the address descriptor entry for result variable to say where it is stored no
 				setregister(destreg, result)
 				setlocation(result, regdest)	
-
+		# Subtraction
 		elif operator == '-':
 			pass
+		# Multiplication
+		elif operator == '*':
+			pass
+		# Division
+		elif operator == '/':
+			pass
 
-	return x86
+	# Generating assembly code if the tac is a functin call
+	elif operator == "call":
+		label = instruction[2]
+		assembly = assembly + "call " + label + "\n"
+	# Generating assembly code if the tac is a label for a new leader
+	elif operator == "label":
+		label = instruction[2]
+		assembly = assembly + label + ": \n"
+	# Generating assembly code if the tac is an ifgoto statement
+	elif operator == "ifgoto":
+		pass
+	# Generating assembly code if the tac is a goto statement
+	elif operator == "goto":
+		pass
+	# Generating assembly code if the tac is a return statement
+	elif operator == "ret":
+		pass
+	# Generating assembly code if the tac is a print
+	elif operator == "print":
+		pass
+	# Generating code for assignment operations
+	elif operator == '=':
+		pass
+
+	# Return the assembly code
+	return assembly
 
 ###################################################################################################
 
@@ -136,9 +175,6 @@ instrlist = []
 instrlist = ircode.split('\n')
 
 # Construct the variable list and the address discriptor table
-varlist = []
-addressDescriptor = {}
-tackeywords = ['ifgoto', 'goto', 'ret', 'call', 'print', 'label', 'leq', 'geq', '='] + mathops
 for instr in instrlist:
 	templist = instr.split(', ')
 	if templist[1] not in ['label', 'call']:
