@@ -6,8 +6,6 @@ import sys
 
 ###################################################################################################
 
-# Initialization of Data Structures----------------------------------------------------------------
-
 # Get the intermediate code file name
 if len(sys.argv) == 2:
 	filename = str(sys.argv[1])
@@ -16,63 +14,48 @@ else:
 	exit()
 
 # Define the list of registers
-reglist = ['rax', 'rbx', 'rcx', 'rdx', 'rbp', 'rsp', 'rsi', 'rdi', 'r8', 'r9', 'r10', 'r11', 'r12', 'r13', 'r14', 'r15']
-
+reglist = ['%eax', '%ebx', '%ecx', '%edx', '%ebp', '%esp', '%esi', '%edi']
 # Construct the register descriptor table
 registers = {}
 registers = registers.fromkeys(reglist)
 
-# Opcodes
+# Mathematical Operators
 mathops = ['+', '-', '*', '/']
 
-# Function definitions ----------------------------------------------------------------------------
-
-# getreg: returns a register which is currently empty
-def getreg(line):
-	# Check the current instruction to see if a register is going to be freed
-
-	# Otherwise return an empty register (if available)
-
-	# Otherwise free a register by splitting live range (heuristic algorithm) of a variable
-
-	# Otherwise return None so that memory is allocated instead of a register
-	return None
-
-# translate: returns the x86 assembly code for a three address code
-def translate():
-	# instruction is the string containing the one line three address code
-	x86c = ""
+# The function to translate a single line tac to x8 assembly
+def translate(instruction):
+	assembly = ""
 	line = instruction[0]
 	operator = instruction[1]
-	
 	if operator in mathops:
 		result = instruction[2]
 		operand1 = instruction[3]
 		operand2 = instruction[4]
 		if operator == '+':
-			destreg = getreg(line)
-			if destreg != None:
-				x86c = "movl " + operand1 + ", %" + destreg + "\n"
-				x86c = x86c + "addl " + operand2 + ", %" + destreg + "\n"
-		elif operator == '-':
-				x86c = "movl " + operand1 + ", %" + destreg + "\n"
-				x86c = x86c + "subl " + operand2 + ", %" + destreg + "\n"
-		elif operator == '*':
-			pass
-		elif operator == '/':
-			pass
+			# Get the register to store the result
+			regdest = getReg(result)
+			# Get the locations of the operands
+			loc1 = location(operand1)
+			loc2 = location(operand2)
+			# Move the value of the first operand to the destination register
+			if loc1 != regdest:
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+			# Perform the addition, the result ill be stored in the register regdest
+			assembly = assembly + "addl " + loc2 + ", " + regdest + "\n"
+			# Update the register descriptor entry for destreg to say that it contains the result
+			registers[destreg] = result
+			# Updae the address descriptor entry for result variable to say where it is stored now
+			location(result) = destreg
+			# If operand1 and operand2 have no further use, then free their respective locations
+			if nextuse(operand1) == -1:
+				loc = location(operand1)
+				if loc != "mem":
+					registers[loc] = None
+			if nextuse(operand2) == -1:
+				loc = location(operand2)
+				if loc != "mem":
+					registers[loc] = None
 
-
-	elif operator == '=':
-		pass
-	elif operator == 'ifgoto':
-		pass
-	elif operator == 'goto':
-		pass
-
-	return x86c
-
-###################################################################################################
 
 # Load the intermediate representation of the program from a file
 irfile = open(filename, 'r')
@@ -83,9 +66,9 @@ ircode = ircode.strip('\n')
 instrlist = []
 instrlist = ircode.split('\n')
 
-# Construct the variable list
+# Construct the variable list and the address discriptor table
 varlist = []
-vardict = {}
+addressDescriptor = {}
 tackeywords = ['ifgoto', 'goto', 'ret', 'call', 'print', 'label', 'leq', 'geq', '='] + mathops
 for instr in instrlist:
 	templist = instr.split(', ')
@@ -96,29 +79,22 @@ varlist = [x for x in varlist if not (x.isdigit() or (x[0] == '-' and x[1:].isdi
 for word in tackeywords:
 	if word in varlist:
 		varlist.remove(word)
-vardict = vardict.fromkeys(varlist)
+addressDescriptor = addressDescriptor.fromkeys(varlist, "mem")
 
 # Get the leaders
 leaders = [1,]
-for instr in instrlist:
-	temp = instr.split(', ')
-	if 'ifgoto' in instr:
-		# print("In instr : "+ instr)
-		leaders.append(int(temp[-1]))
-		# print("Appended "+temp[-1])
-		leaders.append(int(temp[0])+1)
-		# print("Appended "+str(int(temp[0])+1))
-	elif 'goto' in instr:
-		# print("In instr : "+ instr)
-		leaders.append(int(temp[-1]))
-		# print("Appended "+temp[-1])
-		leaders.append(int(temp[0])+1)
-		# print("Appended "+str(int(temp[0])+1))
-	elif 'label' in instr:
-		leaders.append(int(temp[0]))
+for i in range(len(instrlist)):
+	instrlist[i] = instrlist[i].split(', ')
+	if 'ifgoto' in instrlist[i]:
+		leaders.append(int(instrlist[i][-1]))
+		leaders.append(int(instrlist[i][0])+1)
+	elif 'goto' in instrlist[i]:
+		leaders.append(int(instrlist[i][-1]))
+		leaders.append(int(instrlist[i][0])+1)
+	elif 'label' in instrlist[i]:
+		leaders.append(int(instrlist[i][0]))
 leaders = list(set(leaders))
 leaders.sort()
-# print("leaders = "+ str(leaders))
 
 # Constructing the Basic Blocks as nodes
 nodes = []
@@ -128,31 +104,31 @@ while i < len(leaders)-1:
 	i = i + 1
 nodes.append(list(range(leaders[i],len(instrlist)+1)))
 
-
-
-
-# X86 ASEMBLY CODE GENERATION BEGINS HERE
+# Generating the x86 Assembly code
 #--------------------------------------------------------------------------------------------------
-# Generate the data section (if required) of the assembly program
-print(".section .data")
-for variable in varlist:
-	print(variable + ": ")
-	print("  .int 0")
+data_section = ".section .data\n"
+for var in varlist:
+	data_section = data_section + var + ":\n" + ".int 0"
 
-# Generate the bss section (if required) of the assembly program
-print(".section .bss")
+bss_section = ".section .bss\n"
+text_section = ".section .text\n" + ".globl _main\n" + "_main:\n"
 
-# Generate the text section (if required) of the assembly program
-print(".section .text")
-print(".globl _main")
-print("_main: ")
 for node in nodes:
 	for n in node:
-		print(translate(instrlist[n-1].split(', ')))
+		text_section = text_section + translate(instrlist[n-1])
 
-# Generate the assembly code to cleanly exit the program
-print("movl $1, %eax")
-print("movl $0, %ebx")
-print("int 0x80")
+exit = "movl $1, %eax\n" + "movl $0, %ebx\n" + "int 0x80"
 
 #--------------------------------------------------------------------------------------------------
+
+print("\n")
+# Priniting the final output
+print("Assembly Code (x86) for: [" + filename + "]")
+print("--------------------------------------------------------------------")
+x86c = data_section + bss_section + text_section + exit
+print(x86c) 
+print("--------------------------------------------------------------------")
+
+# Save the x86 code in a file here as output.s
+
+###################################################################################################
