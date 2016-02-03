@@ -18,3 +18,7 @@ for l in labels:
      	nodes.append(newlist)
      	prelabel=l
 nodes=nodes[1:]
+
+
+#Sample class declaration
+class 
