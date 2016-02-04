@@ -20,7 +20,7 @@ registers = {}
 registers = registers.fromkeys(reglist)
 
 # Mathematical Operators
-mathops = ['+', '-', '*', '/']
+mathops = ['+', '-', '*', '/', '%']
 
 # Variable 
 varlist = []
@@ -86,81 +86,236 @@ def translate(instruction):
 		operand2 = instruction[4]
 		# Addition
 		if operator == '+':
-			if not operand1.isdigit() and not operand2.isdigit():
+			if operand1.isdigit() and operand2.isdigit():
 				# Get the register to store the result
 				regdest = getReg(result, line)
-				# Get the locations of the operands
-				loc1 = getlocation(operand1)
-				loc2 = getlocation(operand2)
-				# Move the value of the first operand to the destination register
-				if loc1 != regdest:
-					assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
-				# Perform the addition, the result will be stored in the register regdest
-				assembly = assembly + "addl " + loc2 + ", " + regdest + "\n"
-				# Update the register descriptor entry for regdest to say that it contains the result
+				assembly = assembly + "movl $" + str(int(operand1)+int(operand2)) + ", " + regdest + "\n"
+				# Update the address descriptor entry for result variable to say where it is stored no
 				setregister(regdest, result)
-				# Update the address descriptor entry for result variable to say where it is stored now
 				setlocation(result, regdest)
-				# If operand1 and operand2 have no further use, then free their registers
-				if nextuse(operand1, line) == -1:
-					if loc1 != "mem":
-						setregister(loc1, None)
-						assembly = assembly + "movl " + regdest + ", " + operand1 + "\n"
-						setlocation(operand1, "mem")
-				if nextuse(operand2, line) == -1:
-					if loc2 != "mem":
-						setregister(loc2, None)
-						assembly = assembly + "movl " + regdest + ", " + operand2 + "\n"
-						setlocation(operand2, "mem")
 			elif operand1.isdigit() and not operand2.isdigit():
 				# Get the register to store the result
 				regdest = getReg(result, line)
 				loc2 = getlocation(operand2)
 				# Move the first operand to the destination register
 				assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
-				# Add the other operand to the register content
-				assembly = assembly + "addl " + loc2 + ", " + regdest + "\n"
+				if loc2 != "mem":
+					assembly = assembly + "addl " + loc2 + ", " + regdest + "\n"
+				else:
+					assembly = assembly + "addl " + operand2 + ", " + regdest + "\n"
 				setregister(regdest, result)
-				setlocation(result, regdest)
-				if nextuse(operand2, line) == -1:
-					if loc2 != "mem":
-						setregister(loc2, None)
-						assembly = assembly + "movl " + regdest + ", " + operand2 + "\n"
-						setlocation(operand2, "mem")
+				setlocation(result, regdest)				
 			elif not operand1.isdigit() and operand2.isdigit():
 				# Get the register to store the result
 				regdest = getReg(result, line)
-				loc1 = getlocation(operand2)
+				loc1 = getlocation(operand1)
 				# Move the first operand to the destination register
 				assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 				# Add the other operand to the register content
-				assembly = assembly + "addl " + loc1 + ", " + regdest + "\n"
+				if loc1 != "mem":
+					assembly = assembly + "addl " + loc1 + ", " + regdest + "\n"
+				else:
+					assembly = assembly + "addl " + operand1 + ", " + regdest + "\n"
 				setregister(regdest, result)
-				setlocation(result, regdest)
-				if nextuse(operand1, line) == -1:
-					if loc1 != "mem":
-						setregister(loc1, None)
-						assembly = assembly + "movl " + regdest + ", " + operand1 + "\n"
-						setlocation(operand1, "mem")
-			elif operand1.isdigit() and operand2.isdigit():
+				setlocation(result, regdest)				
+			elif not operand1.isdigit() and not operand2.isdigit():
+				# Get the register to store the result
+				regdest = getReg(result, line)
+				# Get the locations of the operands
+				loc1 = getlocation(operand1)
+				loc2 = getlocation(operand2)
+				if loc1 != "mem" and loc2 != "mem":
+					assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+					assembly = assembly + "addl " + loc2 + ", " + regdest + "\n"
+				elif loc1 == "mem" and loc2 != "mem":
+					assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+					assembly = assembly + "addl " + loc2 + ", " + regdest + "\n"
+				elif loc1 != "mem" and loc2 == "mem":
+					assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+					assembly = assembly + "addl " + loc1 + ", " + regdest + "\n"
+				elif loc1 == "mem" and loc2 == "mem":
+					assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+					assembly = assembly + "addl " + operand1 + ", " + regdest + "\n"					
+				# Update the register descriptor entry for regdest to say that it contains the result
+				setregister(regdest, result)
+				# Update the address descriptor entry for result variable to say where it is stored now
+				setlocation(result, regdest)				
+
+		# Subtraction
+		elif operator == '-':
+			if operand1.isdigit() and operand2.isdigit():
 				# Get the register to store the result
 				regdest = getReg(result, line)
 				assembly = assembly + "movl $" + str(int(operand1)+int(operand2)) + ", " + regdest + "\n"
 				# Update the address descriptor entry for result variable to say where it is stored no
 				setregister(regdest, result)
-				setlocation(result, regdest)	
-		# Subtraction
-		elif operator == '-':
-			pass
+				setlocation(result, regdest)
+			elif operand1.isdigit() and not operand2.isdigit():
+				# Get the register to store the result
+				regdest = getReg(result, line)
+				loc2 = getlocation(operand2)
+				# Move the first operand to the destination register
+				assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
+				if loc2 != "mem":
+					assembly = assembly + "subl " + loc2 + ", " + regdest + "\n"
+				else:
+					assembly = assembly + "subl " + operand2 + ", " + regdest + "\n"
+				setregister(regdest, result)
+				setlocation(result, regdest)				
+			elif not operand1.isdigit() and operand2.isdigit():
+				# Get the register to store the result
+				regdest = getReg(result, line)
+				loc1 = getlocation(operand1)
+				# Move the first operand to the destination register
+				assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
+				# Add the other operand to the register content
+				if loc1 != "mem":
+					assembly = assembly + "subl " + loc1 + ", " + regdest + "\n"
+				else:
+					assembly = assembly + "subl " + operand1 + ", " + regdest + "\n"
+				setregister(regdest, result)
+				setlocation(result, regdest)				
+			elif not operand1.isdigit() and not operand2.isdigit():
+				# Get the register to store the result
+				regdest = getReg(result, line)
+				# Get the locations of the operands
+				loc1 = getlocation(operand1)
+				loc2 = getlocation(operand2)
+				if loc1 != "mem" and loc2 != "mem":
+					assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+					assembly = assembly + "subl " + loc2 + ", " + regdest + "\n"
+				elif loc1 == "mem" and loc2 != "mem":
+					assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+					assembly = assembly + "subl " + loc2 + ", " + regdest + "\n"
+				elif loc1 != "mem" and loc2 == "mem":
+					assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+					assembly = assembly + "subl " + loc1 + ", " + regdest + "\n"
+				elif loc1 == "mem" and loc2 == "mem":
+					assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+					assembly = assembly + "subl " + operand1 + ", " + regdest + "\n"					
+				# Update the register descriptor entry for regdest to say that it contains the result
+				setregister(regdest, result)
+				# Update the address descriptor entry for result variable to say where it is stored now
+				setlocation(result, regdest)				
+
+
 		# Multiplication
 		elif operator == '*':
-			pass
+			if registers['%eax'] != None:
+					assembly = assembly + "movl %eax, " + registers['eax'] + "\n"
+					setlocation(registers['eax'], "mem")
+			if registers['%edx'] != None:
+					assembly = assembly + "movl %edx, " + registers['edx'] + "\n"
+					setlocation(registers['%edx'], "mem")
+			if not operand1.isdigit():
+				loc1 = getlocation(operand1)
+				setlocation(operand1, "mem")
+			if not operand2.isdigit():
+				loc2 = getlocation(operand2)
+				setlocation(operand2, "mem")
+			if not operand1.isdigit() and not operand2.isdigit():
+				# Get the locations of the operands
+				assembly = assembly + "movl " + operand1 + ", %eax \n"
+				assembly = assembly + "movl " + operand2 + ", %edx \n"
+				assembly = assembly + "imul %edx \n"
+				setlocation(result, '%eax')
+			elif operand1.isdigit() and not operand2.isdigit():
+				assembly = assembly + "movl $" + (operand1) + ", %eax \n"
+				assembly = assembly + "movl " + operand2 + ", %edx \n"
+				assembly = assembly + "imul %edx \n"
+				setlocation(result, '%eax')
+			elif not operand1.isdigit() and operand2.isdigit():
+				assembly = assembly + "movl " + operand1 + ", %eax \n"
+				assembly = assembly + "movl $" + (operand2) + ", %edx \n"
+				assembly = assembly + "imul %edx \n"
+				setlocation(result, '%eax')
+			else:
+				ansmul = int(operand1)*int(operand2)
+				assembly = assembly + "movl $" + str(ansmul) + ", %eax \n"
+				setlocation(result, '%eax')
 		# Division
 		elif operator == '/':
-			pass
+			if registers['%eax'] != None:
+				assembly = assembly + "movl %eax, " + registers['eax'] + "\n"
+				setlocation(registers['eax'], "mem")
+			if registers['%edx'] != None:
+				assembly = assembly + "movl %edx, " + registers['edx'] + "\n"
+				setlocation(registers['%edx'], "mem")
+			if not operand1.isdigit():
+				loc1 = getlocation(operand1)
+				setlocation(operand1, "mem")
+			if not operand2.isdigit():
+				loc2 = getlocation(operand2)
+				setlocation(operand2, "mem")
+			assembly = assembly + "movl $0, %edx \n"
+			if not operand1.isdigit() and not operand2.isdigit():
+				# Get the locations of the operands
+				assembly = assembly + "movl " + operand1 + ", %eax \n"
+				assembly = assembly + "movl " + operand2 + ", %edx \n"
+				assembly = assembly + "idiv %edx \n"
+				setlocation(result, '%eax')
+			elif operand1.isdigit() and not operand2.isdigit():
+				assembly = assembly + "movl $" + (operand1) + ", %eax \n"
+				assembly = assembly + "movl " + operand2 + ", %edx \n"
+				assembly = assembly + "idiv %edx \n"
+				setlocation(result, '%eax')
+			elif not operand1.isdigit() and operand2.isdigit():
+				loc1 = getlocation(operand1)
+				assembly = assembly + "movl " + operand1 + ", %eax \n"
+				regdest = getReg(result, line)
+				assembly = assembly + "movl $" + (operand2) + ", " + regdest + " \n"
+				assembly = assembly + "idiv " + regdest + "\n"
+				setlocation(result, '%eax')
+			else:
+				ansdiv = int(int(operand1)/int(operand2))
+				assembly = assembly + "movl $" + str(ansdiv) + ", %eax \n"
+				setlocation(result, '%eax')
+		# Modulus
+		elif operator == '%':
+			if registers['%eax'] != None:
+				assembly = assembly + "movl %eax, " + registers['eax'] + "\n"
+				setlocation(registers['eax'], "mem")
+			if registers['%edx'] != None:
+				assembly = assembly + "movl %edx, " + registers['edx'] + "\n"
+				setlocation(registers['%edx'], "mem")
+			if not operand1.isdigit():
+				loc1 = getlocation(operand1)
+				setlocation(operand1, "mem")
+			if not operand2.isdigit():
+				loc2 = getlocation(operand2)
+				setlocation(operand2, "mem")
+			assembly = assembly + "movl $0, %edx \n"
+			if not operand1.isdigit() and not operand2.isdigit():
+				# Get the locations of the operands
+				assembly = assembly + "movl " + operand1 + ", %eax \n"
+				assembly = assembly + "movl " + operand2 + ", %edx \n"
+				assembly = assembly + "idiv %edx \n"
+				setlocation(result, '%edx')
+			elif operand1.isdigit() and not operand2.isdigit():
+				assembly = assembly + "movl $" + operand1 + ", %eax \n"
+				assembly = assembly + "movl " + operand2 + ", %edx \n"
+				assembly = assembly + "idiv %edx \n"
+				setlocation(result, '%edx')
+			elif not operand1.isdigit() and operand2.isdigit():
+				loc1 = getlocation(operand1)
+				assembly = assembly + "movl " + operand1 + ", %eax \n"
+				regdest = getReg(result, line)
+				assembly = assembly + "movl $" + (operand2) + ", " + regdest + " \n"
+				assembly = assembly + "idiv " + regdest + "\n"
+				setlocation(result, '%edx')
+			else:
+				ansmod = int(int(operand1)/int(operand2))
+				assembly = assembly + "movl $" + str(ansmod) + ", %eax \n"
+				setlocation(result, '%edx')
 
 	# Generating assembly code if the tac is a functin call
 	elif operator == "call":
+		# Add code to write all the variables to the memory
+		for var in varlist:
+			loc = getlocation(var)
+			if loc != "mem":
+				assembly = assembly + "movl " + loc + ", " + var + "\n"
+				setlocation(var, "mem")
 		label = instruction[2]
 		assembly = assembly + "call " + label + "\n"
 
@@ -181,14 +336,45 @@ def translate(instruction):
 			loc1 = getlocation(operand1)
 			loc2 = getlocation(operand2)
 			#Get the register for comparing the operands
-			reg1 = getReg(loc1)
-			#generating assembly instructions 
-			assembly = assembly + "movl " + loc1 + ", " + reg1 + "\n"
-			assembly = assembly + "cmp " + loc2 + ", " + reg1 + "\n"
+			reg1 = getReg(operand1)
+			#generating assembly instructions
+			if loc1 != "mem":
+				assembly = assembly + "movl " + loc1 + ", " + reg1 + "\n"
+			else:
+				assembly = assembly + "movl " + operand1 + ", " + reg1 + "\n"
+			if loc2 != "mem":
+				assembly = assembly + "cmp " + loc2 + ", " + reg1 + "\n"
+			else:
+				assembly = assembly + "cmp " + operand2 + ", " + reg1 + "\n"
 			#updating the registor & address descriptors
 			setregister(reg1, operand1)
 			setlocation(operand1, reg1)
-		# Translation for diffrent conditional operators
+
+		elif not operand1.isdigit() and operand2.isdigit(): #only operand1 is variables
+			#Get the location of the 1st operand
+			loc1 = getlocation(operand1)
+			if loc1 != "mem":
+				assembly = assembly + "cmp $" + operand2 + ", " + loc1 + "\n"
+			else:
+				assembly = assembly + "cmp $" + operand2 + ", " + operand1 + "\n"
+		elif operand1.isdigit() and not operand2.isdigit(): #only operand2 is variables
+			#Get the location of the 1st operand
+			loc2 = getlocation(operand2)
+			if loc2 != "mem":
+				assembly = assembly + "cmp " + loc2 + ", $" + operand1 + "\n"
+			else:
+				assembly = assembly + "cmp " + operand2 + ", $" + operand1 + "\n"
+		elif operand1.isdigit() and operand2.isdigit(): #none of the operandsare variables
+			#generate assembly instructions
+			assembly = assembly + "cmp $" + operand2 + ", $" + operand1 + "\n"
+
+		# Add code to write all the variables to the memory
+		for var in varlist:
+			loc = getlocation(var)
+			if loc != "mem":
+				assembly = assembly + "movl " + loc + ", " + var + "\n"
+				setlocation(var, "mem")
+
 		if operator == "<=":
 			assembly = assembly + "jle L" + label + "\n"
 		elif operator == ">=":
@@ -204,11 +390,18 @@ def translate(instruction):
 
 	# Generating assembly code if the tac is a goto statement
 	elif operator == "goto":
+		# Add code to write all the variables to the memory
+		for var in varlist:
+			loc = getlocation(var)
+			if loc != "mem":
+				assembly = assembly + "movl " + loc + ", " + var + "\n"
+				setlocation(var, "mem")
+		
 		label = instruction[2]
 		if label.isdigit():
-			assembly = assembly + "jl L" + label + "\n"
+			assembly = assembly + "jmp L" + label + "\n"
 		else:
-			assembly = assembly + "jl " + label + "\n" 
+			assembly = assembly + "jmp " + label + "\n" 
 
 	# Generating assembly code if the tac is a return statement
 	elif operator == "exit":
