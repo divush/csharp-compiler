@@ -58,6 +58,7 @@ def getReg(variable, instrno):
 			break;
 	#regspill contais register to be spilled!!
 	assembly = assembly + "movl " + regspill + ", " + var + "\n"
+
 	return regspill
 
 # Returns the location of the variable from the addrss descriptor table
@@ -172,28 +173,41 @@ def translate(instruction):
 		operator = instruction[2]
 		operand1 = instruction[3]
 		operand2 = instruction[4]
+		label = instruction[5]
+		#check whether the operands are variables or constants
+		if not operand1.isdigit() and not operand2.isdigit(): #both the operands are variables
+			#Get the locations of the operands
+			loc1 = getlocation(operand1)
+			loc2 = getlocation(operand2)
+			#Get the register for comparing the operands
+			reg1 = getReg(loc1)
+			#generating assembly instructions 
+			assembly = assembly + "movl " + loc1 + ", " + reg1 + "\n"
+			assembly = assembly + "cmp " + loc2 + ", " + reg1 + "\n"
+			#updating the registor & address descriptors
+			setregister(reg1, operand1)
+			setlocation(operand1, reg1)
 		# Translation for diffrent conditional operators
 		if operator == "<=":
-			pass
+			assembly = assembly + "jle L" + label + "\n"
 		elif operator == ">=":
-			pass
+			assembly = assembly + "jge L" + label + "\n" 
 		elif operator == "==":
-			pass
+			assembly = assembly + "je L" + label + "\n" 
 		elif operator == "<":
-			pass
+			assembly = assembly + "jl L" + label + "\n" 
 		elif operator == ">":
-			pass
+			assembly = assembly + "jg L" + label + "\n" 
 		elif operator == "!=":
-			pass
-
+			assembly = assembly + "jne L" + label + "\n"
 
 	# Generating assembly code if the tac is a goto statement
 	elif operator == "goto":
 		label = instruction[2]
 		if label.isdigit():
-			assembly = assembly + "jmp L" + label + "\n"
+			assembly = assembly + "jl L" + label + "\n"
 		else:
-			assembly = assembly + "jmp " + label + "\n" 
+			assembly = assembly + "jl " + label + "\n" 
 
 	# Generating assembly code if the tac is a return statement
 	elif operator == "exit":
@@ -224,18 +238,31 @@ def translate(instruction):
 		loc1 = getlocation(destination)
 		# If the source is a literal then we can just move it to the destination
 		if source.isdigit():
-			assembly = assembly + "movl $" + source + ", " + loc1
-		# If both the source and the destination reside in the memory
-		elif loc1 == "mem":
-			loc2 = getlocation(source)
-			regdest = getReg(destination)
-			assembly = assembly + "movl " + source + ", " + regdest
-			# Update the address descriptor entry for result variable to say where it is stored no
-			setregister(regdest, destination)
-			setlocation(destination, regdest)			
-		# If one of the locations is a register	
+			if loc1 == "mem":
+				assembly = assembly + "movl $" + source + ", " + destination + "\n"
+			else:
+				assembly = assembly + "movl $" + source + ", " + loc1 + "\n"
 		else:
-			assembly = assembly + "movl " + loc2 + ", " + loc1 
+			# If both the source and the destination reside in the memory
+			loc2 = getlocation(source)
+			if loc1 == "mem" and loc2 == "mem":				
+				regdest = getReg(destination)
+				assembly = assembly + "movl " + source + ", " + regdest + "\n"
+				# Update the address descriptor entry for result variable to say where it is stored no
+				setregister(regdest, destination)
+				setlocation(destination, regdest)			
+			# If the source is in a register
+			elif loc1 == "mem" and loc2 != "mem":
+				regdest = getReg(destination)
+				assembly = assembly + "movl " + loc2 + ", " + regdest + "\n"
+				# Update the address descriptor entry for result variable to say where it is stored no
+				setregister(regdest, destination)
+				setlocation(destination, regdest)
+			elif loc1 != "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + source + ", " + loc1 + "\n"
+			elif loc1 != "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + loc2 + ", " + loc1 + "\n"
+
 
 	# Generating the prelude for a function definition
 	elif operator == "function":
