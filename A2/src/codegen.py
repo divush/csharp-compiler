@@ -77,6 +77,7 @@ def nextuse(variable, line):
 def translate(instruction):
 	assembly = ""
 	line = int(instruction[0])
+	# assembly = assembly + str(line) + "\n"
 	operator = instruction[1]
 	# Generating assembly code if the tac is a mathematical operation
 	if operator in mathops:
@@ -344,7 +345,7 @@ for node in nodes:
 		# Get the variable names in the current istruction
 		variables = [x for x in instr if x in varlist]
 		# Set the next use values here
-		nextuseTable[instrnumber-1] = {var:symbolTable[var] for var in variables}
+		nextuseTable[instrnumber-1] = {var:symbolTable[var] for var in varlist}
 		# Rule for mathematical operations
 		if operator in mathops:
 			z = instr[2]
