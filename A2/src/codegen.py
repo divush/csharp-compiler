@@ -14,7 +14,7 @@ else:
 	exit()
 
 # Define the list of registers
-reglist = ['%eax', '%ebx', '%ecx', '%edx', '%ebp', '%esp', '%esi', '%edi']
+reglist = ['%eax', '%ebx', '%ecx', '%edx']
 # Construct the register descriptor table
 registers = {}
 registers = registers.fromkeys(reglist)
@@ -27,7 +27,7 @@ varlist = []
 addressDescriptor = {}
 
 # Three address code keywords
-tackeywords = ['ifgoto', 'goto', 'return', 'call', 'print', 'label', 'leq', 'geq', '=', 'function', 'exit'] + mathops
+tackeywords = ['ifgoto', 'goto', 'return', 'call', 'print', 'label', '<=', '>=', '==', '>', '<', '!=', '=', 'function', 'exit'] + mathops
 
 ###################################################################################################
 
@@ -48,7 +48,7 @@ def setlocation(variable, location):
 	addressDescriptor[variable] = location
 
 # Returns the nextuse of the variable
-def nextuse(variable):
+def nextuse(line, variable):
 	pass
 
 # The function to translate a single line tac to x86 assembly
@@ -213,7 +213,7 @@ def translate(instruction):
 			setregister(destreg, destination)
 			setlocation(destination, regdest)			
 		# If one of the locations is a register	
-		elif:
+		else:
 			assembly = assembly + "movl " + loc2 + ", " + loc1 
 
 	# Generating the prelude for a function definition
@@ -245,10 +245,12 @@ ircode = ircode.strip('\n')
 instrlist = []
 instrlist = ircode.split('\n')
 
+nextuseTable = [None for i in range(len(instrlist))]
+
 # Construct the variable list and the address discriptor table
 for instr in instrlist:
 	templist = instr.split(', ')
-	if templist[1] not in ['label', 'call']:
+	if templist[1] not in ['label', 'call', 'function']:
 		varlist = varlist + templist 
 varlist = list(set(varlist))
 varlist = [x for x in varlist if not (x.isdigit() or (x[0] == '-' and x[1:].isdigit()))]
@@ -256,6 +258,7 @@ for word in tackeywords:
 	if word in varlist:
 		varlist.remove(word)
 addressDescriptor = addressDescriptor.fromkeys(varlist, "mem")
+symbolTable = addressDescriptor.fromkeys(varlist, ["live", None])
 
 # Get the leaders
 leaders = [1,]
@@ -282,6 +285,22 @@ while i < len(leaders)-1:
 	i = i + 1
 nodes.append(list(range(leaders[i],len(instrlist)+1)))
 
+# Constructing the next use table
+for node in nodes:
+	i = len(node)
+	while i > 0:
+		n = node[i-1]
+		# Get the current instruction and the operator and the operands
+		instr = instrlist[n-1]
+		operator = instr[1]
+
+		# Get the variable names in the current istruction
+		variables = [x for x in instr if x in varlist]
+		# Set the next use values here
+		nextuseTable[n-1] = { var:symbolTable[var] for var in variables}
+		symbolTable[var] = 
+		i = i - 1
+
 # Generating the x86 Assembly code
 #--------------------------------------------------------------------------------------------------
 data_section = ".section .data\n"
@@ -290,11 +309,9 @@ for var in varlist:
 data_section = data_section + "str:\n.ascii \"%d\\n\\0\"\n"
 
 bss_section = ".section .bss\n"
-text_section = ".section .text\n" + ".globl _main\n" + "_main:\n"
+text_section = ".section .text\n" + ".globl main\n" + "main:\n"
 
 for node in nodes:
-	# Add code to construct the nextuse table for the basic block here
-	# ... Call a function may be
 	for n in node:
 		text_section = text_section + "L" + str(n) + ":\n"
 		text_section = text_section + translate(instrlist[n-1])
