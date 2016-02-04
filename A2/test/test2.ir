@@ -10,4 +10,4 @@
 10, goto, 13
 11, print, c
 12, goto, 13
-13, ret
+13, exit
