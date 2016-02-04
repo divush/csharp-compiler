@@ -1,5 +1,5 @@
-# IMPLEMENTING C SHARP IN PYTHON
-# Machine Code Generation Module
+#!/usr/bin/python3
+# Assembly code generator: TAC to x86 (AT&T) Assembly
 ###################################################################################################
 
 import sys 
@@ -158,7 +158,23 @@ def translate(instruction):
 		pass
 	# Generating code for assignment operations
 	elif operator == '=':
-		pass
+		destination = instruction[2]
+		source = instruction[3]
+		loc1 = getlocation(destination)
+		loc2 = getlocation(source)
+		# If the source is a literal then we can just move it to the destination
+		if source.isdigit():
+			assembly = assembly + "movl $" + source + ", " + loc1
+		# If both the source and the destination reside in the memory
+		elif loc1 == "mem" and loc2 == "mem":
+			regdest = getReg(destination)
+			assembly = assembly + "movl " + source + ", " + regdest
+			# Update the address descriptor entry for result variable to say where it is stored no
+			setregister(destreg, destination)
+			setlocation(destination, regdest)			
+		# If one of the locations is a register	
+		elif:
+			assembly = assembly + "movl " + loc2 + ", " + loc1 
 
 	# Return the assembly code
 	return assembly
