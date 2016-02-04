@@ -33,6 +33,10 @@ tackeywords = ['ifgoto', 'goto', 'return', 'call', 'print', 'label', '<=', '>=',
 
 ###################################################################################################
 
+def isnumber(num):
+	t = num.isdigit() or (num[1:].isdigit() and num[0] == "-")
+	return t
+
 # Sets the register descriptor entry as per the arguments
 def setregister(register, content):
 	registers[register] = content
@@ -86,14 +90,14 @@ def translate(instruction):
 		operand2 = instruction[4]
 		# Addition
 		if operator == '+':
-			if operand1.isdigit() and operand2.isdigit():
+			if isnumber(operand1) and isnumber(operand2):
 				# Get the register to store the result
 				regdest = getReg(result, line)
 				assembly = assembly + "movl $" + str(int(operand1)+int(operand2)) + ", " + regdest + "\n"
 				# Update the address descriptor entry for result variable to say where it is stored no
 				setregister(regdest, result)
 				setlocation(result, regdest)
-			elif operand1.isdigit() and not operand2.isdigit():
+			elif isnumber(operand1) and not isnumber(operand2):
 				# Get the register to store the result
 				regdest = getReg(result, line)
 				loc2 = getlocation(operand2)
@@ -105,7 +109,7 @@ def translate(instruction):
 					assembly = assembly + "addl " + operand2 + ", " + regdest + "\n"
 				setregister(regdest, result)
 				setlocation(result, regdest)				
-			elif not operand1.isdigit() and operand2.isdigit():
+			elif not isnumber(operand1) and isnumber(operand2):
 				# Get the register to store the result
 				regdest = getReg(result, line)
 				loc1 = getlocation(operand1)
@@ -118,7 +122,7 @@ def translate(instruction):
 					assembly = assembly + "addl " + operand1 + ", " + regdest + "\n"
 				setregister(regdest, result)
 				setlocation(result, regdest)				
-			elif not operand1.isdigit() and not operand2.isdigit():
+			elif not isnumber(operand1) and not isnumber(operand2):
 				# Get the register to store the result
 				regdest = getReg(result, line)
 				# Get the locations of the operands
@@ -143,14 +147,14 @@ def translate(instruction):
 
 		# Subtraction
 		elif operator == '-':
-			if operand1.isdigit() and operand2.isdigit():
+			if isnumber(operand1) and isnumber(operand2):
 				# Get the register to store the result
 				regdest = getReg(result, line)
 				assembly = assembly + "movl $" + str(int(operand1)+int(operand2)) + ", " + regdest + "\n"
 				# Update the address descriptor entry for result variable to say where it is stored no
 				setregister(regdest, result)
 				setlocation(result, regdest)
-			elif operand1.isdigit() and not operand2.isdigit():
+			elif isnumber(operand1) and not isnumber(operand1):
 				# Get the register to store the result
 				regdest = getReg(result, line)
 				loc2 = getlocation(operand2)
@@ -162,7 +166,7 @@ def translate(instruction):
 					assembly = assembly + "subl " + operand2 + ", " + regdest + "\n"
 				setregister(regdest, result)
 				setlocation(result, regdest)				
-			elif not operand1.isdigit() and operand2.isdigit():
+			elif not isnumber(operand1) and isnumber(operand2):
 				# Get the register to store the result
 				regdest = getReg(result, line)
 				loc1 = getlocation(operand1)
@@ -175,7 +179,7 @@ def translate(instruction):
 					assembly = assembly + "subl " + operand1 + ", " + regdest + "\n"
 				setregister(regdest, result)
 				setlocation(result, regdest)				
-			elif not operand1.isdigit() and not operand2.isdigit():
+			elif not isnumber(operand1) and not isnumber(operand2):
 				# Get the register to store the result
 				regdest = getReg(result, line)
 				# Get the locations of the operands
@@ -207,24 +211,24 @@ def translate(instruction):
 			if registers['%edx'] != None:
 					assembly = assembly + "movl %edx, " + registers['edx'] + "\n"
 					setlocation(registers['%edx'], "mem")
-			if not operand1.isdigit():
+			if not isnumber(operand1):
 				loc1 = getlocation(operand1)
 				setlocation(operand1, "mem")
-			if not operand2.isdigit():
+			if not isnumber(operand2):
 				loc2 = getlocation(operand2)
 				setlocation(operand2, "mem")
-			if not operand1.isdigit() and not operand2.isdigit():
+			if not isnumber(operand1) and not isnumber(operand2):
 				# Get the locations of the operands
 				assembly = assembly + "movl " + operand1 + ", %eax \n"
 				assembly = assembly + "movl " + operand2 + ", %edx \n"
 				assembly = assembly + "imul %edx \n"
 				setlocation(result, '%eax')
-			elif operand1.isdigit() and not operand2.isdigit():
+			elif isnumber(operand1) and not isnumber(operand2):
 				assembly = assembly + "movl $" + (operand1) + ", %eax \n"
 				assembly = assembly + "movl " + operand2 + ", %edx \n"
 				assembly = assembly + "imul %edx \n"
 				setlocation(result, '%eax')
-			elif not operand1.isdigit() and operand2.isdigit():
+			elif not isnumber(operand1) and isnumber(operand2):
 				assembly = assembly + "movl " + operand1 + ", %eax \n"
 				assembly = assembly + "movl $" + (operand2) + ", %edx \n"
 				assembly = assembly + "imul %edx \n"
@@ -241,25 +245,25 @@ def translate(instruction):
 			if registers['%edx'] != None:
 				assembly = assembly + "movl %edx, " + registers['edx'] + "\n"
 				setlocation(registers['%edx'], "mem")
-			if not operand1.isdigit():
+			if not isnumber(operand1):
 				loc1 = getlocation(operand1)
 				setlocation(operand1, "mem")
-			if not operand2.isdigit():
+			if not isnumber(operand2):
 				loc2 = getlocation(operand2)
 				setlocation(operand2, "mem")
 			assembly = assembly + "movl $0, %edx \n"
-			if not operand1.isdigit() and not operand2.isdigit():
+			if not isnumber(operand1) and not isnumber(operand2):
 				# Get the locations of the operands
 				assembly = assembly + "movl " + operand1 + ", %eax \n"
 				assembly = assembly + "movl " + operand2 + ", %edx \n"
 				assembly = assembly + "idiv %edx \n"
 				setlocation(result, '%eax')
-			elif operand1.isdigit() and not operand2.isdigit():
+			elif isnumber(operand1) and not isnumber(operand2):
 				assembly = assembly + "movl $" + (operand1) + ", %eax \n"
 				assembly = assembly + "movl " + operand2 + ", %edx \n"
 				assembly = assembly + "idiv %edx \n"
 				setlocation(result, '%eax')
-			elif not operand1.isdigit() and operand2.isdigit():
+			elif not isnumber(operand1) and isnumber(operand2):
 				loc1 = getlocation(operand1)
 				assembly = assembly + "movl " + operand1 + ", %eax \n"
 				regdest = getReg(result, line)
@@ -278,25 +282,25 @@ def translate(instruction):
 			if registers['%edx'] != None:
 				assembly = assembly + "movl %edx, " + registers['edx'] + "\n"
 				setlocation(registers['%edx'], "mem")
-			if not operand1.isdigit():
+			if not isnumber(operand1):
 				loc1 = getlocation(operand1)
 				setlocation(operand1, "mem")
-			if not operand2.isdigit():
+			if not isnumber(operand2):
 				loc2 = getlocation(operand2)
 				setlocation(operand2, "mem")
 			assembly = assembly + "movl $0, %edx \n"
-			if not operand1.isdigit() and not operand2.isdigit():
+			if not isnumber(operand1) and not isnumber(operand2):
 				# Get the locations of the operands
 				assembly = assembly + "movl " + operand1 + ", %eax \n"
 				assembly = assembly + "movl " + operand2 + ", %edx \n"
 				assembly = assembly + "idiv %edx \n"
 				setlocation(result, '%edx')
-			elif operand1.isdigit() and not operand2.isdigit():
+			elif isnumber(operand1) and not isnumber(operand2):
 				assembly = assembly + "movl $" + operand1 + ", %eax \n"
 				assembly = assembly + "movl " + operand2 + ", %edx \n"
 				assembly = assembly + "idiv %edx \n"
 				setlocation(result, '%edx')
-			elif not operand1.isdigit() and operand2.isdigit():
+			elif not isnumber(operand1) and isnumber(operand2):
 				loc1 = getlocation(operand1)
 				assembly = assembly + "movl " + operand1 + ", %eax \n"
 				regdest = getReg(result, line)
@@ -331,7 +335,7 @@ def translate(instruction):
 		operand2 = instruction[4]
 		label = instruction[5]
 		#check whether the operands are variables or constants
-		if not operand1.isdigit() and not operand2.isdigit(): #both the operands are variables
+		if not isnumber(operand1) and not isnumber(operand2): #both the operands are variables
 			#Get the locations of the operands
 			loc1 = getlocation(operand1)
 			loc2 = getlocation(operand2)
@@ -350,21 +354,21 @@ def translate(instruction):
 			setregister(reg1, operand1)
 			setlocation(operand1, reg1)
 
-		elif not operand1.isdigit() and operand2.isdigit(): #only operand1 is variables
+		elif not isnumber(operand1) and isnumber(operand2): #only operand1 is variables
 			#Get the location of the 1st operand
 			loc1 = getlocation(operand1)
 			if loc1 != "mem":
 				assembly = assembly + "cmp $" + operand2 + ", " + loc1 + "\n"
 			else:
 				assembly = assembly + "cmp $" + operand2 + ", " + operand1 + "\n"
-		elif operand1.isdigit() and not operand2.isdigit(): #only operand2 is variables
+		elif isnumber(operand1) and not isnumber(operand2): #only operand2 is variables
 			#Get the location of the 1st operand
 			loc2 = getlocation(operand2)
 			if loc2 != "mem":
 				assembly = assembly + "cmp " + loc2 + ", $" + operand1 + "\n"
 			else:
 				assembly = assembly + "cmp " + operand2 + ", $" + operand1 + "\n"
-		elif operand1.isdigit() and operand2.isdigit(): #none of the operandsare variables
+		elif isnumber(operand1) and isnumber(operand2): #none of the operandsare variables
 			#generate assembly instructions
 			assembly = assembly + "cmp $" + operand2 + ", $" + operand1 + "\n"
 
@@ -410,7 +414,7 @@ def translate(instruction):
 	# Generating assembly code if the tac is a print
 	elif operator == "print":
 		operand = instruction[2]
-		if not operand.isdigit():
+		if not isnumber(operand):
 			loc = getlocation(operand)
 			if not loc == "mem":
 				assembly = assembly + "pushl " + loc + "\n"
@@ -431,7 +435,7 @@ def translate(instruction):
 		source = instruction[3]
 		loc1 = getlocation(destination)
 		# If the source is a literal then we can just move it to the destination
-		if source.isdigit():
+		if isnumber(source):
 			if loc1 == "mem":
 				assembly = assembly + "movl $" + source + ", " + destination + "\n"
 			else:
@@ -495,7 +499,7 @@ for instr in instrlist:
 	if templist[1] not in ['label', 'call', 'function']:
 		varlist = varlist + templist 
 varlist = list(set(varlist))
-varlist = [x for x in varlist if not (x.isdigit() or (x[0] == '-' and x[1:].isdigit()))]
+varlist = [x for x in varlist if not isnumber(x)]
 for word in tackeywords:
 	if word in varlist:
 		varlist.remove(word)
@@ -582,8 +586,8 @@ bss_section = ".section .bss\n"
 text_section = ".section .text\n" + ".globl main\n" + "main:\n"
 
 for node in nodes:
+	text_section = text_section + "L" + str(node[0]) + ":\n"
 	for n in node:
-		text_section = text_section + "L" + str(n) + ":\n"
 		text_section = text_section + translate(instrlist[n-1])
 
 #--------------------------------------------------------------------------------------------------
