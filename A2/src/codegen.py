@@ -140,22 +140,32 @@ def translate(instruction):
 	elif operator == "call":
 		label = instruction[2]
 		assembly = assembly + "call " + label + "\n"
+
 	# Generating assembly code if the tac is a label for a new leader
 	elif operator == "label":
 		label = instruction[2]
 		assembly = assembly + label + ": \n"
+	
 	# Generating assembly code if the tac is an ifgoto statement
 	elif operator == "ifgoto":
 		pass
+
 	# Generating assembly code if the tac is a goto statement
 	elif operator == "goto":
-		pass
+		label = instruction[2]
+		if label.isdigit():
+			assembly = assembly + "jmp L" + label + "\n"
+		else:
+			assembly = assembly + "jmp " + label + "\n" 
+
 	# Generating assembly code if the tac is a return statement
 	elif operator == "ret":
 		pass
+
 	# Generating assembly code if the tac is a print
 	elif operator == "print":
 		pass
+
 	# Generating code for assignment operations
 	elif operator == '=':
 		destination = instruction[2]
@@ -236,6 +246,7 @@ text_section = ".section .text\n" + ".globl _main\n" + "_main:\n"
 
 for node in nodes:
 	for n in node:
+		text_section = text_section + "L" + str(n) + ":\n"
 		text_section = text_section + translate(instrlist[n-1])
 
 exit = "movl $1, %eax\n" + "movl $0, %ebx\n" + "int 0x80"
