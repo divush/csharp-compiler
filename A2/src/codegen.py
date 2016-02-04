@@ -145,7 +145,7 @@ def translate(instruction):
 	elif operator == "label":
 		label = instruction[2]
 		assembly = assembly + label + ": \n"
-	
+
 	# Generating assembly code if the tac is an ifgoto statement
 	elif operator == "ifgoto":
 		pass
@@ -160,11 +160,18 @@ def translate(instruction):
 
 	# Generating assembly code if the tac is a return statement
 	elif operator == "ret":
-		pass
+		assembly = assembly + "ret\n"
 
 	# Generating assembly code if the tac is a print
 	elif operator == "print":
-		pass
+		operand = instruction[2]
+		loc = getlocation(operand)
+		if not loc == "mem":
+			assembly = assembly + "pushl " + loc + "\n"
+			assembly = assembly + "call printf\naddl $8, %esp\n"
+		else:
+			assembly = assembly + "pushl " + operand + "\n"
+			assembly = assembly + "call printf\naddl $8, %esp\n"
 
 	# Generating code for assignment operations
 	elif operator == '=':
@@ -245,6 +252,8 @@ bss_section = ".section .bss\n"
 text_section = ".section .text\n" + ".globl _main\n" + "_main:\n"
 
 for node in nodes:
+	# Add code to construct the nextuse table for the basic block here
+	# ... Call a function may be
 	for n in node:
 		text_section = text_section + "L" + str(n) + ":\n"
 		text_section = text_section + translate(instrlist[n-1])
