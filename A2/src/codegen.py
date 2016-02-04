@@ -26,6 +26,8 @@ mathops = ['+', '-', '*', '/']
 varlist = []
 addressDescriptor = {}
 
+assembly = ""
+
 # Three address code keywords
 tackeywords = ['ifgoto', 'goto', 'return', 'call', 'print', 'label', '<=', '>=', '==', '>', '<', '!=', '=', 'function', 'exit'] + mathops
 
@@ -35,9 +37,29 @@ tackeywords = ['ifgoto', 'goto', 'return', 'call', 'print', 'label', '<=', '>=',
 def setregister(register, content):
 	registers[register] = content
 
-# getreg function
-def getReg(variable):
-	pass
+# getreg function... return register for the variable. spilling implemented here.
+def getReg(variable, instrno):
+	#instrno is the line number!
+	if variable in registers.values():
+		for x in registers.keys():
+			if registers[x] == variable:
+				return x
+	for x in registers.keys():
+		if registers[x] == None:
+			return x
+		else:
+			instrvardict = nextuseTable[instrno - 1]
+			farthestnextuse = max(instrvardict.keys())
+			for var in instrvardict:
+				if instrvardict[var] == farthestnextuse:
+					break;
+			#var is variable to be spilled!
+			for regspill in registers.keys():
+				if registers[regspill] == var:
+					break;
+			#regspill contais register to be spilled!!
+			assembly = assembly + "movl " + regspill + ", " + var + "\n"
+			return regspill
 
 # Returns the location of the variable from the addrss descriptor table
 def getlocation(variable):
@@ -287,18 +309,46 @@ nodes.append(list(range(leaders[i],len(instrlist)+1)))
 
 # Constructing the next use table
 for node in nodes:
-	i = len(node)
-	while i > 0:
-		n = node[i-1]
+	revlist=node.copy()
+	revlist.reverse()
+	for instrnumber in revlist:
 		# Get the current instruction and the operator and the operands
-		instr = instrlist[n-1]
+		instr = instrlist[instrnumber - 1]
 		operator = instr[1]
-
 		# Get the variable names in the current istruction
 		variables = [x for x in instr if x in varlist]
 		# Set the next use values here
-		nextuseTable[n-1] = { var:symbolTable[var] for var in variables}
-		symbolTable[var] = 
+		nextuseTable[instrnumber-1] = {var:symbolTable[var] for var in variables}
+		# Rule for mathematical operations
+		if operator in mathops:
+			z = instr[2]
+			x = instr[3]
+			y = instr[4]
+			if z in variables:
+				symbolTable[z] = ["dead", None]
+			if x in variables:
+				symbolTable[x] = ["live", instrnumber]
+			if y in variables:
+				symbolTable[y] = ["live", instrnumber]
+		elif operator == "ifgoto":
+			x = instr[3]
+			y = instr[4]
+			if x in variables:
+				symbolTable[x] = ["live", instrnumber]
+			if y in variables:
+				symbolTable[y] = ["live", instrnumber]
+		elif operator == "print":
+			x = instr[2]
+			if x in variables:
+				symbolTable[x] = ["live", instrnumber]			
+		elif operator == "=":
+			x = instr[2]
+			y = instr[3]
+			if x in variables:
+				symbolTable[x] = ["dead", None]
+			if y in variables:
+				symbolTable[y] = ["live", instrnumber]					
+
 		i = i - 1
 
 # Generating the x86 Assembly code
