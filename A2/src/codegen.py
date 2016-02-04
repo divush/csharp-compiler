@@ -148,7 +148,23 @@ def translate(instruction):
 
 	# Generating assembly code if the tac is an ifgoto statement
 	elif operator == "ifgoto":
-		pass
+		operator = instruction[2]
+		operand1 = instruction[3]
+		operand2 = instruction[4]
+		# Translation for diffrent conditional operators
+		if operator == "<=":
+			pass
+		elif operator == ">=":
+			pass
+		elif operator == "==":
+			pass
+		elif operator == "<":
+			pass
+		elif operator == ">":
+			pass
+		elif operator == "!=":
+			pass
+
 
 	# Generating assembly code if the tac is a goto statement
 	elif operator == "goto":
@@ -202,10 +218,18 @@ def translate(instruction):
 
 	# Generating the prelude for a function definition
 	elif operator == "function":
-		pass
-
+		function_name = instruction[2]
+		assembly = assembly + ".globl " + function_name + "\n"
+		assembly = assembly + ".type "  + function_name + ", @function\n"
+		assembly = assembly + function_name + ":\n"
+		assembly = assembly + "pushl %ebp\n"
+		assembly = assembly + "movl %esp, %ebp\n"
+		
+	# Generating the conclude of the function
 	elif operator == "return":
-		pass
+		assembly = assembly + "movl %ebp, %esp\n"
+		assembly = assembly + "popl %ebp\n"
+		assembly = assembly + "ret\n"
 
 	# Return the assembly code
 	return assembly
