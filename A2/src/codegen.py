@@ -27,7 +27,7 @@ varlist = []
 addressDescriptor = {}
 
 # Three address code keywords
-tackeywords = ['ifgoto', 'goto', 'ret', 'call', 'print', 'label', 'leq', 'geq', '='] + mathops
+tackeywords = ['ifgoto', 'goto', 'return', 'call', 'print', 'label', 'leq', 'geq', '=', 'function', 'exit'] + mathops
 
 ###################################################################################################
 
@@ -159,19 +159,26 @@ def translate(instruction):
 			assembly = assembly + "jmp " + label + "\n" 
 
 	# Generating assembly code if the tac is a return statement
-	elif operator == "ret":
-		assembly = assembly + "ret\n"
+	elif operator == "exit":
+		assembly = assembly + "call exit\n"
 
 	# Generating assembly code if the tac is a print
 	elif operator == "print":
 		operand = instruction[2]
-		loc = getlocation(operand)
-		if not loc == "mem":
-			assembly = assembly + "pushl " + loc + "\n"
-			assembly = assembly + "call printf\naddl $8, %esp\n"
+		if not operand.isdigit():
+			loc = getlocation(operand)
+			if not loc == "mem":
+				assembly = assembly + "pushl " + loc + "\n"
+				assembly = assembly + "pushl $str\n"
+				assembly = assembly + "call printf\n"
+			else:
+				assembly = assembly + "pushl " + operand + "\n"
+				assembly = assembly + "pushl $str\n"
+				assembly = assembly + "call printf\n"
 		else:
-			assembly = assembly + "pushl " + operand + "\n"
-			assembly = assembly + "call printf\naddl $8, %esp\n"
+			assembly = assembly + "pushl $" + operand + "\n"
+			assembly = assembly + "pushl $str\n"
+			assembly = assembly + "call printf\n"			
 
 	# Generating code for assignment operations
 	elif operator == '=':
@@ -192,6 +199,13 @@ def translate(instruction):
 		# If one of the locations is a register	
 		elif:
 			assembly = assembly + "movl " + loc2 + ", " + loc1 
+
+	# Generating the prelude for a function definition
+	elif operator == "function":
+		pass
+
+	elif operator == "return":
+		pass
 
 	# Return the assembly code
 	return assembly
@@ -229,6 +243,8 @@ for i in range(len(instrlist)):
 	elif 'goto' in instrlist[i]:
 		leaders.append(int(instrlist[i][-1]))
 		leaders.append(int(instrlist[i][0])+1)
+	elif 'function' in instrlist[i]:
+		leaders.append(int(instrlist[i][0]))
 	elif 'label' in instrlist[i]:
 		leaders.append(int(instrlist[i][0]))
 leaders = list(set(leaders))
@@ -247,6 +263,7 @@ nodes.append(list(range(leaders[i],len(instrlist)+1)))
 data_section = ".section .data\n"
 for var in varlist:
 	data_section = data_section + var + ":\n" + ".int 0"
+data_section = data_section + "str:\n.ascii \"%d\\n\\0\"\n"
 
 bss_section = ".section .bss\n"
 text_section = ".section .text\n" + ".globl _main\n" + "_main:\n"
@@ -258,15 +275,13 @@ for node in nodes:
 		text_section = text_section + "L" + str(n) + ":\n"
 		text_section = text_section + translate(instrlist[n-1])
 
-exit = "movl $1, %eax\n" + "movl $0, %ebx\n" + "int 0x80"
-
 #--------------------------------------------------------------------------------------------------
 
 print("\n")
 # Priniting the final output
 print("Assembly Code (x86) for: [" + filename + "]")
 print("--------------------------------------------------------------------")
-x86c = data_section + bss_section + text_section + exit
+x86c = data_section + bss_section + text_section
 print(x86c) 
 print("--------------------------------------------------------------------")
 
