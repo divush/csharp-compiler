@@ -47,19 +47,18 @@ def getReg(variable, instrno):
 	for x in registers.keys():
 		if registers[x] == None:
 			return x
-		else:
-			instrvardict = nextuseTable[instrno - 1]
-			farthestnextuse = max(instrvardict.keys())
-			for var in instrvardict:
-				if instrvardict[var] == farthestnextuse:
-					break;
-			#var is variable to be spilled!
-			for regspill in registers.keys():
-				if registers[regspill] == var:
-					break;
-			#regspill contais register to be spilled!!
-			assembly = assembly + "movl " + regspill + ", " + var + "\n"
-			return regspill
+	instrvardict = nextuseTable[instrno - 1]
+	farthestnextuse = max(instrvardict.keys())
+	for var in instrvardict:
+		if instrvardict[var] == farthestnextuse:
+			break;
+	#var is variable to be spilled!
+	for regspill in registers.keys():
+		if registers[regspill] == var:
+			break;
+	#regspill contais register to be spilled!!
+	assembly = assembly + "movl " + regspill + ", " + var + "\n"
+	return regspill
 
 # Returns the location of the variable from the addrss descriptor table
 def getlocation(variable):
@@ -70,13 +69,13 @@ def setlocation(variable, location):
 	addressDescriptor[variable] = location
 
 # Returns the nextuse of the variable
-def nextuse(line, variable):
-	pass
+def nextuse(variable, line):
+	return nextuseTable[line-1][variable]
 
 # The function to translate a single line tac to x86 assembly
 def translate(instruction):
 	assembly = ""
-	line = instruction[0]
+	line = int(instruction[0])
 	operator = instruction[1]
 	# Generating assembly code if the tac is a mathematical operation
 	if operator in mathops:
@@ -87,7 +86,7 @@ def translate(instruction):
 		if operator == '+':
 			if not operand1.isdigit() and not operand2.isdigit():
 				# Get the register to store the result
-				regdest = getReg(result)
+				regdest = getReg(result, line)
 				# Get the locations of the operands
 				loc1 = getlocation(operand1)
 				loc2 = getlocation(operand2)
@@ -96,57 +95,57 @@ def translate(instruction):
 					assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
 				# Perform the addition, the result will be stored in the register regdest
 				assembly = assembly + "addl " + loc2 + ", " + regdest + "\n"
-				# Update the register descriptor entry for destreg to say that it contains the result
-				setregister(destreg, result)
+				# Update the register descriptor entry for regdest to say that it contains the result
+				setregister(regdest, result)
 				# Update the address descriptor entry for result variable to say where it is stored now
-				setlocation(result, destreg)
+				setlocation(result, regdest)
 				# If operand1 and operand2 have no further use, then free their registers
-				if nextuse(operand1) == -1:
+				if nextuse(operand1, line) == -1:
 					if loc1 != "mem":
 						setregister(loc1, None)
 						assembly = assembly + "movl " + regdest + ", " + operand1 + "\n"
 						setlocation(operand1, "mem")
-				if nextuse(operand2) == -1:
+				if nextuse(operand2, line) == -1:
 					if loc2 != "mem":
 						setregister(loc2, None)
 						assembly = assembly + "movl " + regdest + ", " + operand2 + "\n"
 						setlocation(operand2, "mem")
 			elif operand1.isdigit() and not operand2.isdigit():
 				# Get the register to store the result
-				regdest = getReg(result)
+				regdest = getReg(result, line)
 				loc2 = getlocation(operand2)
 				# Move the first operand to the destination register
 				assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
 				# Add the other operand to the register content
 				assembly = assembly + "addl " + loc2 + ", " + regdest + "\n"
-				setregister(destreg, result)
+				setregister(regdest, result)
 				setlocation(result, regdest)
-				if nextuse(operand2) == -1:
+				if nextuse(operand2, line) == -1:
 					if loc2 != "mem":
 						setregister(loc2, None)
 						assembly = assembly + "movl " + regdest + ", " + operand2 + "\n"
 						setlocation(operand2, "mem")
 			elif not operand1.isdigit() and operand2.isdigit():
 				# Get the register to store the result
-				regdest = getReg(result)
+				regdest = getReg(result, line)
 				loc1 = getlocation(operand2)
 				# Move the first operand to the destination register
 				assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 				# Add the other operand to the register content
 				assembly = assembly + "addl " + loc1 + ", " + regdest + "\n"
-				setregister(destreg, result)
+				setregister(regdest, result)
 				setlocation(result, regdest)
-				if nextuse(operand1) == -1:
+				if nextuse(operand1, line) == -1:
 					if loc1 != "mem":
 						setregister(loc1, None)
 						assembly = assembly + "movl " + regdest + ", " + operand1 + "\n"
 						setlocation(operand1, "mem")
 			elif operand1.isdigit() and operand2.isdigit():
 				# Get the register to store the result
-				regdest = getReg(result)
+				regdest = getReg(result, line)
 				assembly = assembly + "movl $" + str(int(operand1)+int(operand2)) + ", " + regdest + "\n"
 				# Update the address descriptor entry for result variable to say where it is stored no
-				setregister(destreg, result)
+				setregister(regdest, result)
 				setlocation(result, regdest)	
 		# Subtraction
 		elif operator == '-':
@@ -223,16 +222,16 @@ def translate(instruction):
 		destination = instruction[2]
 		source = instruction[3]
 		loc1 = getlocation(destination)
-		loc2 = getlocation(source)
 		# If the source is a literal then we can just move it to the destination
 		if source.isdigit():
 			assembly = assembly + "movl $" + source + ", " + loc1
 		# If both the source and the destination reside in the memory
-		elif loc1 == "mem" and loc2 == "mem":
+		elif loc1 == "mem":
+			loc2 = getlocation(source)
 			regdest = getReg(destination)
 			assembly = assembly + "movl " + source + ", " + regdest
 			# Update the address descriptor entry for result variable to say where it is stored no
-			setregister(destreg, destination)
+			setregister(regdest, destination)
 			setlocation(destination, regdest)			
 		# If one of the locations is a register	
 		else:
@@ -355,7 +354,7 @@ for node in nodes:
 #--------------------------------------------------------------------------------------------------
 data_section = ".section .data\n"
 for var in varlist:
-	data_section = data_section + var + ":\n" + ".int 0"
+	data_section = data_section + var + ":\n" + ".int 0\n"
 data_section = data_section + "str:\n.ascii \"%d\\n\\0\"\n"
 
 bss_section = ".section .bss\n"
