@@ -5,5 +5,6 @@
 5, call, foo
 6, exit
 7, function, foo
+8, /, a, a, b
 8, print, a
 9, return
