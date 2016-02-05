@@ -87,7 +87,29 @@ def translate(instruction):
 	if operator in mathops:
 		result = instruction[2]
 		operand1 = instruction[3]
+		if '[' in operand1 and ']' in operand1:
+			id1=operand1.index('[')
+			id2=operand1.index(']')
+			varname=operand1[:id1]
+			arrindex=[id1+1:id2]
+			if arrindex.isdigit():
+				assembly = assembly + "movl $" + arrindex + ", %esi \n"
+			else:
+				assembly = assembly + "movl " + arrindex + ", %esi \n"
+			operand1 = ""
+			operand1 = varname+"(%esi)"
 		operand2 = instruction[4]
+		if '[' in operand2 and ']' in operand2:
+			id1=operand2.index('[')
+			id2=operand2.index(']')
+			varname=operand2[:id1]
+			arrindex=[id1+1:id2]
+			if arrindex.isdigit():
+				assembly = assembly + "movl $" + arrindex + ", %esi \n"
+			else:
+				assembly = assembly + "movl " + arrindex + ", %esi \n"
+			operand2 = ""
+			operand2 = varname+"(%esi)"
 		# Addition
 		if operator == '+':
 			if isnumber(operand1) and isnumber(operand2):
