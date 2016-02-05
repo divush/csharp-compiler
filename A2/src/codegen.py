@@ -206,10 +206,10 @@ def translate(instruction):
 		# Multiplication
 		elif operator == '*':
 			if registers['%eax'] != None:
-					assembly = assembly + "movl %eax, " + registers['eax'] + "\n"
-					setlocation(registers['eax'], "mem")
+					assembly = assembly + "movl %eax, " + registers['%eax'] + "\n"
+					setlocation(registers['%eax'], "mem")
 			if registers['%edx'] != None:
-					assembly = assembly + "movl %edx, " + registers['edx'] + "\n"
+					assembly = assembly + "movl %edx, " + registers['%edx'] + "\n"
 					setlocation(registers['%edx'], "mem")
 			if not isnumber(operand1):
 				loc1 = getlocation(operand1)
@@ -240,11 +240,14 @@ def translate(instruction):
 		# Division
 		elif operator == '/':
 			if registers['%eax'] != None:
-				assembly = assembly + "movl %eax, " + registers['eax'] + "\n"
-				setlocation(registers['eax'], "mem")
+				assembly = assembly + "movl %eax, " + registers['%eax'] + "\n"
+				setlocation(registers['%eax'], "mem")
 			if registers['%edx'] != None:
-				assembly = assembly + "movl %edx, " + registers['edx'] + "\n"
+				assembly = assembly + "movl %edx, " + registers['%edx'] + "\n"
 				setlocation(registers['%edx'], "mem")
+			if registers['%ecx'] != None:
+				assembly = assembly + "movl %ecx, " + registers['%ecx'] + "\n"
+				setlocation(registers['%ecx'], "mem")
 			if not isnumber(operand1):
 				loc1 = getlocation(operand1)
 				setlocation(operand1, "mem")
@@ -255,20 +258,19 @@ def translate(instruction):
 			if not isnumber(operand1) and not isnumber(operand2):
 				# Get the locations of the operands
 				assembly = assembly + "movl " + operand1 + ", %eax \n"
-				assembly = assembly + "movl " + operand2 + ", %edx \n"
-				assembly = assembly + "idiv %edx \n"
+				assembly = assembly + "movl " + operand2 + ", %ecx \n"
+				assembly = assembly + "idiv %ecx \n"
 				setlocation(result, '%eax')
 			elif isnumber(operand1) and not isnumber(operand2):
 				assembly = assembly + "movl $" + (operand1) + ", %eax \n"
-				assembly = assembly + "movl " + operand2 + ", %edx \n"
-				assembly = assembly + "idiv %edx \n"
+				assembly = assembly + "movl " + operand2 + ", %ecx \n"
+				assembly = assembly + "idiv %ecx \n"
 				setlocation(result, '%eax')
 			elif not isnumber(operand1) and isnumber(operand2):
 				loc1 = getlocation(operand1)
 				assembly = assembly + "movl " + operand1 + ", %eax \n"
-				regdest = getReg(result, line)
-				assembly = assembly + "movl $" + (operand2) + ", " + regdest + " \n"
-				assembly = assembly + "idiv " + regdest + "\n"
+				assembly = assembly + "movl $" + (operand2) + ", %ecx \n"
+				assembly = assembly + "idiv %ecx \n"
 				setlocation(result, '%eax')
 			else:
 				ansdiv = int(int(operand1)/int(operand2))
@@ -277,11 +279,14 @@ def translate(instruction):
 		# Modulus
 		elif operator == '%':
 			if registers['%eax'] != None:
-				assembly = assembly + "movl %eax, " + registers['eax'] + "\n"
+				assembly = assembly + "movl %eax, " + registers['%eax'] + "\n"
 				setlocation(registers['eax'], "mem")
 			if registers['%edx'] != None:
-				assembly = assembly + "movl %edx, " + registers['edx'] + "\n"
+				assembly = assembly + "movl %edx, " + registers['%edx'] + "\n"
 				setlocation(registers['%edx'], "mem")
+			if registers['%ecx'] != None:
+				assembly = assembly + "movl %ecx, " + registers['%ecx'] + "\n"
+				setlocation(registers['%ecx'], "mem")
 			if not isnumber(operand1):
 				loc1 = getlocation(operand1)
 				setlocation(operand1, "mem")
@@ -292,24 +297,23 @@ def translate(instruction):
 			if not isnumber(operand1) and not isnumber(operand2):
 				# Get the locations of the operands
 				assembly = assembly + "movl " + operand1 + ", %eax \n"
-				assembly = assembly + "movl " + operand2 + ", %edx \n"
-				assembly = assembly + "idiv %edx \n"
+				assembly = assembly + "movl " + operand2 + ", %ecx \n"
+				assembly = assembly + "idiv %ecx \n"
 				setlocation(result, '%edx')
 			elif isnumber(operand1) and not isnumber(operand2):
 				assembly = assembly + "movl $" + operand1 + ", %eax \n"
-				assembly = assembly + "movl " + operand2 + ", %edx \n"
-				assembly = assembly + "idiv %edx \n"
+				assembly = assembly + "movl " + operand2 + ", %ecx \n"
+				assembly = assembly + "idiv %ex \n"
 				setlocation(result, '%edx')
 			elif not isnumber(operand1) and isnumber(operand2):
 				loc1 = getlocation(operand1)
 				assembly = assembly + "movl " + operand1 + ", %eax \n"
-				regdest = getReg(result, line)
-				assembly = assembly + "movl $" + (operand2) + ", " + regdest + " \n"
-				assembly = assembly + "idiv " + regdest + "\n"
+				assembly = assembly + "movl $" + (operand2) + ", %ecx \n"
+				assembly = assembly + "idiv %ecx \n"
 				setlocation(result, '%edx')
 			else:
 				ansmod = int(int(operand1)/int(operand2))
-				assembly = assembly + "movl $" + str(ansmod) + ", %eax \n"
+				assembly = assembly + "movl $" + str(ansmod) + ", %edx \n"
 				setlocation(result, '%edx')
 
 	# Generating assembly code if the tac is a functin call
