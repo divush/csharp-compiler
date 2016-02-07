@@ -6,5 +6,5 @@
 6, exit
 7, function, foo
 8, /, a, a, b
-8, print, a
-9, return
+9, print, a
+10, return

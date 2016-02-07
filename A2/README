@@ -1,29 +1,5 @@
-1) Three address code to be designed simultaneously. We can start by sir's 3 address code and add to it. (All)
-2) Implementing register spilling and basic blocks - Requires construction of control flow graph and register spilling algorithm discussed in class.
-3) 3 address code to assembly - Requires direct translation.
-4) set up the data regions to handle global data and constants  - Along with (3)
-5) provide some (minimal) library support to allow for writing of useful programs - Along with (2).
-
-
-In the meeting we'll discuss about the Python data types to use for representing various data structures like symbol table, etc.
-
-#Remove first and last \n's :
-f=open('filename', 'r')
-inputstr=f.read()
-inputstr=inputstr.strip('\n')
-
-#GET INSTR LIST:
-for instr in instrlist:
-	if 'ifgoto' in instr:
-        	labels.append(instr[-1])
-		labels.append(str(int(instr[0])+1))
-
-
-
-#Make nodes in  control flow graph:
-prelabel=1
-for l in labels:
-	newlist=list(range(prelabel, l))
-     	nodes.append(newlist)
-     	prelabel=l
-nodes=nodes[1:]
+In this assignment, we converted IR to x86 assembly code. Here are the functions and their descriptions:
+1) isnumber(num) : checks if the input is a number (positive or negative).
+2) setregister(register, content) : puts content in specified register.
+3) getReg(variable, instrno) : this is an important function. getReg takes the variable and instruction number as parameters and implements the spilling. It gets the register from the nextuseTable.
+4) translate(instruction) : translates the instruction into assembly code.
