@@ -3,7 +3,7 @@
 3, =, p, 1
 4, ifgoto, <=, a, 1, 8
 5, *, t, t, a
-6, -, a, p, a
+6, -, a, 1, a
 7, goto, 4
 8, print, t
 9, exit

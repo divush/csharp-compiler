@@ -150,20 +150,20 @@ def translate(instruction):
 			if isnumber(operand1) and isnumber(operand2):
 				# Get the register to store the result
 				regdest = getReg(result, line)
-				assembly = assembly + "movl $" + str(int(operand1)+int(operand2)) + ", " + regdest + "\n"
+				assembly = assembly + "movl $" + str(int(operand2)-int(operand1)) + ", " + regdest + "\n"
 				# Update the address descriptor entry for result variable to say where it is stored no
 				setregister(regdest, result)
 				setlocation(result, regdest)
-			elif isnumber(operand1) and not isnumber(operand1):
+			elif isnumber(operand1) and not isnumber(operand2):
 				# Get the register to store the result
 				regdest = getReg(result, line)
 				loc2 = getlocation(operand2)
 				# Move the first operand to the destination register
-				assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
 				if loc2 != "mem":
-					assembly = assembly + "subl " + loc2 + ", " + regdest + "\n"
+					assembly = assembly + "movl " + loc2 + ", " + regdest + "\n"
 				else:
-					assembly = assembly + "subl " + operand2 + ", " + regdest + "\n"
+					assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "subl $" + operand1 + ", " + regdest + "\n"
 				setregister(regdest, result)
 				setlocation(result, regdest)				
 			elif not isnumber(operand1) and isnumber(operand2):
@@ -186,11 +186,11 @@ def translate(instruction):
 				loc1 = getlocation(operand1)
 				loc2 = getlocation(operand2)
 				if loc1 != "mem" and loc2 != "mem":
-					assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
-					assembly = assembly + "subl " + loc2 + ", " + regdest + "\n"
+					assembly = assembly + "movl " + loc2 + ", " + regdest + "\n"
+					assembly = assembly + "subl " + loc1 + ", " + regdest + "\n"
 				elif loc1 == "mem" and loc2 != "mem":
-					assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
-					assembly = assembly + "subl " + loc2 + ", " + regdest + "\n"
+					assembly = assembly + "movl " + loc2 + ", " + regdest + "\n"
+					assembly = assembly + "subl " + operand1 + ", " + regdest + "\n"
 				elif loc1 != "mem" and loc2 == "mem":
 					assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
 					assembly = assembly + "subl " + loc1 + ", " + regdest + "\n"
