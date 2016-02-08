@@ -1,1 +1,8 @@
-1, 
+1, =, a, 6
+2, =, t, 1
+3, ifgoto, leq, a, 1, 7
+4, =, t, t, a
+5, =, a, 1, a
+6, goto, 3
+7, print, a
+8, exit
