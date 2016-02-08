@@ -334,6 +334,12 @@ def translate(instruction):
 
 	# Generating assembly code if the tac is an ifgoto statement
 	elif operator == "ifgoto":
+		# Add code to write all the variables to the memory
+		for var in varlist:
+			loc = getlocation(var)
+			if loc != "mem":
+				assembly = assembly + "movl " + loc + ", " + var + "\n"
+				setlocation(var, "mem")
 		operator = instruction[2]
 		operand1 = instruction[3]
 		operand2 = instruction[4]
