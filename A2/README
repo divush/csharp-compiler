@@ -3,3 +3,5 @@ In this assignment, we converted IR to x86 assembly code. Here are the functions
 2) setregister(register, content) : puts content in specified register.
 3) getReg(variable, instrno) : this is an important function. getReg takes the variable and instruction number as parameters and implements the spilling. It gets the register from the nextuseTable.
 4) translate(instruction) : translates the instruction into assembly code.
+5) getlocation(variable) : return location of variable from address descriptor table. returned value is a register or "mem".
+6) setlocation(variable, location) : modifies address descriptor table entry for the particular variable and sets it's entry to the given location.
