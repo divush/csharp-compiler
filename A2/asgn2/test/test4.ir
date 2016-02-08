@@ -1,0 +1,12 @@
+1, =, a, 3
+2, =, t, 1
+3, =, p, 1
+4, call, fact
+5, print, t
+6, exit
+7, function, fact
+8, ifgoto, ==, a, 1, 12
+9, *, t, a, t
+10, -, a, p, a
+11, call, fact
+12, return

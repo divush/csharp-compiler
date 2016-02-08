@@ -1,0 +1,13 @@
+1, =, a, 2
+2, +, b, a, 4
+3, ifgoto, <=, b, 7, 7
+4, *, c, b, a
+5, ifgoto, <=, c, 10, 11
+6, goto, 13
+7, ifgoto, >=, a, 2, 9
+8, goto, 13
+9, print, a
+10, goto, 13
+11, print, c
+12, goto, 13
+13, exit
