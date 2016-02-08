@@ -26,6 +26,11 @@ line, return
 
 Note that the function definitions must be in the end of the program
 
+RUNNING THE GENERATED ASSEMBLY CODE
+---------------------------------------------------------------------------------------------------
+gcc -m32 test.s -o test
+./test
+
 THE DESCRIPTION OF DATA STRUCTURES DEFINED IN CODEGEN.PY IS AS FOLLOWS:
 ---------------------------------------------------------------------------------------------------
 1. reglist
