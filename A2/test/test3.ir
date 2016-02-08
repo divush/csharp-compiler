@@ -1,6 +1,7 @@
 1, =, a, 2
 2, =, b, 7
-3, ifgoto, leq, a, 0, 5
+3, ifgoto, leq, a, 0, 6
 4, *, b, b, b
-5, print, b
-6, exit
+5, -, a, a, 1
+6, print, b
+7, exit
