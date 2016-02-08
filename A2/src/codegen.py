@@ -412,10 +412,7 @@ def translate(instruction):
 				setlocation(var, "mem")
 		
 		label = instruction[2]
-		if label.isdigit():
-			assembly = assembly + "jmp L" + label + "\n"
-		else:
-			assembly = assembly + "jmp " + label + "\n" 
+		assembly = assembly + "jmp L" + label + "\n"
 
 	# Generating assembly code if the tac is a return statement
 	elif operator == "exit":
