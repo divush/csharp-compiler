@@ -350,7 +350,7 @@ def translate(instruction):
 			loc1 = getlocation(operand1)
 			loc2 = getlocation(operand2)
 			#Get the register for comparing the operands
-			reg1 = getReg(operand1)
+			reg1 = getReg(operand1, line)
 			#generating assembly instructions
 			if loc1 != "mem":
 				assembly = assembly + "movl " + loc1 + ", " + reg1 + "\n"
@@ -451,14 +451,14 @@ def translate(instruction):
 			# If both the source and the destination reside in the memory
 			loc2 = getlocation(source)
 			if loc1 == "mem" and loc2 == "mem":				
-				regdest = getReg(destination)
+				regdest = getReg(destination, line)
 				assembly = assembly + "movl " + source + ", " + regdest + "\n"
 				# Update the address descriptor entry for result variable to say where it is stored no
 				setregister(regdest, destination)
 				setlocation(destination, regdest)			
 			# If the source is in a register
 			elif loc1 == "mem" and loc2 != "mem":
-				regdest = getReg(destination)
+				regdest = getReg(destination, line)
 				assembly = assembly + "movl " + loc2 + ", " + regdest + "\n"
 				# Update the address descriptor entry for result variable to say where it is stored no
 				setregister(regdest, destination)
