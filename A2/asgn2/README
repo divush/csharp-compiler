@@ -1,0 +1,60 @@
+INTERMEDIATE CODE SPECIFICATION
+---------------------------------------------------------------------------------------------------
+Syntax: line_number, operator, arg1, [arg2, ...]
+
+Details:
+1. Mathematical Operations ['+', '-', '*', '/', '%']
+line, operator, destination, arg1, arg2
+2. Function Calls
+line, call, function_name
+3. Code Labels
+line, label, label_name
+4. Conditional Jumps ['<=', '>=', '==', '>', '<', '!=', '=']
+line, ifgoto, condition, operand1, operand2, line_to_jump_to
+5. Unconditional Jumps
+line, goto, line_to_jump_to
+6. Exit Call
+line, exit
+7. Print Innstruction
+line, print, variable_name
+8. Assignement Instruction
+line, =, destination_var, source_var
+9. Function Definitions
+line, function, function_name
+10. Return from Function
+line, return
+
+Note that the function definitions must be in the end of the program
+
+RUNNING THE GENERATED ASSEMBLY CODE
+---------------------------------------------------------------------------------------------------
+gcc -m32 test.s -o test
+./test
+
+THE DESCRIPTION OF DATA STRUCTURES DEFINED IN CODEGEN.PY IS AS FOLLOWS:
+---------------------------------------------------------------------------------------------------
+1. reglist
+The list of general purpose registers that we have used. ['%eax', '%ebx', '%ecx', '%edx']
+2. registers
+A dictionary that keeps track of the contents in these registers
+3. varlist
+The list of variable names found in the Intermediate Code
+4. addressDescriptor
+A dictionary that keeps track of the current address of the variables in the program
+5. tackeywords
+The list of the keywords in our IR
+
+THE DESCRIPTION OF THE FUNCTIONS DEFINED IN CODEGEN.PY IS AS FOLLOWS:
+---------------------------------------------------------------------------------------------------
+1. isnumber(num)
+Checks if the input is a number (positive or negative).
+2. setregister(register, content) 
+Puts content in specified register.
+3. getReg(variable, instrno) : 
+This is an important function. getReg takes the variable and instruction number as parameters and implements the spilling. It gets the register from the nextuseTable.
+4. translate(instruction) 
+Translates the instruction into assembly code.
+5. getlocation(variable) 
+Return location of variable from address descriptor table. returned value is a register or "mem".
+6. setlocation(variable, location) : 
+Modifies address descriptor table entry for the particular variable and sets it's entry to the given location.

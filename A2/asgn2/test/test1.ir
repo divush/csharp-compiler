@@ -1,0 +1,10 @@
+1, =, a, 2
+2, =, b, 7
+3, +, a, a, b
+4, ifgoto, <=, a, 50, 2
+5, call, foo
+6, exit
+7, function, foo
+8, /, a, a, b
+9, print, a
+10, return
