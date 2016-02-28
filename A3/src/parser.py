@@ -57,5 +57,18 @@ for rule in opt_rules:
 
 # Grammar Productions for C#
 def p_compilation_unit(p):
+	"""compilation_unit 	: extern_alias_directives_opt
+							| using_directives_opt
+							| global_attributes_opt
+							| namespace_member_declaration_opt
 	"""
+	pass
+
+def p_extern_alias_directives(p):
+	"""extern_alias_directives 	: extern_alias_directive
+								| extern_alias_directives extern_alias_directive
 	"""
+	pass
+
+def p_extern_alias_directive(p):
+	"""extern_alias_directive 	
