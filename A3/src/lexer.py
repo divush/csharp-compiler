@@ -3,7 +3,6 @@
 #  Lexer for generating tokens in C#  language
 # ------------------------------------------------------------------
 import ply.lex as lex
-import sys
 
 # THE LIST OF RESERVED KEYWORDS IN C# 
 reserved = {
@@ -214,58 +213,5 @@ def t_error(t):
 	print("{}: Illegal character {}".format(t.lineno, t.value[0]))
 	t.lexer.skip(1)
 
-
 #  Build the lexer
 lexer = lex.lex()
-
-# # File I/O
-# # Input filename from terminal
-# strinputfile = sys.argv[1]
-# inputfile = open(strinputfile, 'r')
-
-# #data = "using System; namespace HelloWorld"
-# #Convert file to string as lexer takes only string inputs.
-# data = inputfile.read()
-
-# #Giving file (in string form) as input to our lexer
-# lexer.input(data)
-
-# #Data Structures for various counts.
-# #Stores {token_type : token_count} pairs for each token
-# tokentype = {}
-
-# #The key here is the token_type(like IDENTIFIER, INT, etc.). Value is a LIST of lexemes that match the token.
-# lexeme = {}			
-
-# #This stores those token types which are not be recounted of they occur more than once. For example, a variable name.
-# non_recountable = ['IDENTIFIER']
-# #Tokenize input!
-# while True:
-# 	tok = lexer.token() #Get token
-# 	if not tok:			#No token?
-# 		break      # No more input
-# 	tokname = tok.value 		#store the lexeme
-# 	toktype = tok.type 			#stores the token_type
-# 	if toktype not in tokentype:		
-# 		tokentype[toktype] = 1			#initianlize count of token to 1
-# 		lexeme[toktype]=[]				#initialize the list in the lexeme dictionary
-# 		lexeme[toktype].append(tokname)	#append lexeme to the lexeme dictionary
-# 		# print(tokname+"\t"+toktype+"NOT here previously")
-# 	else:
-# 		if tokname not in lexeme[toktype]:	
-# 			lexeme[toktype].append(tokname)		#if not present add. above check avoids repetitions
-# 			tokentype[toktype] += 1			#add another token seen of that type
-# 		else:
-# 			if toktype not in non_recountable:			#if this token type is not to be recounted
-# 				tokentype[toktype] +=1			#add token seen.
-
-# # print(tokentype)
-# # print(lexeme)
-
-# #printing the tokens
-# for types in tokentype:
-# 	print("----------------------------------------")
-# 	print("{0:<20s} {1:>5s}".format(types, (str)(tokentype[types])))
-# 	for lexlist in lexeme[types]:
-# 		print("{0:>40s}".format(lexlist))
-# print("----------------------------------------")
