@@ -316,7 +316,6 @@ def p_expression(p):
 def p_non_assignment_expression(p):
 	"""non_assignment_expression : conditional_expression
 				| lambda_expression
-				| query_expression
 	"""
 def p_conditional_expression(p):
 	"""conditional_expression : null_coalescing_expression
@@ -859,66 +858,66 @@ def p_anonymous_function_body(p):
 	"""anonymous_function_body : expression
 				| block
 	"""
-def p_query_expression(p):
-	"""query_expression : from_clause query_body
-	"""
-def p_from_clause(p):
-	"""from_clause : "from" type_opt identifier "in" expression
-	"""
-def p_query_body(p):
-	"""query_body : query_body_clauses_opt select_or_group_clause query_continuation_opt
-	"""
-def p_query_body_clauses(p):
-	"""query_body_clauses : query_body_clause
-				| query_body_clauses query_body_clause
-	"""
-def p_query_body_clause(p):
-	"""query_body_clause : from_clause
-				| let_clause
-				| where_clause
-				| join_clause
-				| join_into_clause
-				| orderby_clause
-	"""
-def p_let_clause(p):
-	"""let_clause : "let" identifier "=" expression
-	"""
-def p_where_clause(p):
-	"""where_clause : "where" boolean_expression
-	"""
-def p_join_clause(p):
-	"""join_clause : "join" type_opt identifier "in" expression "on" expression "equals" expression
-	"""
-def p_join_into_clause(p):
-	"""join_into_clause : "join" type_opt identifier "in" expression "on" expression "equals" expression "into" identifier
-	"""
-def p_orderby_clause(p):
-	"""orderby_clause : "orderby" orderings
-	"""
-def p_orderings(p):
-	"""orderings : ordering
-				| orderings "," ordering
-	"""
-def p_ordering(p):
-	"""ordering : expression ordering_direction_opt
-	"""
-def p_ordering_direction(p):
-	"""ordering_direction : "ascending"
-				| "descending"
-	"""
-def p_select_or_group_clause(p):
-	"""select_or_group_clause : select_clause
-				| group_clause
-	"""
-def p_select_clause(p):
-	"""select_clause : "select" expression
-	"""
-def p_group_clause(p):
-	"""group_clause : "group" expression "by" expression
-	"""
-def p_query_continuation(p):
-	"""query_continuation : "into" identifier query_body
-	"""
+# def p_query_expression(p):
+# 	"""query_expression : from_clause query_body
+# 	"""
+# def p_from_clause(p):
+# 	"""from_clause : "from" type_opt identifier "in" expression
+# 	"""
+# def p_query_body(p):
+# 	"""query_body : query_body_clauses_opt select_or_group_clause query_continuation_opt
+# 	"""
+# def p_query_body_clauses(p):
+# 	"""query_body_clauses : query_body_clause
+# 				| query_body_clauses query_body_clause
+# 	"""
+# def p_query_body_clause(p):
+# 	"""query_body_clause : from_clause
+# 				| let_clause
+# 				| where_clause
+# 				| join_clause
+# 				| join_into_clause
+# 				| orderby_clause
+# 	"""
+# def p_let_clause(p):
+# 	"""let_clause : "let" identifier "=" expression
+# 	"""
+# def p_where_clause(p):
+# 	"""where_clause : "where" boolean_expression
+# 	"""
+# def p_join_clause(p):
+# 	"""join_clause : "join" type_opt identifier "in" expression "on" expression "equals" expression
+# 	"""
+# def p_join_into_clause(p):
+# 	"""join_into_clause : "join" type_opt identifier "in" expression "on" expression "equals" expression "into" identifier
+# 	"""
+# def p_orderby_clause(p):
+# 	"""orderby_clause : "orderby" orderings
+# 	"""
+# def p_orderings(p):
+# 	"""orderings : ordering
+# 				| orderings "," ordering
+# 	"""
+# def p_ordering(p):
+# 	"""ordering : expression ordering_direction_opt
+# 	"""
+# def p_ordering_direction(p):
+# 	"""ordering_direction : "ascending"
+# 				| "descending"
+# 	"""
+# def p_select_or_group_clause(p):
+# 	"""select_or_group_clause : select_clause
+# 				| group_clause
+# 	"""
+# def p_select_clause(p):
+# 	"""select_clause : "select" expression
+# 	"""
+# def p_group_clause(p):
+# 	"""group_clause : "group" expression "by" expression
+# 	"""
+# def p_query_continuation(p):
+# 	"""query_continuation : "into" identifier query_body
+# 	"""
 def p_named_argument_list(p):
 	"""named_argument_list : named_argument
 				| named_argument_list "," named_argument
