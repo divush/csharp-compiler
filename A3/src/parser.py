@@ -260,55 +260,55 @@ def p_using_namespace_directive(p):
 def p_namespace_name(p):
 	"""namespace_name : namespace_or_type_name
 	"""
-def p_global_attributes(p):
-	"""global_attributes : global_attribute_sections
-	"""
-def p_global_attribute_sections(p):
-	"""global_attribute_sections : global_attribute_section
-				| global_attribute_sections global_attribute_section
-	"""
-def p_global_attribute_section(p):
-	"""global_attribute_section : "[" global_attribute_target_specifier attribute_list "]"
-				| "[" global_attribute_target_specifier attribute_list "," "]"
-	"""
-def p_global_attribute_target_specifier(p):
-	"""global_attribute_target_specifier : global_attribute_target ":"
-	"""
+# def p_global_attributes(p):
+# 	"""global_attributes : global_attribute_sections
+# 	"""
+# def p_global_attribute_sections(p):
+# 	"""global_attribute_sections : global_attribute_section
+# 				| global_attribute_sections global_attribute_section
+# 	"""
+# def p_global_attribute_section(p):
+# 	"""global_attribute_section : "[" global_attribute_target_specifier attribute_list "]"
+# 				| "[" global_attribute_target_specifier attribute_list "," "]"
+# 	"""
+# def p_global_attribute_target_specifier(p):
+# 	"""global_attribute_target_specifier : global_attribute_target ":"
+# 	"""
 
-def p_global_attribute_target(p):
-	"""global_attribute_target : "assembly"
-				| "module"
-	"""
-def p_attribute_list(p):
-	"""attribute_list : attribute
-				| attribute_list "," attribute
-	"""
-def p_attribute(p):
-	"""attribute : attribute_name attribute_arguments_opt
-	"""
-def p_attribute_name(p):
-	"""attribute_name : type_name
-	"""
-def p_attribute_arguments(p):
-	"""attribute_arguments : "(" positional_argument_list_opt ")"
-				| "(" positional_argument_list "," named_argument_list ")"
-				| "(" named_argument_list ")"
-	"""
-def p_positional_argument_list(p):
-	"""positional_argument_list : positional_argument
-				| positional_argument_list "," positional_argument
-	"""
-def p_positional_argument(p):
-	"""positional_argument : argument_name_opt attribute_argument_expression
-	"""
+# def p_global_attribute_target(p):
+# 	"""global_attribute_target : "assembly"
+# 				| "module"
+# 	"""
+# def p_attribute_list(p):
+# 	"""attribute_list : attribute
+# 				| attribute_list "," attribute
+# 	"""
+# def p_attribute(p):
+# 	"""attribute : attribute_name attribute_arguments_opt
+# 	"""
+# def p_attribute_name(p):
+# 	"""attribute_name : type_name
+# 	"""
+# def p_attribute_arguments(p):
+# 	"""attribute_arguments : "(" positional_argument_list_opt ")"
+# 				| "(" positional_argument_list "," named_argument_list ")"
+# 				| "(" named_argument_list ")"
+# 	"""
+# def p_positional_argument_list(p):
+# 	"""positional_argument_list : positional_argument
+# 				| positional_argument_list "," positional_argument
+# 	"""
+# def p_positional_argument(p):
+# 	"""positional_argument : argument_name_opt attribute_argument_expression
+# 	"""
 
 def p_argument_name(p):
 	"""argument_name : identifier ":"
 	"""
 
-def p_attribute_argument_expression(p):
-	"""attribute_argument_expression : expression
-	"""
+# def p_attribute_argument_expression(p):
+# 	"""attribute_argument_expression : expression
+# 	"""
 def p_expression(p):
 	"""expression : non_assignment_expression
 				| assignment
@@ -954,31 +954,31 @@ def p_class_declaration(p):
 	"""class_declaration : attributes_opt class_modifiers_opt "partial"_opt "class" identifier type_parameter_list_opt
 				| class_base_opt type_parameter_constraints_clauses_opt class_body ";"_opt
 	"""
-def p_attributes(p):
-	"""attributes : attribute_sections
-	"""
-def p_attribute_sections(p):
-	"""attribute_sections : attribute_section
-				| attribute_sections attribute_section
-	"""
-def p_attribute_section(p):
-	"""attribute_section : "[" attribute_target_specifier_opt attribute_list "]"
-				| "[" attribute_target_specifier_opt attribute_list "," "]"
-	"""
-def p_attribute_target_specifier(p):
-	"""attribute_target_specifier:
-				| attribute_target ":"
-	"""
+# def p_attributes(p):
+# 	"""attributes : attribute_sections
+# 	"""
+# def p_attribute_sections(p):
+# 	"""attribute_sections : attribute_section
+# 				| attribute_sections attribute_section
+# 	"""
+# def p_attribute_section(p):
+# 	"""attribute_section : "[" attribute_target_specifier_opt attribute_list "]"
+# 				| "[" attribute_target_specifier_opt attribute_list "," "]"
+# 	"""
+# def p_attribute_target_specifier(p):
+# 	"""attribute_target_specifier:
+# 				| attribute_target ":"
+# 	"""
 
-def p_attribute_target(p):
-	"""attribute_target : "field"
-				| "event"
-				| "method"
-				| "param"
-				| "property"
-				| "return"
-				| type
-	"""
+# def p_attribute_target(p):
+# 	"""attribute_target : "field"
+# 				| "event"
+# 				| "method"
+# 				| "param"
+# 				| "property"
+# 				| "return"
+# 				| type
+# 	"""
 def p_class_modifiers(p):
 	"""class_modifiers : class_modifier
 				| class_modifiers class_modifier
