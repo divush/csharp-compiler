@@ -4,3 +4,283 @@
 4) attributes - need to remove attributes_opt if finalised!
 
 5) Removed EXTERN ALIAS DIRECTIVES, this statements are used to import 'dynamically linked libraries in your program'
+
+# def p_extern_alias_directives(p):
+# 	"""extern_alias_directives : extern_alias_directive
+# 				| extern_alias_directives extern_alias_directive
+# 	"""
+
+
+# def p_extern_alias_directive(p):
+# 	"""extern_alias_directive : EXTERN "alias" IDENTIFIER STMT_TERMINATOR
+# 	"""
+
+# def p_nullable_type(p):
+# 	"""nullable_type : non_nullable_value_type CONDOP
+# 	"""
+
+
+# def p_non_nullable_value_type(p):
+# 	"""non_nullable_value_type : type
+# 	"""
+
+
+# def p_enum_type(p):
+# 	"""enum_type : type_name
+# 	"""
+# def p_global_attributes(p):
+# 	"""global_attributes : global_attribute_sections
+# 	"""
+
+# def p_global_attribute_sections(p):
+# 	"""global_attribute_sections : global_attribute_section
+# 				| global_attribute_sections global_attribute_section
+# 	"""
+
+# def p_global_attribute_section(p):
+# 	"""global_attribute_section : LBRACKET global_attribute_target_specifier attribute_list RBRACKET
+# 				| LBRACKET global_attribute_target_specifier attribute_list COMMA RBRACKET
+# 	"""
+
+# def p_global_attribute_target_specifier(p):
+# 	"""global_attribute_target_specifier : global_attribute_target COLON
+# 	"""
+
+
+# def p_global_attribute_target(p):
+# 	"""global_attribute_target : "assembly"
+# 				| "module"
+# 	"""
+
+# def p_attribute_list(p):
+# 	"""attribute_list : attribute
+# 				| attribute_list COMMA attribute
+# 	"""
+
+# def p_attribute(p):
+# 	"""attribute : attribute_name attribute_arguments_opt
+# 	"""
+
+# def p_attribute_name(p):
+# 	"""attribute_name : type_name
+# 	"""
+
+# def p_attribute_arguments(p):
+# 	"""attribute_arguments : LPAREN positional_argument_list_opt RPAREN
+# 				| LPAREN positional_argument_list COMMA named_argument_list RPAREN
+# 				| LPAREN named_argument_list RPAREN
+# 	"""
+
+# def p_positional_argument_list(p):
+# 	"""positional_argument_list : positional_argument
+# 				| positional_argument_list COMMA positional_argument
+# 	"""
+
+# def p_positional_argument(p):
+# 	"""positional_argument : argument_name_opt attribute_argument_expression
+# 	"""
+
+
+
+# def p_attribute_argument_expression(p):
+# 	"""attribute_argument_expression : expression
+# 	"""
+
+# def p_checked_expression(p):
+# 	"""checked_expression : "checked" LPAREN expression RPAREN
+# 	"""
+
+# def p_unchecked_expression(p):
+# 	"""unchecked_expression : "unchecked" LPAREN expression RPAREN
+# 	"""
+
+# def p_anonymous_function_parameter_modifier(p):
+# 	"""anonymous_function_parameter_modifier : REF
+# 				| OUT
+# 	"""
+
+# def p_labeled_statement(p):
+# 	"""labeled_statement: IDENTIFIER COLON statement
+# 	"""
+
+# def p_foreach_statement(p):
+# 	"""foreach_statement : "foreach" LPAREN local_variable_type IDENTIFIER IN expression RPAREN embedded_statement
+# 	"""
+
+# def p_throw_statement(p):
+# 	"""throw_statement : "throw" expression_opt STMT_TERMINATOR
+# 	"""
+
+# def p_try_statement(p):
+# 	"""try_statement : "try" block catch_clauses
+# 				| "try" block finally_clause
+# 				| "try" block catch_clauses finally_clause
+# 	"""
+
+# def p_catch_clauses(p):
+# 	"""catch_clauses : specific_catch_clauses general_catch_clause_opt
+# 				| specific_catch_clauses_opt general_catch_clause
+# 	"""
+
+# def p_specific_catch_clauses(p):
+# 	"""specific_catch_clauses : specific_catch_clause
+# 				| specific_catch_clauses specific_catch_clause
+# 	"""
+
+# def p_specific_catch_clause(p):
+# 	"""specific_catch_clause : "catch" LPAREN class_type IDENTIFIER_opt RPAREN block
+# 	"""
+
+# def p_general_catch_clause(p):
+# 	"""general_catch_clause : "catch" block
+# 	"""
+
+# def p_finally_clause(p):
+# 	"""finally_clause : "finally" block
+# 	"""
+
+# def p_checked_statement(p):
+# 	"""checked_statement : "checked" block
+# 	"""
+
+# def p_unchecked_statement(p):
+# 	"""unchecked_statement : "unchecked" block
+# 	"""
+
+# def p_lock_statement(p):
+# 	"""lock_statement : "lock" LPAREN expression RPAREN embedded_statement
+# 	"""
+
+# def p_using_statement(p):
+# 	"""using_statement : USING LPAREN resource_acquisition RPAREN embedded_statement
+# 	"""
+
+# def p_resource_acquisition(p):
+# 	"""resource_acquisition : local_variable_declaration
+# 				| expression
+# 	"""
+
+# def p_yield_statement(p):
+# 	"""yield_statement : "yield" RETURN expression STMT_TERMINATOR
+# 				| "yield" BREAK STMT_TERMINATOR
+# 	"""
+
+# def p_right_shift(p):
+# 	"""right_shift : RSHIFT
+# 	"""
+
+# def p_query_expression(p):
+# 	"""query_expression : from_clause query_body
+# 	"""
+
+# def p_from_clause(p):
+# 	"""from_clause : "from" type_opt IDENTIFIER IN expression
+# 	"""
+
+# def p_query_body(p):
+# 	"""query_body : query_body_clauses_opt select_or_group_clause query_continuation_opt
+# 	"""
+
+# def p_query_body_clauses(p):
+# 	"""query_body_clauses : query_body_clause
+# 				| query_body_clauses query_body_clause
+# 	"""
+
+# def p_query_body_clause(p):
+# 	"""query_body_clause : from_clause
+# 				| let_clause
+# 				| where_clause
+# 				| join_clause
+# 				| join_into_clause
+# 				| orderby_clause
+# 	"""
+
+# def p_let_clause(p):
+# 	"""let_clause : "let" IDENTIFIER EQUALS expression
+# 	"""
+
+# def p_where_clause(p):
+# 	"""where_clause : "where" boolean_expression
+# 	"""
+
+# def p_join_clause(p):
+# 	"""join_clause : "join" type_opt IDENTIFIER IN expression "on" expression "equals" expression
+# 	"""
+
+# def p_join_into_clause(p):
+# 	"""join_into_clause : "join" type_opt IDENTIFIER IN expression "on" expression "equals" expression "into" IDENTIFIER
+# 	"""
+
+# def p_orderby_clause(p):
+# 	"""orderby_clause : "orderby" orderings
+# 	"""
+
+# def p_orderings(p):
+# 	"""orderings : ordering
+# 				| orderings COMMA ordering
+# 	"""
+
+# def p_ordering(p):
+# 	"""ordering : expression ordering_direction_opt
+# 	"""
+
+# def p_ordering_direction(p):
+# 	"""ordering_direction : "ascending"
+# 				| "descending"
+# 	"""
+
+# def p_select_or_group_clause(p):
+# 	"""select_or_group_clause : select_clause
+# 				| group_clause
+# 	"""
+
+# def p_select_clause(p):
+# 	"""select_clause : "select" expression
+# 	"""
+
+# def p_group_clause(p):
+# 	"""group_clause : "group" expression "by" expression
+# 	"""
+
+# def p_query_continuation(p):
+# 	"""query_continuation : "into" IDENTIFIER query_body
+# 	"""
+
+# def p_named_argument_list(p):
+# 	"""named_argument_list : named_argument
+# 				| named_argument_list COMMA named_argument
+# 	"""
+
+# def p_named_argument(p):
+# 	"""named_argument : IDENTIFIER EQUALS attribute_argument_expression
+# 	"""
+
+# def p_attributes(p):
+# 	"""attributes : attribute_sections
+# 	"""
+
+# def p_attribute_sections(p):
+# 	"""attribute_sections : attribute_section
+# 				| attribute_sections attribute_section
+# 	"""
+
+# def p_attribute_section(p):
+# 	"""attribute_section : LBRACKET attribute_target_specifier_opt attribute_list RBRACKET
+# 				| LBRACKET attribute_target_specifier_opt attribute_list COMMA RBRACKET
+# 	"""
+
+# def p_attribute_target_specifier(p):
+# 	"""attribute_target_specifier:
+# 				| attribute_target COLON
+# 	"""
+
+
+# def p_attribute_target(p):
+# 	"""attribute_target : "field"
+# 				| "event"
+# 				| "method"
+# 				| "param"
+# 				| "property"
+# 				| RETURN
+# 				| type
+# 	"""

@@ -59,7 +59,7 @@ opt_rules = [
 	'interface_base',
 	'new',
 	'expression',
-	'IDENTIFIER_part_characters',
+	'identifier_part_characters',
 	'integer_type_suffix',
 	'enum_modifiers',
 	'interface_member_declarations',
@@ -125,37 +125,23 @@ for rule in opt_rules:
 
 
 def p_compilation_unit(p):
-	"""compilation_unit : using_directives_opt global_
+	"""compilation_unit : using_directives_opt
 				| namespace_member_declarations_opt
 	"""
-
-# def p_extern_alias_directives(p):
-# 	"""extern_alias_directives : extern_alias_directive
-# 				| extern_alias_directives extern_alias_directive
-# 	"""
-
-
-# def p_extern_alias_directive(p):
-# 	"""extern_alias_directive : EXTERN "alias" IDENTIFIER STMT_TERMINATOR
-# 	"""
-
 
 def p_using_directives(p):
 	"""using_directives : using_directive
 				| using_directives using_directive
 	"""
 
-
 def p_using_directive(p):
 	"""using_directive : using_alias_directive
 				| using_namespace_directive
 	"""
 
-
 def p_using_alias_directive(p):
 	"""using_alias_directive : USING IDENTIFIER EQUALS namespace_or_type_name STMT_TERMINATOR
 	"""
-
 
 def p_namespace_or_type_name(p):
 	"""namespace_or_type_name : IDENTIFIER type_argument_list_opt
@@ -163,22 +149,18 @@ def p_namespace_or_type_name(p):
 				| qualified_alias_member
 	"""
 
-
 def p_type_argument_list(p):
 	"""type_argument_list : "<" type_arguments ">"
 	"""
-
 
 def p_type_arguments(p):
 	"""type_arguments : type_argument
 				| type_arguments COMMA type_argument
 	"""
 
-
 def p_type_argument(p):
 	"""type_argument : type
 	"""
-
 
 def p_type(p):
 	"""type : value_type
@@ -186,37 +168,29 @@ def p_type(p):
 				| type_parameter
 	"""
 
-
 def p_value_type(p):
 	"""value_type : struct_type
-				| enum_type
 	"""
-
 
 def p_struct_type(p):
 	"""struct_type : type_name
 				| simple_type
-				| nullable_type
 	"""
-
 
 def p_type_name(p):
 	"""type_name : namespace_or_type_name
 	"""
-
 
 def p_simple_type(p):
 	"""simple_type : numeric_type
 				| BOOL
 	"""
 
-
 def p_numeric_type(p):
 	"""numeric_type : integral_type
 				| floating_point_type
 				| DECIMAL
 	"""
-
 
 def p_integral_type(p):
 	"""integral_type : SBYTE
@@ -230,27 +204,10 @@ def p_integral_type(p):
 				| CHAR
 	"""
 
-
 def p_floating_point_type(p):
 	"""floating_point_type : FLOAT
 				| DOUBLE
 	"""
-
-
-def p_nullable_type(p):
-	"""nullable_type : non_nullable_value_type CONDOP
-	"""
-
-
-def p_non_nullable_value_type(p):
-	"""non_nullable_value_type : type
-	"""
-
-
-def p_enum_type(p):
-	"""enum_type : type_name
-	"""
-
 
 def p_reference_type(p):
 	"""reference_type : class_type
@@ -259,7 +216,6 @@ def p_reference_type(p):
 				| delegate_type
 	"""
 
-
 def p_class_type(p):
 	"""class_type : type_name
 				| OBJECT
@@ -267,186 +223,106 @@ def p_class_type(p):
 				| STRING
 	"""
 
-
 def p_interface_type(p):
 	"""interface_type : type_name
 	"""
-
 
 def p_array_type(p):
 	"""array_type : non_array_type rank_specifiers
 	"""
 
-
 def p_non_array_type(p):
 	"""non_array_type : type
 	"""
-
 
 def p_rank_specifiers(p):
 	"""rank_specifiers : rank_specifier
 				| rank_specifiers rank_specifier
 	"""
 
-
 def p_rank_specifier(p):
 	"""rank_specifier : LBRACKET dim_separators_opt RBRACKET
 	"""
-
 
 def p_dim_separators(p):
 	"""dim_separators : COMMA
 				| dim_separators COMMA
 	"""
 
-
 def p_delegate_type(p):
 	"""delegate_type : type_name
 	"""
-
 
 def p_type_parameter(p):
 	"""type_parameter : IDENTIFIER
 	"""
 
-
 def p_qualified_alias_member(p):
 	"""qualified_alias_member : IDENTIFIER "::" IDENTIFIER type_argument_list_opt
 	"""
-
 
 def p_using_namespace_directive(p):
 	"""using_namespace_directive : USING namespace_name STMT_TERMINATOR
 	"""
 
-
 def p_namespace_name(p):
 	"""namespace_name : namespace_or_type_name
 	"""
 
-
-# def p_global_attributes(p):
-# 	"""global_attributes : global_attribute_sections
-# 	"""
-
-# def p_global_attribute_sections(p):
-# 	"""global_attribute_sections : global_attribute_section
-# 				| global_attribute_sections global_attribute_section
-# 	"""
-
-# def p_global_attribute_section(p):
-# 	"""global_attribute_section : LBRACKET global_attribute_target_specifier attribute_list RBRACKET
-# 				| LBRACKET global_attribute_target_specifier attribute_list COMMA RBRACKET
-# 	"""
-
-# def p_global_attribute_target_specifier(p):
-# 	"""global_attribute_target_specifier : global_attribute_target COLON
-# 	"""
-
-
-# def p_global_attribute_target(p):
-# 	"""global_attribute_target : "assembly"
-# 				| "module"
-# 	"""
-
-# def p_attribute_list(p):
-# 	"""attribute_list : attribute
-# 				| attribute_list COMMA attribute
-# 	"""
-
-# def p_attribute(p):
-# 	"""attribute : attribute_name attribute_arguments_opt
-# 	"""
-
-# def p_attribute_name(p):
-# 	"""attribute_name : type_name
-# 	"""
-
-# def p_attribute_arguments(p):
-# 	"""attribute_arguments : LPAREN positional_argument_list_opt RPAREN
-# 				| LPAREN positional_argument_list COMMA named_argument_list RPAREN
-# 				| LPAREN named_argument_list RPAREN
-# 	"""
-
-# def p_positional_argument_list(p):
-# 	"""positional_argument_list : positional_argument
-# 				| positional_argument_list COMMA positional_argument
-# 	"""
-
-# def p_positional_argument(p):
-# 	"""positional_argument : argument_name_opt attribute_argument_expression
-# 	"""
-
-
 def p_argument_name(p):
 	"""argument_name : IDENTIFIER COLON
 	"""
-
-
-# def p_attribute_argument_expression(p):
-# 	"""attribute_argument_expression : expression
-# 	"""
 
 def p_expression(p):
 	"""expression : non_assignment_expression
 				| assignment
 	"""
 
-
 def p_non_assignment_expression(p):
 	"""non_assignment_expression : conditional_expression
 				| lambda_expression
 	"""
-
 
 def p_conditional_expression(p):
 	"""conditional_expression : null_coalescing_expression
 				| null_coalescing_expression CONDOP expression COLON expression
 	"""
 
-
 def p_null_coalescing_expression(p):
 	"""null_coalescing_expression : conditional_or_expression
 				| conditional_or_expression "??" null_coalescing_expression
 	"""
-
 
 def p_conditional_or_expression(p):
 	"""conditional_or_expression : conditional_and_expression
 				| conditional_or_expression COR conditional_and_expression
 	"""
 
-
 def p_conditional_and_expression(p):
 	"""conditional_and_expression : inclusive_or_expression
 				| conditional_and_expression CAND inclusive_or_expression
 	"""
-
 
 def p_inclusive_or_expression(p):
 	"""inclusive_or_expression : exclusive_or_expression
 				| inclusive_or_expression OR exclusive_or_expression
 	"""
 
-
 def p_exclusive_or_expression(p):
 	"""exclusive_or_expression : and_expression
 				| exclusive_or_expression XOR and_expression
 	"""
-
 
 def p_and_expression(p):
 	"""and_expression : equality_expression
 				| and_expression AND equality_expression
 	"""
 
-
 def p_equality_expression(p):
 	"""equality_expression : relational_expression
 				| equality_expression EQ relational_expression
 				| equality_expression NE relational_expression
 	"""
-
 
 def p_relational_expression(p):
 	"""relational_expression : shift_expression
@@ -458,13 +334,11 @@ def p_relational_expression(p):
 				| relational_expression AS type
 	"""
 
-
 def p_shift_expression(p):
 	"""shift_expression : additive_expression
 				| shift_expression LSHIFT additive_expression
 				| shift_expression RSHIFT additive_expression
 	"""
-
 
 def p_additive_expression(p):
 	"""additive_expression : multiplicative_expression
@@ -530,7 +404,6 @@ def p_member_access(p):
 	"""
 
 def p_predefined_type(p):
-
 	"""predefined_type : BOOL
 				| BYTE
 				| CHAR
@@ -563,8 +436,6 @@ def p_argument(p):
 
 def p_argument_value(p):
 	"""argument_value : expression
-				| REF variable_reference
-				| OUT variable_reference
 	"""
 
 def p_variable_reference(p):
@@ -686,14 +557,6 @@ def p_commas(p):
 				| commas COMMA
 	"""
 
-# def p_checked_expression(p):
-# 	"""checked_expression : "checked" LPAREN expression RPAREN
-# 	"""
-
-# def p_unchecked_expression(p):
-# 	"""unchecked_expression : "unchecked" LPAREN expression RPAREN
-# 	"""
-
 def p_default_value_expression(p):
 	"""default_value_expression : DEFAULT LPAREN type RPAREN
 	"""
@@ -712,12 +575,7 @@ def p_explicit_anonymous_function_parameter_list(p):
 	"""
 
 def p_explicit_anonymous_function_parameter(p):
-	"""explicit_anonymous_function_parameter : anonymous_function_parameter_modifier_opt type IDENTIFIER
-	"""
-
-def p_anonymous_function_parameter_modifier(p):
-	"""anonymous_function_parameter_modifier : REF
-				| OUT
+	"""explicit_anonymous_function_parameter : type IDENTIFIER
 	"""
 
 def p_block(p):
@@ -734,10 +592,6 @@ def p_statement(p):
 				| embedded_statement
 	"""
 
-# def p_labeled_statement(p):
-# 	"""labeled_statement: IDENTIFIER COLON statement
-# 	"""
-
 def p_declaration_statement(p):
 	"""declaration_statement : local_variable_declaration STMT_TERMINATOR
 				| local_constant_declaration STMT_TERMINATOR
@@ -749,7 +603,7 @@ def p_local_variable_declaration(p):
 
 def p_local_variable_type(p):
 	"""local_variable_type : type
-				| "var"
+				| VAR
 	"""
 
 def p_local_variable_declarators(p):
@@ -844,10 +698,6 @@ def p_assignment_operator(p):
 				| RSHIFTEQUAL
 	"""
 
-# def p_right_shift_assignment(p):
-# 	"""right_shift_assignment : RSHIFTEQUAL
-# 	"""
-
 def p_pre_increment_expression(p):
 	"""pre_increment_expression : INCREMENT unary_expression
 	"""
@@ -934,10 +784,6 @@ def p_for_iterator(p):
 	"""for_iterator : statement_expression_list
 	"""
 
-# def p_foreach_statement(p):
-# 	"""foreach_statement : "foreach" LPAREN local_variable_type IDENTIFIER IN expression RPAREN embedded_statement
-# 	"""
-
 def p_jump_statement(p):
 	"""jump_statement : break_statement
 				| continue_statement
@@ -963,64 +809,6 @@ def p_return_statement(p):
 	"""return_statement : RETURN expression_opt STMT_TERMINATOR
 	"""
 
-# def p_throw_statement(p):
-# 	"""throw_statement : "throw" expression_opt STMT_TERMINATOR
-# 	"""
-
-# def p_try_statement(p):
-# 	"""try_statement : "try" block catch_clauses
-# 				| "try" block finally_clause
-# 				| "try" block catch_clauses finally_clause
-# 	"""
-
-# def p_catch_clauses(p):
-# 	"""catch_clauses : specific_catch_clauses general_catch_clause_opt
-# 				| specific_catch_clauses_opt general_catch_clause
-# 	"""
-
-# def p_specific_catch_clauses(p):
-# 	"""specific_catch_clauses : specific_catch_clause
-# 				| specific_catch_clauses specific_catch_clause
-# 	"""
-
-# def p_specific_catch_clause(p):
-# 	"""specific_catch_clause : "catch" LPAREN class_type IDENTIFIER_opt RPAREN block
-# 	"""
-
-# def p_general_catch_clause(p):
-# 	"""general_catch_clause : "catch" block
-# 	"""
-
-# def p_finally_clause(p):
-# 	"""finally_clause : "finally" block
-# 	"""
-
-# def p_checked_statement(p):
-# 	"""checked_statement : "checked" block
-# 	"""
-
-# def p_unchecked_statement(p):
-# 	"""unchecked_statement : "unchecked" block
-# 	"""
-
-# def p_lock_statement(p):
-# 	"""lock_statement : "lock" LPAREN expression RPAREN embedded_statement
-# 	"""
-
-# def p_using_statement(p):
-# 	"""using_statement : USING LPAREN resource_acquisition RPAREN embedded_statement
-# 	"""
-
-# def p_resource_acquisition(p):
-# 	"""resource_acquisition : local_variable_declaration
-# 				| expression
-# 	"""
-
-# def p_yield_statement(p):
-# 	"""yield_statement : "yield" RETURN expression STMT_TERMINATOR
-# 				| "yield" BREAK STMT_TERMINATOR
-# 	"""
-
 def p_array_creation_expression(p):
 	"""array_creation_expression : NEW non_array_type LBRACKET expression_list RBRACKET rank_specifiers_opt array_initializer_opt
 				| NEW array_type array_initializer
@@ -1030,10 +818,6 @@ def p_array_creation_expression(p):
 def p_cast_expression(p):
 	"""cast_expression : LPAREN type RPAREN unary_expression
 	"""
-
-# def p_right_shift(p):
-# 	"""right_shift : RSHIFT
-# 	"""
 
 def p_lambda_expression(p):
 	"""lambda_expression : anonymous_function_signature LAMBDADEC anonymous_function_body
@@ -1062,92 +846,6 @@ def p_anonymous_function_body(p):
 	"""anonymous_function_body : expression
 				| block
 	"""
-
-# def p_query_expression(p):
-# 	"""query_expression : from_clause query_body
-# 	"""
-
-# def p_from_clause(p):
-# 	"""from_clause : "from" type_opt IDENTIFIER IN expression
-# 	"""
-
-# def p_query_body(p):
-# 	"""query_body : query_body_clauses_opt select_or_group_clause query_continuation_opt
-# 	"""
-
-# def p_query_body_clauses(p):
-# 	"""query_body_clauses : query_body_clause
-# 				| query_body_clauses query_body_clause
-# 	"""
-
-# def p_query_body_clause(p):
-# 	"""query_body_clause : from_clause
-# 				| let_clause
-# 				| where_clause
-# 				| join_clause
-# 				| join_into_clause
-# 				| orderby_clause
-# 	"""
-
-# def p_let_clause(p):
-# 	"""let_clause : "let" IDENTIFIER EQUALS expression
-# 	"""
-
-# def p_where_clause(p):
-# 	"""where_clause : "where" boolean_expression
-# 	"""
-
-# def p_join_clause(p):
-# 	"""join_clause : "join" type_opt IDENTIFIER IN expression "on" expression "equals" expression
-# 	"""
-
-# def p_join_into_clause(p):
-# 	"""join_into_clause : "join" type_opt IDENTIFIER IN expression "on" expression "equals" expression "into" IDENTIFIER
-# 	"""
-
-# def p_orderby_clause(p):
-# 	"""orderby_clause : "orderby" orderings
-# 	"""
-
-# def p_orderings(p):
-# 	"""orderings : ordering
-# 				| orderings COMMA ordering
-# 	"""
-
-# def p_ordering(p):
-# 	"""ordering : expression ordering_direction_opt
-# 	"""
-
-# def p_ordering_direction(p):
-# 	"""ordering_direction : "ascending"
-# 				| "descending"
-# 	"""
-
-# def p_select_or_group_clause(p):
-# 	"""select_or_group_clause : select_clause
-# 				| group_clause
-# 	"""
-
-# def p_select_clause(p):
-# 	"""select_clause : "select" expression
-# 	"""
-
-# def p_group_clause(p):
-# 	"""group_clause : "group" expression "by" expression
-# 	"""
-
-# def p_query_continuation(p):
-# 	"""query_continuation : "into" IDENTIFIER query_body
-# 	"""
-
-# def p_named_argument_list(p):
-# 	"""named_argument_list : named_argument
-# 				| named_argument_list COMMA named_argument
-# 	"""
-
-# def p_named_argument(p):
-# 	"""named_argument : IDENTIFIER EQUALS attribute_argument_expression
-# 	"""
 
 def p_namespace_member_declarations(p):
 	"""namespace_member_declarations : namespace_member_declaration
@@ -1184,36 +882,6 @@ def p_class_declaration(p):
 	"""class_declaration : class_modifiers_opt "partial"_opt CLASS IDENTIFIER type_parameter_list_opt
 				| class_base_opt type_parameter_constraints_clauses_opt class_body STMT_TERMINATOR_opt
 	"""
-
-# def p_attributes(p):
-# 	"""attributes : attribute_sections
-# 	"""
-
-# def p_attribute_sections(p):
-# 	"""attribute_sections : attribute_section
-# 				| attribute_sections attribute_section
-# 	"""
-
-# def p_attribute_section(p):
-# 	"""attribute_section : LBRACKET attribute_target_specifier_opt attribute_list RBRACKET
-# 				| LBRACKET attribute_target_specifier_opt attribute_list COMMA RBRACKET
-# 	"""
-
-# def p_attribute_target_specifier(p):
-# 	"""attribute_target_specifier:
-# 				| attribute_target COLON
-# 	"""
-
-
-# def p_attribute_target(p):
-# 	"""attribute_target : "field"
-# 				| "event"
-# 				| "method"
-# 				| "param"
-# 				| "property"
-# 				| RETURN
-# 				| type
-# 	"""
 
 def p_class_modifiers(p):
 	"""class_modifiers : class_modifier
@@ -1410,14 +1078,11 @@ def p_fixed_parameters(p):
 	"""
 
 def p_fixed_parameter(p):
-
 	"""fixed_parameter :  parameter_modifier_opt type IDENTIFIER default_argument_opt
 	"""
 
 def p_parameter_modifier(p):
-	"""parameter_modifier : REF
-				| OUT
-				| THIS
+	"""parameter_modifier : THIS
 	"""
 
 def p_default_argument(p):

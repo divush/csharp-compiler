@@ -4,7 +4,8 @@ PARSER FOR C# IN PYTHON
 C# Grammar Specification
 ---------------------------------------------------------------------------------------------------
 C# Grammar Specification can be seen here:
-https://msdn.microsoft.com/en-in/library/aa664812(v=vs.71).aspx
+https://slps.github.io/zoo/cs/csharp-msft-ls-4.0.html
+Source used for this grammar: Microsoft, C# Language Specification, Version 4.0, 2010.
 
 Description
 ---------------------------------------------------------------------------------------------------
