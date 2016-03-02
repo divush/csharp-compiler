@@ -51,147 +51,53 @@ precedence = (
 )
 
 #--------------------------------------------------------------------------------------------------
-
-opt_rules = [
-	'class_member_declarations',
-	'struct_member_declarations',
-	'verbatim_string_literal_characters',
-	'interface_base',
-	'new',
-	'expression',
-	'identifier_part_characters',
-	'integer_type_suffix',
-	'enum_modifiers',
-	'interface_member_declarations',
-	'statement_list',
-	'argument_list',
-	'dim_separators',
-	'array_initializer',
-	'hex_digit',
-	'constant_modifiers',
-	'pp_else_section',
-	'formal_parameter_list',
-	'variable_initializer_list',
-	'exponent_part',
-	'delegate_modifiers',
-	'regular_string_literal_characters',
-	'IDENTIFIER',
-	'parameter_modifier',
-	'enum_base',
-	'namespace_member_declarations',
-	'method_modifiers',
-	'conditional_section',
-	'constructor_initializer',
-	'skipped_characters',
-	'struct_modifiers',
-	'constructor_modifiers',
-	'positional_argument_list',
-	'switch_sections',
-	'pp_elif_sections',
-	'for_condition',
-	'using_directives',
-	'rank_specifiers',
-	'interface_modifiers',
-	'unsafe',
-	'input_characters',
-	'class_base',
-	'indexer_modifiers',
-	'enum_member_declarations',
-	'property_modifiers',
-	'class_modifiers',
-	'set_accessor_declaration',
-	'input_section',
-	'extern',
-	'field_modifiers',
-	'whitespace',
-	'get_accessor_declaration',
-	'real_type_suffix',
-	';',
-	'struct_interfaces',
-	'sign',
-	'single_line_comment',
-	'event_modifiers',
-	'for_iterator',
-	'for_initializer',
-	'delimited_comment_characters',
-	'input_elements'
-]
-
-for rule in opt_rules:
-	create_opt_rule(rule)
-
-#--------------------------------------------------------------------------------------------------
 # Grammar Productions for C#
 
-
+# Compilation unit marks the beginning of the program
 def p_compilation_unit(p):
 	"""compilation_unit : using_directives_opt
 				| namespace_member_declarations_opt
 	"""
 
+# Using directives
 def p_using_directives(p):
 	"""using_directives : using_directive
 				| using_directives using_directive
 	"""
-
 def p_using_directive(p):
-	"""using_directive : using_alias_directive
-				| using_namespace_directive
+	"""using_directive : using_namespace_directive
 	"""
 
-def p_using_alias_directive(p):
-	"""using_alias_directive : USING IDENTIFIER EQUALS namespace_or_type_name STMT_TERMINATOR
-	"""
-
+# Variable Names, may be a simple type variable or namespace member
 def p_namespace_or_type_name(p):
-	"""namespace_or_type_name : IDENTIFIER type_argument_list_opt
-				| namespace_or_type_name MEMBERACCESS IDENTIFIER type_argument_list_opt
-				| qualified_alias_member
+	"""namespace_or_type_name : IDENTIFIER
+				| namespace_or_type_name MEMBERACCESS IDENTIFIER
 	"""
 
-def p_type_argument_list(p):
-	"""type_argument_list : "<" type_arguments ">"
-	"""
-
-def p_type_arguments(p):
-	"""type_arguments : type_argument
-				| type_arguments COMMA type_argument
-	"""
-
-def p_type_argument(p):
-	"""type_argument : type
-	"""
-
+# Data Types
 def p_type(p):
 	"""type : value_type
 				| reference_type
-				| type_parameter
 	"""
-
 def p_value_type(p):
 	"""value_type : struct_type
 	"""
-
 def p_struct_type(p):
 	"""struct_type : type_name
 				| simple_type
 	"""
-
 def p_type_name(p):
 	"""type_name : namespace_or_type_name
 	"""
-
 def p_simple_type(p):
 	"""simple_type : numeric_type
 				| BOOL
 	"""
-
 def p_numeric_type(p):
 	"""numeric_type : integral_type
 				| floating_point_type
 				| DECIMAL
 	"""
-
 def p_integral_type(p):
 	"""integral_type : SBYTE
 				| BYTE
@@ -203,127 +109,102 @@ def p_integral_type(p):
 				| ULONG
 				| CHAR
 	"""
-
 def p_floating_point_type(p):
 	"""floating_point_type : FLOAT
 				| DOUBLE
 	"""
-
 def p_reference_type(p):
 	"""reference_type : class_type
-				| interface_type
 				| array_type
 				| delegate_type
 	"""
-
 def p_class_type(p):
 	"""class_type : type_name
 				| OBJECT
 				| DYNAMIC
 				| STRING
 	"""
-
-def p_interface_type(p):
-	"""interface_type : type_name
-	"""
-
 def p_array_type(p):
 	"""array_type : non_array_type rank_specifiers
 	"""
-
 def p_non_array_type(p):
 	"""non_array_type : type
 	"""
-
 def p_rank_specifiers(p):
 	"""rank_specifiers : rank_specifier
 				| rank_specifiers rank_specifier
 	"""
-
 def p_rank_specifier(p):
 	"""rank_specifier : LBRACKET dim_separators_opt RBRACKET
 	"""
 
+# Separators like ','	
 def p_dim_separators(p):
 	"""dim_separators : COMMA
 				| dim_separators COMMA
 	"""
 
+# Delegate Type
 def p_delegate_type(p):
 	"""delegate_type : type_name
 	"""
 
-def p_type_parameter(p):
-	"""type_parameter : IDENTIFIER
-	"""
-
-def p_qualified_alias_member(p):
-	"""qualified_alias_member : IDENTIFIER "::" IDENTIFIER type_argument_list_opt
-	"""
-
+# Using namespace e.g., using System;
 def p_using_namespace_directive(p):
 	"""using_namespace_directive : USING namespace_name STMT_TERMINATOR
 	"""
-
+# Namespace
 def p_namespace_name(p):
 	"""namespace_name : namespace_or_type_name
 	"""
 
+# Arguments
 def p_argument_name(p):
 	"""argument_name : IDENTIFIER COLON
 	"""
 
+# Expressions 
 def p_expression(p):
 	"""expression : non_assignment_expression
 				| assignment
 	"""
-
 def p_non_assignment_expression(p):
 	"""non_assignment_expression : conditional_expression
 				| lambda_expression
 	"""
-
 def p_conditional_expression(p):
 	"""conditional_expression : null_coalescing_expression
 				| null_coalescing_expression CONDOP expression COLON expression
 	"""
-
 def p_null_coalescing_expression(p):
 	"""null_coalescing_expression : conditional_or_expression
 				| conditional_or_expression "??" null_coalescing_expression
 	"""
-
 def p_conditional_or_expression(p):
 	"""conditional_or_expression : conditional_and_expression
 				| conditional_or_expression COR conditional_and_expression
 	"""
-
 def p_conditional_and_expression(p):
 	"""conditional_and_expression : inclusive_or_expression
 				| conditional_and_expression CAND inclusive_or_expression
 	"""
-
 def p_inclusive_or_expression(p):
 	"""inclusive_or_expression : exclusive_or_expression
 				| inclusive_or_expression OR exclusive_or_expression
 	"""
-
 def p_exclusive_or_expression(p):
 	"""exclusive_or_expression : and_expression
 				| exclusive_or_expression XOR and_expression
 	"""
-
 def p_and_expression(p):
 	"""and_expression : equality_expression
 				| and_expression AND equality_expression
 	"""
-
 def p_equality_expression(p):
 	"""equality_expression : relational_expression
 				| equality_expression EQ relational_expression
 				| equality_expression NE relational_expression
 	"""
-
 def p_relational_expression(p):
 	"""relational_expression : shift_expression
 				| relational_expression LT shift_expression
@@ -333,26 +214,22 @@ def p_relational_expression(p):
 				| relational_expression IS type
 				| relational_expression AS type
 	"""
-
 def p_shift_expression(p):
 	"""shift_expression : additive_expression
 				| shift_expression LSHIFT additive_expression
 				| shift_expression RSHIFT additive_expression
 	"""
-
 def p_additive_expression(p):
 	"""additive_expression : multiplicative_expression
 				| additive_expression PLUS multiplicative_expression
 				| additive_expression MINUS multiplicative_expression
 	"""
-
 def p_multiplicative_expression(p):
 	"""multiplicative_expression : unary_expression
 				| multiplicative_expression TIMES unary_expression
 				| multiplicative_expression DIVIDE unary_expression
 				| multiplicative_expression MOD unary_expression
 	"""
-
 def p_unary_expression(p):
 	"""unary_expression : primary_expression
 				| PLUS unary_expression
@@ -363,12 +240,10 @@ def p_unary_expression(p):
 				| pre_decrement_expression
 				| cast_expression
 	"""
-
 def p_primary_expression(p):
 	"""primary_expression : primary_no_array_creation_expression
 				| array_creation_expression
 	"""
-
 def p_primary_no_array_creation_expression(p):
 	"""primary_no_array_creation_expression : literal
 				| simple_name
@@ -388,21 +263,24 @@ def p_primary_no_array_creation_expression(p):
 				| anonymous_method_expression
 	"""
 
+# Simple Variables	
 def p_simple_name(p):
-	"""simple_name : IDENTIFIER type_argument_list_opt
+	"""simple_name : IDENTIFIER
 	"""
 
+# Expression in paranthesis
 def p_parenthesized_expression(p):
 	"""parenthesized_expression : LPAREN expression RPAREN
 	"""
 
+# Member of an expression
 def p_member_access(p):
-	"""member_access : primary_expression MEMBERACCESS IDENTIFIER type_argument_list_opt
-
-				| predefined_type MEMBERACCESS IDENTIFIER type_argument_list_opt
+	"""member_access : primary_expression MEMBERACCESS IDENTIFIER
+				| predefined_type MEMBERACCESS IDENTIFIER
 				| qualified_alias_member MEMBERACCESS IDENTIFIER
 	"""
 
+# Types
 def p_predefined_type(p):
 	"""predefined_type : BOOL
 				| BYTE
@@ -425,18 +303,18 @@ def p_invocation_expression(p):
 	"""invocation_expression : primary_expression LPAREN argument_list_opt RPAREN
 	"""
 
+# Arguments related
 def p_argument_list(p):
 	"""argument_list : argument
 				| argument_list COMMA argument
 	"""
-
 def p_argument(p):
 	"""argument : argument_name_opt argument_value
 	"""
-
 def p_argument_value(p):
 	"""argument_value : expression
 	"""
+
 
 def p_variable_reference(p):
 	"""variable_reference : expression
@@ -561,98 +439,87 @@ def p_default_value_expression(p):
 	"""default_value_expression : DEFAULT LPAREN type RPAREN
 	"""
 
+# Anonymous methods
 def p_anonymous_method_expression(p):
-	"""anonymous_method_expression : DELEGATE" explicit_anonymous_function_signature_opt block
+	"""anonymous_method_expression : DELEGATE explicit_anonymous_function_signature_opt block
 	"""
-
 def p_explicit_anonymous_function_signature(p):
 	"""explicit_anonymous_function_signature : LPAREN explicit_anonymous_function_parameter_list_opt RPAREN
 	"""
-
 def p_explicit_anonymous_function_parameter_list(p):
 	"""explicit_anonymous_function_parameter_list : explicit_anonymous_function_parameter
 				| explicit_anonymous_function_parameter_list COMMA explicit_anonymous_function_parameter
 	"""
-
 def p_explicit_anonymous_function_parameter(p):
 	"""explicit_anonymous_function_parameter : type IDENTIFIER
 	"""
 
+# Statements
 def p_block(p):
 	"""block : LBRACE statement_list_opt RBRACE
 	"""
-
 def p_statement_list(p):
 	"""statement_list : statement
 				| statement_list statement
 	"""
-
 def p_statement(p):
 	"""statement : declaration_statement
 				| embedded_statement
 	"""
-
 def p_declaration_statement(p):
 	"""declaration_statement : local_variable_declaration STMT_TERMINATOR
 				| local_constant_declaration STMT_TERMINATOR
 	"""
 
+# Local Variables Related
 def p_local_variable_declaration(p):
 	"""local_variable_declaration : local_variable_type local_variable_declarators
 	"""
-
 def p_local_variable_type(p):
 	"""local_variable_type : type
 				| VAR
 	"""
-
 def p_local_variable_declarators(p):
 	"""local_variable_declarators : local_variable_declarator
 				| local_variable_declarators COMMA local_variable_declarator
 	"""
-
 def p_local_variable_declarator(p):
 	"""local_variable_declarator : IDENTIFIER
 				| IDENTIFIER EQUALS local_variable_initializer
 	"""
-
 def p_local_variable_initializer(p):
 	"""local_variable_initializer : expression
 				| array_initializer
 	"""
-
 def p_array_initializer(p):
 	"""array_initializer : LBRACE variable_initializer_list_opt RBRACE
 				| LBRACE variable_initializer_list COMMA RBRACE
 	"""
-
 def p_variable_initializer_list(p):
 	"""variable_initializer_list : variable_initializer
 				| variable_initializer_list COMMA variable_initializer
 	"""
-
 def p_variable_initializer(p):
 	"""variable_initializer : expression
 				| array_initializer
 	"""
 
+# Loacl Constants Related
 def p_local_constant_declaration(p):
 	"""local_constant_declaration : CONST type constant_declarators
 	"""
-
 def p_constant_declarators(p):
 	"""constant_declarators : constant_declarator
 				| constant_declarators COMMA constant_declarator
 	"""
-
 def p_constant_declarator(p):
 	"""constant_declarator : IDENTIFIER EQUALS constant_expression
 	"""
-
 def p_constant_expression(p):
 	"""constant_expression : expression
 	"""
 
+# Embedded Staements
 def p_embedded_statement(p):
 	"""embedded_statement : block
 				| empty_statement
@@ -698,10 +565,10 @@ def p_assignment_operator(p):
 				| RSHIFTEQUAL
 	"""
 
+# Increment Decrement
 def p_pre_increment_expression(p):
 	"""pre_increment_expression : INCREMENT unary_expression
 	"""
-
 def p_pre_decrement_expression(p):
 	"""pre_decrement_expression : DECREMENT unary_expression
 	"""
@@ -711,61 +578,53 @@ def p_selection_statement(p):
 				| switch_statement
 	"""
 
+# Branching Statements
 def p_if_statement(p):
 	"""if_statement : IF LPAREN boolean_expression RPAREN embedded_statement
 				| IF LPAREN boolean_expression RPAREN embedded_statement ELSE embedded_statement
 	"""
-
 def p_boolean_expression(p):
 	"""boolean_expression : expression
 	"""
 
+# Switch Case Related
 def p_switch_statement(p):
 	"""switch_statement : SWITCH LPAREN expression RPAREN switch_block
 	"""
-
 def p_switch_block(p):
 	"""switch_block : LBRACE switch_sections_opt RBRACE
 	"""
-
 def p_switch_sections(p):
 	"""switch_sections : switch_section
 				| switch_sections switch_section
 	"""
-
 def p_switch_section(p):
 	"""switch_section : switch_labels statement_list
 	"""
-
 def p_switch_labels(p):
 	"""switch_labels : switch_label
 				| switch_labels switch_label
 	"""
-
 def p_switch_label(p):
 	"""switch_label : CASE constant_expression COLON
 				| DEFAULT COLON
 	"""
 
-
+# Iteration related
 def p_iteration_statement(p):
 	"""iteration_statement : while_statement
 				| do_statement
 				| for_statement
 	"""
-
 def p_while_statement(p):
 	"""while_statement : WHILE LPAREN boolean_expression RPAREN embedded_statement
 	"""
-
 def p_do_statement(p):
 	"""do_statement : DO embedded_statement WHILE LPAREN boolean_expression RPAREN STMT_TERMINATOR
 	"""
-
 def p_for_statement(p):
 	"""for_statement : FOR LPAREN for_initializer_opt STMT_TERMINATOR for_condition_opt STMT_TERMINATOR for_iterator_opt RPAREN embedded_statement
 	"""
-
 def p_for_initializer(p):
 	"""for_initializer : local_variable_declaration
 				| statement_expression_list
@@ -873,14 +732,13 @@ def p_namespace_body(p):
 def p_type_declaration(p):
 	"""type_declaration : class_declaration
 				| struct_declaration
-				| interface_declaration
 				| enum_declaration
 				| delegate_declaration
 	"""
 
 def p_class_declaration(p):
-	"""class_declaration : class_modifiers_opt "partial"_opt CLASS IDENTIFIER type_parameter_list_opt
-				| class_base_opt type_parameter_constraints_clauses_opt class_body STMT_TERMINATOR_opt
+	"""class_declaration : class_modifiers_opt "partial"_opt CLASS IDENTIFIER
+				| class_base_opt class_body STMT_TERMINATOR_opt
 	"""
 
 def p_class_modifiers(p):
@@ -899,63 +757,9 @@ def p_class_modifier(p):
 				| STATIC
 	"""
 
-def p_type_parameter_list(p):
-	"""type_parameter_list : "<" type_parameters ">"
-	"""
-
-def p_type_parameters(p):
-	"""type_parameters :  type_parameter
-				| type_parameters COMMA  type_parameter
-	"""
-
 def p_class_base(p):
 	"""class_base:
 				| COLON class_type
-				| COLON interface_type_list
-				| COLON class_type COMMA interface_type_list
-	"""
-
-
-def p_interface_type_list(p):
-	"""interface_type_list : interface_type
-				| interface_type_list COMMA interface_type
-	"""
-
-def p_type_parameter_constraints_clauses(p):
-	"""type_parameter_constraints_clauses : type_parameter_constraints_clause
-				| type_parameter_constraints_clauses type_parameter_constraints_clause
-	"""
-
-def p_type_parameter_constraints_clause(p):
-	"""type_parameter_constraints_clause: "where" type_parameter COLON type_parameter_constraints
-	"""
-
-
-def p_type_parameter_constraints(p):
-	"""type_parameter_constraints : primary_constraint
-				| secondary_constraints
-				| constructor_constraint
-				| primary_constraint COMMA secondary_constraints
-				| primary_constraint COMMA constructor_constraint
-				| secondary_constraints COMMA constructor_constraint
-				| primary_constraint COMMA secondary_constraints COMMA constructor_constraint
-	"""
-
-def p_primary_constraint(p):
-	"""primary_constraint : class_type
-				| CLASS
-				| STRUCT
-	"""
-
-def p_secondary_constraints(p):
-	"""secondary_constraints : interface_type
-				| type_parameter
-				| secondary_constraints COMMA interface_type
-				| secondary_constraints COMMA type_parameter
-	"""
-
-def p_constructor_constraint(p):
-	"""constructor_constraint : NEW LPAREN RPAREN
 	"""
 
 def p_class_body(p):
@@ -1033,8 +837,8 @@ def p_method_declaration(p):
 	"""
 
 def p_method_header(p):
-	"""method_header :  method_modifiers_opt "partial"_opt return_type member_name type_parameter_list_opt
-				| LPAREN formal_parameter_list_opt RPAREN type_parameter_constraints_clauses_opt
+	"""method_header :  method_modifiers_opt "partial"_opt return_type member_name
+				| LPAREN formal_parameter_list_opt RPAREN
 	"""
 
 def p_method_modifiers(p):
@@ -1063,7 +867,6 @@ def p_return_type(p):
 
 def p_member_name(p):
 	"""member_name : IDENTIFIER
-				| interface_type MEMBERACCESS IDENTIFIER
 	"""
 
 def p_formal_parameter_list(p):
@@ -1209,7 +1012,6 @@ def p_indexer_modifier(p):
 
 def p_indexer_declarator(p):
 	"""indexer_declarator : type THIS LBRACKET formal_parameter_list RBRACKET
-				| type interface_type MEMBERACCESS THIS LBRACKET formal_parameter_list RBRACKET
 	"""
 
 def p_operator_declaration(p):
@@ -1337,8 +1139,8 @@ def p_static_constructor_body(p):
 	"""
 
 def p_struct_declaration(p):
-	"""struct_declaration :  struct_modifiers_opt "partial"_opt STRUCT IDENTIFIER type_parameter_list_opt
-				| struct_interfaces_opt type_parameter_constraints_clauses_opt struct_body STMT_TERMINATOR_opt
+	"""struct_declaration :  struct_modifiers_opt "partial"_opt STRUCT IDENTIFIER
+				| struct_body STMT_TERMINATOR_opt
 	"""
 
 def p_struct_modifiers(p):
@@ -1352,10 +1154,6 @@ def p_struct_modifier(p):
 				| PROTECTED
 				| INTERNAL
 				| PRIVATE
-	"""
-
-def p_struct_interfaces(p):
-	"""struct_interfaces: COLON interface_type_list
 	"""
 
 
@@ -1379,84 +1177,6 @@ def p_struct_member_declaration(p):
 				| constructor_declaration
 				| static_constructor_declaration
 				| type_declaration
-	"""
-
-def p_interface_declaration(p):
-	"""interface_declaration :  interface_modifiers_opt "partial"_opt "interface"
-				| IDENTIFIER variant_type_parameter_list_opt interface_base_opt
-				| type_parameter_constraints_clauses_opt interface_body STMT_TERMINATOR_opt
-	"""
-
-def p_interface_modifiers(p):
-	"""interface_modifiers : interface_modifier
-				| interface_modifiers interface_modifier
-	"""
-
-def p_interface_modifier(p):
-	"""interface_modifier : NEW
-				| PUBLIC
-				| PROTECTED
-				| INTERNAL
-				| PRIVATE
-	"""
-
-def p_variant_type_parameter_list(p):
-	"""variant_type_parameter_list : "<" variant_type_parameters ">"
-	"""
-
-def p_variant_type_parameters(p):
-	"""variant_type_parameters :  variance_annotation_opt type_parameter
-				| variant_type_parameters COMMA  variance_annotation_opt type_parameter
-	"""
-
-def p_variance_annotation(p):
-	"""variance_annotation : IN
-				| OUT
-	"""
-
-def p_interface_base(p):
-	"""interface_base : COLON interface_type_list
-	"""
-
-
-def p_interface_body(p):
-	"""interface_body : LBRACE interface_member_declarations_opt RBRACE
-	"""
-
-def p_interface_member_declarations(p):
-	"""interface_member_declarations : interface_member_declaration
-				| interface_member_declarations interface_member_declaration
-	"""
-
-def p_interface_member_declaration(p):
-	"""interface_member_declaration : interface_method_declaration
-				| interface_property_declaration
-				| interface_event_declaration
-				| interface_indexer_declaration
-	"""
-
-def p_interface_method_declaration(p):
-	"""interface_method_declaration :  NEW_opt return_type IDENTIFIER type_parameter_list
-				| LPAREN formal_parameter_list_opt RPAREN type_parameter_constraints_clauses_opt STMT_TERMINATOR
-	"""
-
-def p_interface_property_declaration(p):
-	"""interface_property_declaration :  NEW_opt type IDENTIFIER LBRACE interface_accessors RBRACE
-	"""
-
-def p_interface_accessors(p):
-	"""interface_accessors :  "get" STMT_TERMINATOR
-				|  "set" STMT_TERMINATOR
-				|  "get" STMT_TERMINATOR  "set" STMT_TERMINATOR
-				|  "set" STMT_TERMINATOR  "get" STMT_TERMINATOR
-	"""
-
-def p_interface_event_declaration(p):
-	"""interface_event_declaration :  NEW_opt "event" type IDENTIFIER STMT_TERMINATOR
-	"""
-
-def p_interface_indexer_declaration(p):
-	"""interface_indexer_declaration :  NEW_opt type THIS LBRACKET formal_parameter_list RBRACKET LBRACE interface_accessors RBRACE
 	"""
 
 def p_enum_declaration(p):

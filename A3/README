@@ -7,15 +7,8 @@ C# Grammar Specification can be seen here:
 https://slps.github.io/zoo/cs/csharp-msft-ls-4.0.html
 Source used for this grammar: Microsoft, C# Language Specification, Version 4.0, 2010.
 
-Description
+
+Unsupported Features
 ---------------------------------------------------------------------------------------------------
-1. 	Each grammar rule is defined by a Python function where the docstring to that function contains 
-	the	appropriate context-free grammar specification
-2.	The statements that make up the function body implement the semantic actions of the rule. 
-3.	Each function accepts a single argument p that is a sequence containing the values of each 
-	grammar symbol in the corresponding rule.
-4.	The first rule defined in the yacc specification determines the starting grammar symbol (in 
-	this case, a rule for expression appears first). Whenever the starting rule is reduced by the 
-	parser and no more input is available, parsing stops and the final value is returned (this value 
-	will be whatever the top-most rule placed in p[0]).
-5.	The p_error(p) rule is defined to catch syntax errors.
+As of now, following features of the C# Language are not implemented in the parser, hence, they are not supported. These features might be included in the future versions.
+
