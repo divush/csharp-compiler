@@ -10,5 +10,24 @@ Source used for this grammar: Microsoft, C# Language Specification, Version 4.0,
 
 Unsupported Features
 ---------------------------------------------------------------------------------------------------
-As of now, following features of the C# Language are not implemented in the parser, hence, they are not supported. These features might be included in the future versions.
-
+As of now, following features of the C# Language are not implemented in the parser. These features 
+might be included in the future versions.
+1.	Query related rules
+2.	From, Where clauses
+3.	Orderings
+4.	Attributes
+5.	Extern Alias Directives
+6.	Positional Arguments
+7.	Checked/Unchecked Expressions
+8.	Anonymous Function Parameter Modifiers (REF/OUT)
+9.	Labeled Statements
+10.	Foreach Statement
+11.	Throw Statement
+12.	Try/Catch Statements
+13.	Resource Acquisition (using())
+14.	Yeild Statements
+15.	Using Alias Directives
+16.	Qualified Alias Member
+17.	Interfaces
+18.	Variance Annotation
+19.	Constraints
