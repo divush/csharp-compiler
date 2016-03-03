@@ -96,10 +96,6 @@ def p_struct_modifiers_opt(p):
 	"""struct_modifiers_opt : empty 
 			| struct_modifiers""" 
 
-def p_accessor_modifier_opt(p): 
-	"""accessor_modifier_opt : empty 
-			| accessor_modifier""" 
-
 def p_switch_sections_opt(p): 
 	"""switch_sections_opt : empty 
 			| switch_sections""" 
@@ -110,11 +106,7 @@ def p_namespace_member_declarations_opt(p):
 
 def p_explicit_anonymous_function_signature_opt(p): 
 	"""explicit_anonymous_function_signature_opt : empty 
-			| explicit_anonymous_function_signature""" 
-
-def p_property_modifiers_opt(p): 
-	"""property_modifiers_opt : empty 
-			| property_modifiers""" 
+			| explicit_anonymous_function_signature"""  
 
 def p_parameter_modifier_opt(p): 
 	"""parameter_modifier_opt : empty 
@@ -477,11 +469,6 @@ def p_argument_value(p):
 	"""argument_value : expression
 	"""
 
-
-def p_variable_reference(p):
-	"""variable_reference : expression
-	"""
-
 def p_element_access(p):
 	"""element_access : primary_no_array_creation_expression LBRACKET argument_list RBRACKET
 	"""
@@ -724,6 +711,7 @@ def p_assignment_operator(p):
 				| XOREQUAL
 				| LAMBDADEC
 				| RSHIFTEQUAL
+				| LSHIFTEQUAL
 	"""
 
 # Increment Decrement
@@ -1059,38 +1047,6 @@ def p_method_body(p):
 				| STMT_TERMINATOR
 	"""
 
-def p_property_modifiers(p):
-	"""property_modifiers : property_modifier
-				| property_modifiers property_modifier
-	"""
-
-def p_property_modifier(p):
-	"""property_modifier : NEW
-				| PUBLIC
-				| PROTECTED
-				| INTERNAL
-				| PRIVATE
-				| STATIC
-				| VIRTUAL
-				| SEALED
-				| OVERRIDE
-				| ABSTRACT
-				| EXTERN
-	"""
-
-def p_accessor_modifier(p):
-	"""accessor_modifier : PROTECTED
-				| INTERNAL
-				| PRIVATE
-				| PROTECTED INTERNAL
-				| INTERNAL PROTECTED
-	"""
-
-def p_accessor_body(p):
-	"""accessor_body : block
-				| STMT_TERMINATOR
-	"""
-
 def p_operator_declaration(p):
 	"""operator_declaration :  operator_modifiers operator_declarator operator_body
 	"""
@@ -1313,7 +1269,7 @@ def p_delegate_modifier(p):
 
 # Error rule for syntax errors
 def p_error(p):
-    print("Syntax error in input!")
+    print("Syntax error in input!", p)
 
 ###################################################################################################
 # Build the parser now

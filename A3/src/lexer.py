@@ -11,10 +11,6 @@ reserved = {
 	'char' : 'CHAR',
 	'continue' : 'CONTINUE',
 	'do' : 'DO',
-	'event' : 'EVENT',
-	'finally' : 'FINALLY',
-	'foreach' : 'FOREACH',
-	'in' : 'IN',
 	'internal' : 'INTERNAL',
 	'namespace' : 'NAMESPACE',
 	'operator' : 'OPERATOR',
@@ -24,25 +20,18 @@ reserved = {
 	'static' : 'STATIC',
 	'this' : 'THIS',
 	'typeof' : 'TYPEOF',
-	'unsafe' : 'UNSAFE',
 	'void' : 'VOID',
 	'as' : 'AS',
 	'byte' : 'BYTE',
-	'checked' : 'CHECKED',
 	'decimal' : 'DECIMAL',
 	'double' : 'DOUBLE',
 	'explicit' : 'EXPLICIT',
-	'fixed' : 'FIXED',
 	'goto' : 'GOTO',
-	'in' : 'IN',
 	'is' : 'IS',
 	'new' : 'NEW',
-	'out' : 'OUT',
 	'private' : 'PRIVATE',
-	'ref' : 'REF',
 	'short' : 'SHORT',
 	'string' : 'STRING',
-	'throw' : 'THROW',
 	'uint' : 'UINT',
 	'ushort' : 'USHORT',
 	'volatile' : 'VOLATILE',
@@ -55,35 +44,26 @@ reserved = {
 	'float' : 'FLOAT',
 	'if' : 'IF',
 	'int' : 'INT',
-	'lock' : 'LOCK',
-	'null' : 'NULL',
-	'out' : 'OUT',
 	'protected' : 'PROTECTED',
 	'return' : 'RETURN',
-	'sizeof' : 'SIZEOF',
 	'struct' : 'STRUCT',
 	'TRUE' : 'TRUE',
 	'ulong' : 'ULONG',
 	'using' : 'USING',
 	'while' : 'WHILE',
 	'bool' : 'BOOL',
-	'catch' : 'CATCH',
 	'const' : 'CONST',
 	'delegate' : 'DELEGATE',
 	'enum' : 'ENUM',
 	'FALSE' : 'FALSE',
 	'for' : 'FOR',
 	'implicit' : 'IMPLICIT',
-	'interface' : 'INTERFACE',
 	'long' : 'LONG',
 	'object' : 'OBJECT',
 	'override' : 'OVERRIDE',
 	'public' : 'PUBLIC',
 	'sbyte' : 'SBYTE',
-	'stackalloc' : 'STACKALLOC',
 	'switch' : 'SWITCH',
-	'try' : 'TRY',
-	'unchecked' : 'UNCHECKED',
 	'virtual' : 'VIRTUAL'
 }
 
@@ -93,7 +73,7 @@ tokens = [
 	'IDENTIFIER', 'INTCONST', 'CHCONST', 'STRCONST',
 
 	# Primary Operators: . ?. ++ -- ->
-	'MEMBERACCESS', 'CONDMEMBACCESS', 'INCREMENT', 'DECREMENT', 'ARROW',
+	'MEMBERACCESS', 'INCREMENT', 'DECREMENT',
 	# Unary Operators: ~ ! 
 	'NOT', 'LNOT',
 	# Multiplicative Operators: * / %
@@ -116,9 +96,9 @@ tokens = [
 	'LAMBDADEC',
 
 	# Delimiters: ( ) { } [ ] , . ; : ::
-	'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'PERIOD', 'STMT_TERMINATOR', 'COLON', 'DOUBLE_COLON',
+	'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'STMT_TERMINATOR', 'COLON', 'DOUBLE_COLON',
 	# Others: \n // ...
-	'NEWLINE', 'COMMENT', 'ELLIPSIS', 'PREPROCESSOR'
+	'NEWLINE', 'COMMENT'
 
 ] + list(reserved.values())
 
@@ -132,10 +112,8 @@ def t_NEWLINE(t):
 
 # Operators
 t_MEMBERACCESS		= r'\.'
-t_CONDMEMBACCESS	= r'\?\.'
 t_INCREMENT			= r'\+\+'
 t_DECREMENT			= r'--'
-t_ARROW				= r'->'
 t_NOT 				= r'~'
 t_LNOT				= r'!'
 t_TIMES				= r'\*'
@@ -178,11 +156,9 @@ t_RBRACKET         = r'\]'
 t_LBRACE           = r'\{'
 t_RBRACE           = r'\}'
 t_COMMA            = r','
-t_PERIOD           = r'\.'
 t_STMT_TERMINATOR  = r';'
 t_COLON            = r':'
 t_DOUBLE_COLON     = r'::'
-t_ELLIPSIS         = r'\.\.\.'
 
 
 def t_IDENTIFIER(t):
@@ -203,11 +179,6 @@ t_CHCONST = r'(L)?\'([^\\\n]|(\\.))*?\''
 def t_COMMENT(t):
 	r' /\*(.|\n)*?\*/'
 	t.lineno += t.value.count('\n')
-
-# Preprocessor directive (ignored)
-def t_PREPROCESSOR(t):
-	r'\#(.)*?\n'
-	t.lineno += 1
 
 # Error handling rule
 def t_error(t):
