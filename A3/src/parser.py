@@ -34,177 +34,6 @@ precedence = (
 #--------------------------------------------------------------------------------------------------
 # Grammar Productions for C#
 
-#defining a rule for empty productions
-def p_empty(p):
-	'empty :'
-	pass
-
-#opt rules goes here
-def p_implicit_anonymous_function_parameter_list_opt(p): 
-	"""implicit_anonymous_function_parameter_list_opt : empty 
-			| implicit_anonymous_function_parameter_list""" 
-
-def p_generic_dimension_specifier_opt(p): 
-	"""generic_dimension_specifier_opt : empty 
-			| generic_dimension_specifier""" 
-
-def p_method_modifiers_opt(p): 
-	"""method_modifiers_opt : empty 
-			| method_modifiers""" 
-
-def p_formal_parameter_list_opt(p): 
-	"""formal_parameter_list_opt : empty 
-			| formal_parameter_list""" 
-
-def p_rank_specifiers_opt(p): 
-	"""rank_specifiers_opt : empty 
-			| rank_specifiers""" 
-
-def p_smt_terminator_opt(p): 
-	"""smt_terminator_opt : empty 
-			| STMT_TERMINATOR""" 
-
-def p_enum_member_declarations_opt(p): 
-	"""enum_member_declarations_opt : empty 
-			| enum_member_declarations""" 
-
-def p_for_initializer_opt(p): 
-	"""for_initializer_opt : empty 
-			| for_initializer""" 
-
-def p_constant_modifiers_opt(p): 
-	"""constant_modifiers_opt : empty 
-			| constant_modifiers""" 
-
-def p_enum_modifiers_opt(p): 
-	"""enum_modifiers_opt : empty 
-			| enum_modifiers""" 
-
-def p_enum_base_opt(p): 
-	"""enum_base_opt : empty 
-			| enum_base""" 
-
-def p_default_argument_opt(p): 
-	"""default_argument_opt : empty 
-			| default_argument""" 
-
-def p_array_initializer_opt(p): 
-	"""array_initializer_opt : empty 
-			| array_initializer""" 
-
-def p_struct_modifiers_opt(p): 
-	"""struct_modifiers_opt : empty 
-			| struct_modifiers""" 
-
-def p_switch_sections_opt(p): 
-	"""switch_sections_opt : empty 
-			| switch_sections""" 
-
-def p_namespace_member_declarations_opt(p): 
-	"""namespace_member_declarations_opt : empty 
-			| namespace_member_declarations""" 
-
-def p_explicit_anonymous_function_signature_opt(p): 
-	"""explicit_anonymous_function_signature_opt : empty 
-			| explicit_anonymous_function_signature"""  
-
-def p_parameter_modifier_opt(p): 
-	"""parameter_modifier_opt : empty 
-			| parameter_modifier""" 
-
-def p_field_modifiers_opt(p): 
-	"""field_modifiers_opt : empty 
-			| field_modifiers""" 
-
-def p_variable_initializer_list_opt(p): 
-	"""variable_initializer_list_opt : empty 
-			| variable_initializer_list""" 
-
-def p_member_declarator_list_opt(p): 
-	"""member_declarator_list_opt : empty 
-			| member_declarator_list""" 
-
-def p_class_base_opt(p): 
-	"""class_base_opt : empty 
-			| class_base""" 
-
-def p_explicit_anonymous_function_parameter_list_opt(p): 
-	"""explicit_anonymous_function_parameter_list_opt : empty 
-			| explicit_anonymous_function_parameter_list""" 
-
-def p_argument_name_opt(p): 
-	"""argument_name_opt : empty 
-			| argument_name"""  
-
-def p_statement_list_opt(p): 
-	"""statement_list_opt : empty 
-			| statement_list""" 
-
-def p_for_condition_opt(p): 
-	"""for_condition_opt : empty 
-			| for_condition""" 
-
-def p_struct_member_declarations_opt(p): 
-	"""struct_member_declarations_opt : empty 
-			| struct_member_declarations""" 
-
-def p_class_modifiers_opt(p): 
-	"""class_modifiers_opt : empty 
-			| class_modifiers""" 
-
-def p_expression_opt(p): 
-	"""expression_opt : empty 
-			| expression""" 
-
-def p_delegate_modifiers_opt(p): 
-	"""delegate_modifiers_opt : empty 
-			| delegate_modifiers""" 
-
-def p_for_iterator_opt(p): 
-	"""for_iterator_opt : empty 
-			| for_iterator""" 
-
-def p_object_or_collection_initializer_opt(p): 
-	"""object_or_collection_initializer_opt : empty 
-			| object_or_collection_initializer""" 
-
-def p_dim_separators_opt(p): 
-	"""dim_separators_opt : empty 
-			| dim_separators""" 
-
-def p_constructor_initializer_opt(p): 
-	"""constructor_initializer_opt : empty 
-			| constructor_initializer""" 
-
-def p_member_initializer_list_opt(p): 
-	"""member_initializer_list_opt : empty 
-			| member_initializer_list""" 
-
-def p_using_directives_opt(p): 
-	"""using_directives_opt : empty 
-			| using_directives""" 
-
-def p_commas_opt(p): 
-	"""commas_opt : empty 
-			| commas""" 
-
-def p_class_member_declarations_opt(p): 
-	"""class_member_declarations_opt : empty 
-			| class_member_declarations""" 
-
-def p_constructor_modifiers_opt(p): 
-	"""constructor_modifiers_opt : empty 
-			| constructor_modifiers""" 
-
-def p_extern_opt(p): 
-	"""extern_opt : empty 
-			| EXTERN""" 
-
-def p_argument_list_opt(p): 
-	"""argument_list_opt : empty 
-			| argument_list""" 
-
-
 ###################################################################################################
 
 # Compilation unit marks the beginning of the program
@@ -866,12 +695,12 @@ def p_namespace_member_declaration(p):
 	"""
 
 def p_namespace_declaration(p):
-	"""namespace_declaration : NAMESPACE qualified_IDENTIFIER namespace_body smt_terminator_opt
+	"""namespace_declaration : NAMESPACE qualified_identifier namespace_body smt_terminator_opt
 	"""
 
-def p_qualified_IDENTIFIER(p):
-	"""qualified_IDENTIFIER : IDENTIFIER
-				| qualified_IDENTIFIER MEMBERACCESS IDENTIFIER
+def p_qualified_identifier(p):
+	"""qualified_identifier : IDENTIFIER
+				| qualified_identifier MEMBERACCESS IDENTIFIER
 	"""
 
 def p_namespace_body(p):
@@ -886,25 +715,24 @@ def p_type_declaration(p):
 	"""
 
 def p_class_declaration(p):
-	"""class_declaration : class_modifiers_opt CLASS IDENTIFIER
-				| class_base_opt class_body smt_terminator_opt
+	"""class_declaration : CLASS IDENTIFIER class_base_opt class_body smt_terminator_opt
 	"""
 
-def p_class_modifiers(p):
-	"""class_modifiers : class_modifier
-				| class_modifiers class_modifier
-	"""
+# def p_class_modifiers(p):
+# 	"""class_modifiers : class_modifier
+# 				| class_modifiers class_modifier
+# 	"""
 
-def p_class_modifier(p):
-	"""class_modifier : NEW
-				| PUBLIC
-				| PROTECTED
-				| INTERNAL
-				| PRIVATE
-				| ABSTRACT
-				| SEALED
-				| STATIC
-	"""
+# def p_class_modifier(p):
+# 	"""class_modifier : NEW
+# 				| PUBLIC
+# 				| PROTECTED
+# 				| INTERNAL
+# 				| PRIVATE
+# 				| ABSTRACT
+# 				| SEALED
+# 				| STATIC
+# 	"""
 
 def p_class_base(p):
 	"""class_base : COLON class_type
@@ -930,41 +758,41 @@ def p_class_member_declaration(p):
 	"""
 
 def p_constant_declaration(p):
-	"""constant_declaration :  constant_modifiers_opt CONST type constant_declarators STMT_TERMINATOR
+	"""constant_declaration : CONST type constant_declarators STMT_TERMINATOR
 	"""
 
-def p_constant_modifiers(p):
-	"""constant_modifiers : constant_modifier
-				| constant_modifiers constant_modifier
-	"""
+# def p_constant_modifiers(p):
+# 	"""constant_modifiers : constant_modifier
+# 				| constant_modifiers constant_modifier
+# 	"""
 
-def p_constant_modifier(p):
-	"""constant_modifier : NEW
-				| PUBLIC
-				| PROTECTED
-				| INTERNAL
-				| PRIVATE
-	"""
+# def p_constant_modifier(p):
+# 	"""constant_modifier : NEW
+# 				| PUBLIC
+# 				| PROTECTED
+# 				| INTERNAL
+# 				| PRIVATE
+# 	"""
 
 def p_field_declaration(p):
-	"""field_declaration :  field_modifiers_opt type variable_declarators STMT_TERMINATOR
+	"""field_declaration : type variable_declarators STMT_TERMINATOR
 	"""
 
-def p_field_modifiers(p):
-	"""field_modifiers : field_modifier
-				| field_modifiers field_modifier
-	"""
+# def p_field_modifiers(p):
+# 	"""field_modifiers : field_modifier
+# 				| field_modifiers field_modifier
+# 	"""
 
-def p_field_modifier(p):
-	"""field_modifier : NEW
-				| PUBLIC
-				| PROTECTED
-				| INTERNAL
-				| PRIVATE
-				| STATIC
-				| READONLY
-				| VOLATILE
-	"""
+# def p_field_modifier(p):
+# 	"""field_modifier : NEW
+# 				| PUBLIC
+# 				| PROTECTED
+# 				| INTERNAL
+# 				| PRIVATE
+# 				| STATIC
+# 				| READONLY
+# 				| VOLATILE
+# 	"""
 
 def p_variable_declarators(p):
 	"""variable_declarators : variable_declarator
@@ -981,28 +809,28 @@ def p_method_declaration(p):
 	"""
 
 def p_method_header(p):
-	"""method_header :  method_modifiers_opt return_type member_name
+	"""method_header : return_type member_name
 				| LPAREN formal_parameter_list_opt RPAREN
 	"""
 
-def p_method_modifiers(p):
-	"""method_modifiers : method_modifier
-				| method_modifiers method_modifier
-	"""
+# def p_method_modifiers(p):
+# 	"""method_modifiers : method_modifier
+# 				| method_modifiers method_modifier
+# 	"""
 
-def p_method_modifier(p):
-	"""method_modifier : NEW
-				| PUBLIC
-				| PROTECTED
-				| INTERNAL
-				| PRIVATE
-				| STATIC
-				| VIRTUAL
-				| SEALED
-				| OVERRIDE
-				| ABSTRACT
-				| EXTERN
-	"""
+# def p_method_modifier(p):
+# 	"""method_modifier : NEW
+# 				| PUBLIC
+# 				| PROTECTED
+# 				| INTERNAL
+# 				| PRIVATE
+# 				| STATIC
+# 				| VIRTUAL
+# 				| SEALED
+# 				| OVERRIDE
+# 				| ABSTRACT
+# 				| EXTERN
+# 	"""
 
 def p_return_type(p):
 	"""return_type : type
@@ -1025,12 +853,12 @@ def p_fixed_parameters(p):
 	"""
 
 def p_fixed_parameter(p):
-	"""fixed_parameter :  parameter_modifier_opt type IDENTIFIER default_argument_opt
+	"""fixed_parameter : type IDENTIFIER default_argument_opt
 	"""
 
-def p_parameter_modifier(p):
-	"""parameter_modifier : THIS
-	"""
+# def p_parameter_modifier(p):
+# 	"""parameter_modifier : THIS
+# 	"""
 
 def p_default_argument(p):
 
@@ -1047,21 +875,21 @@ def p_method_body(p):
 	"""
 
 def p_constructor_declaration(p):
-	"""constructor_declaration :  constructor_modifiers_opt constructor_declarator constructor_body
+	"""constructor_declaration : constructor_declarator constructor_body
 	"""
 
-def p_constructor_modifiers(p):
-	"""constructor_modifiers : constructor_modifier
-				| constructor_modifiers constructor_modifier
-	"""
+# def p_constructor_modifiers(p):
+# 	"""constructor_modifiers : constructor_modifier
+# 				| constructor_modifiers constructor_modifier
+# 	"""
 
-def p_constructor_modifier(p):
-	"""constructor_modifier : PUBLIC
-				| PROTECTED
-				| INTERNAL
-				| PRIVATE
-				| EXTERN
-	"""
+# def p_constructor_modifier(p):
+# 	"""constructor_modifier : PUBLIC
+# 				| PROTECTED
+# 				| INTERNAL
+# 				| PRIVATE
+# 				| EXTERN
+# 	"""
 
 def p_constructor_declarator(p):
 	"""constructor_declarator : IDENTIFIER LPAREN formal_parameter_list_opt RPAREN constructor_initializer_opt
@@ -1102,22 +930,22 @@ def p_static_constructor_body(p):
 	"""
 
 def p_struct_declaration(p):
-	"""struct_declaration :  struct_modifiers_opt STRUCT IDENTIFIER
+	"""struct_declaration : STRUCT IDENTIFIER
 				| struct_body smt_terminator_opt
 	"""
 
-def p_struct_modifiers(p):
-	"""struct_modifiers : struct_modifier
-				| struct_modifiers struct_modifier
-	"""
+# def p_struct_modifiers(p):
+# 	"""struct_modifiers : struct_modifier
+# 				| struct_modifiers struct_modifier
+# 	"""
 
-def p_struct_modifier(p):
-	"""struct_modifier : NEW
-				| PUBLIC
-				| PROTECTED
-				| INTERNAL
-				| PRIVATE
-	"""
+# def p_struct_modifier(p):
+# 	"""struct_modifier : NEW
+# 				| PUBLIC
+# 				| PROTECTED
+# 				| INTERNAL
+# 				| PRIVATE
+# 	"""
 
 
 def p_struct_body(p):
@@ -1139,21 +967,21 @@ def p_struct_member_declaration(p):
 	"""
 
 def p_enum_declaration(p):
-	"""enum_declaration :  enum_modifiers_opt ENUM IDENTIFIER enum_base_opt enum_body smt_terminator_opt
+	"""enum_declaration : ENUM IDENTIFIER enum_base_opt enum_body smt_terminator_opt
 	"""
 
-def p_enum_modifiers(p):
-	"""enum_modifiers : enum_modifier
-				| enum_modifiers enum_modifier
-	"""
+# def p_enum_modifiers(p):
+# 	"""enum_modifiers : enum_modifier
+# 				| enum_modifiers enum_modifier
+# 	"""
 
-def p_enum_modifier(p):
-	"""enum_modifier : NEW
-				| PUBLIC
-				| PROTECTED
-				| INTERNAL
-				| PRIVATE
-	"""
+# def p_enum_modifier(p):
+# 	"""enum_modifier : NEW
+# 				| PUBLIC
+# 				| PROTECTED
+# 				| INTERNAL
+# 				| PRIVATE
+# 	"""
 
 
 def p_enum_base(p):
@@ -1177,24 +1005,194 @@ def p_enum_member_declaration(p):
 	"""
 
 def p_delegate_declaration(p):
-	"""delegate_declaration :  delegate_modifiers_opt DELEGATE return_type
+	"""delegate_declaration : DELEGATE return_type
 				| IDENTIFIER
 				| LPAREN formal_parameter_list_opt RPAREN STMT_TERMINATOR
 	"""
 
-def p_delegate_modifiers(p):
-	"""delegate_modifiers : delegate_modifier
-				| delegate_modifiers delegate_modifier
-	"""
+# def p_delegate_modifiers(p):
+# 	"""delegate_modifiers : delegate_modifier
+# 				| delegate_modifiers delegate_modifier
+# 	"""
 
-def p_delegate_modifier(p):
-	"""delegate_modifier : NEW
-				| PUBLIC
-				| PROTECTED
-				| INTERNAL
-				| PRIVATE
-	"""
+# def p_delegate_modifier(p):
+# 	"""delegate_modifier : NEW
+# 				| PUBLIC
+# 				| PROTECTED
+# 				| INTERNAL
+# 				| PRIVATE
+# 	"""
 
+
+#defining a rule for empty productions
+def p_empty(p):
+	'empty :'
+	pass
+
+# Optional Rules, Rules that can also go to empty
+def p_implicit_anonymous_function_parameter_list_opt(p): 
+	"""implicit_anonymous_function_parameter_list_opt : empty 
+			| implicit_anonymous_function_parameter_list""" 
+
+def p_generic_dimension_specifier_opt(p): 
+	"""generic_dimension_specifier_opt : empty 
+			| generic_dimension_specifier""" 
+
+# def p_method_modifiers_opt(p): 
+# 	"""method_modifiers_opt : empty 
+# 			| method_modifiers""" 
+
+def p_formal_parameter_list_opt(p): 
+	"""formal_parameter_list_opt : empty 
+			| formal_parameter_list""" 
+
+def p_rank_specifiers_opt(p): 
+	"""rank_specifiers_opt : empty 
+			| rank_specifiers""" 
+
+def p_smt_terminator_opt(p): 
+	"""smt_terminator_opt : empty 
+			| STMT_TERMINATOR""" 
+
+def p_enum_member_declarations_opt(p): 
+	"""enum_member_declarations_opt : empty 
+			| enum_member_declarations""" 
+
+def p_for_initializer_opt(p): 
+	"""for_initializer_opt : empty 
+			| for_initializer""" 
+
+# def p_constant_modifiers_opt(p): 
+# 	"""constant_modifiers_opt : empty 
+# 			| constant_modifiers""" 
+
+# def p_enum_modifiers_opt(p): 
+# 	"""enum_modifiers_opt : empty 
+# 			| enum_modifiers""" 
+
+def p_enum_base_opt(p): 
+	"""enum_base_opt : empty 
+			| enum_base""" 
+
+def p_default_argument_opt(p): 
+	"""default_argument_opt : empty 
+			| default_argument""" 
+
+def p_array_initializer_opt(p): 
+	"""array_initializer_opt : empty 
+			| array_initializer""" 
+
+# def p_struct_modifiers_opt(p): 
+# 	"""struct_modifiers_opt : empty 
+# 			| struct_modifiers""" 
+
+def p_switch_sections_opt(p): 
+	"""switch_sections_opt : empty 
+			| switch_sections""" 
+
+def p_namespace_member_declarations_opt(p): 
+	"""namespace_member_declarations_opt : empty 
+			| namespace_member_declarations""" 
+
+def p_explicit_anonymous_function_signature_opt(p): 
+	"""explicit_anonymous_function_signature_opt : empty 
+			| explicit_anonymous_function_signature"""  
+
+# def p_parameter_modifier_opt(p): 
+# 	"""parameter_modifier_opt : empty 
+# 			| parameter_modifier""" 
+
+# def p_field_modifiers_opt(p): 
+# 	"""field_modifiers_opt : empty 
+# 			| field_modifiers""" 
+
+def p_variable_initializer_list_opt(p): 
+	"""variable_initializer_list_opt : empty 
+			| variable_initializer_list""" 
+
+def p_member_declarator_list_opt(p): 
+	"""member_declarator_list_opt : empty 
+			| member_declarator_list""" 
+
+def p_class_base_opt(p): 
+	"""class_base_opt : empty 
+			| class_base""" 
+
+def p_explicit_anonymous_function_parameter_list_opt(p): 
+	"""explicit_anonymous_function_parameter_list_opt : empty 
+			| explicit_anonymous_function_parameter_list""" 
+
+def p_argument_name_opt(p): 
+	"""argument_name_opt : empty 
+			| argument_name"""  
+
+def p_statement_list_opt(p): 
+	"""statement_list_opt : empty 
+			| statement_list""" 
+
+def p_for_condition_opt(p): 
+	"""for_condition_opt : empty 
+			| for_condition""" 
+
+def p_struct_member_declarations_opt(p): 
+	"""struct_member_declarations_opt : empty 
+			| struct_member_declarations""" 
+
+# def p_class_modifiers_opt(p): 
+# 	"""class_modifiers_opt : empty 
+# 			| class_modifiers""" 
+
+def p_expression_opt(p): 
+	"""expression_opt : empty 
+			| expression""" 
+
+# def p_delegate_modifiers_opt(p): 
+# 	"""delegate_modifiers_opt : empty 
+# 			| delegate_modifiers""" 
+
+def p_for_iterator_opt(p): 
+	"""for_iterator_opt : empty 
+			| for_iterator""" 
+
+def p_object_or_collection_initializer_opt(p): 
+	"""object_or_collection_initializer_opt : empty 
+			| object_or_collection_initializer""" 
+
+def p_dim_separators_opt(p): 
+	"""dim_separators_opt : empty 
+			| dim_separators""" 
+
+def p_constructor_initializer_opt(p): 
+	"""constructor_initializer_opt : empty 
+			| constructor_initializer""" 
+
+def p_member_initializer_list_opt(p): 
+	"""member_initializer_list_opt : empty 
+			| member_initializer_list""" 
+
+def p_using_directives_opt(p): 
+	"""using_directives_opt : empty 
+			| using_directives""" 
+
+def p_commas_opt(p): 
+	"""commas_opt : empty 
+			| commas""" 
+
+def p_class_member_declarations_opt(p): 
+	"""class_member_declarations_opt : empty 
+			| class_member_declarations""" 
+
+# def p_constructor_modifiers_opt(p): 
+# 	"""constructor_modifiers_opt : empty 
+# 			| constructor_modifiers""" 
+
+def p_extern_opt(p): 
+	"""extern_opt : empty 
+			| EXTERN""" 
+
+def p_argument_list_opt(p): 
+	"""argument_list_opt : empty 
+			| argument_list""" 
 
 # Error rule for syntax errors
 def p_error(p):
@@ -1202,10 +1200,10 @@ def p_error(p):
 
 ###################################################################################################
 # Build the parser now
-parser = yacc.yacc(start='compilation_unit')
+parser = yacc.yacc(start='compilation_unit', debug=True, optimize=False)
 
 # Read the input program
 inputfile = open(filename, 'r')
 data = inputfile.read()
-result = parser.parse(data)
+result = parser.parse(data, debug=2)
 print(result)

@@ -3,7 +3,7 @@ namespace HelloWorld
 {
     class Hello 
     {
-        static void Main() 
+        void Main() 
         {
             Console.WriteLine("Hello World!");
             Console.WriteLine("Press any key to exit.");
