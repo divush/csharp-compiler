@@ -57,5 +57,5 @@ opt_rules = [ 'implicit_anonymous_function_parameter_list_opt',
         # """
 for i in opt_rules :
         rulename = i[0:-4]
-        print "def %s(p): \n \t \'%s : empty \n \t \t \t | %s\' \n" %(i, i, rulename)
+        print "def p_%s(p): \n \t \"\"\"%s : empty \n \t \t \t | %s\"\"\" \n" %(i, i, rulename)
 
