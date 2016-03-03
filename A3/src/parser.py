@@ -21,56 +21,6 @@ data = inputfile.read()
 # Now we can access the tokens in the program as lexer.token()
 
 ###################################################################################################
-opt_rules = [ implicit_anonymous_function_parameter_list_opt,
-	generic_dimension_specifier_opt,
-	method_modifiers_opt,
-	variant_type_parameter_list_opt,
-	formal_parameter_list_opt,
-	get_accessor_declaration_opt,
-	indexer_modifiers_opt,
-	rank_specifiers_opt,
-	STMT_TERMINATOR_opt,
-	enum_member_declarations_opt,
-	for_initializer_opt,
-	constant_modifiers_opt,
-	set_accessor_declaration_opt,
-	enum_modifiers_opt,
-	enum_base_opt,
-	default_argument_opt,
-	array_initializer_opt,
-	struct_modifiers_opt,
-	accessor_modifier_opt,
-	switch_sections_opt,
-	namespace_member_declarations_opt,
-	explicit_anonymous_function_signature_opt,
-	property_modifiers_opt,
-	parameter_modifier_opt,
-	field_modifiers_opt,
-	variable_initializer_list_opt,
-	member_declarator_list_opt,
-	"partial"_opt,
-	class_base_opt,
-	explicit_anonymous_function_parameter_list_opt,
-	argument_name_opt,
-	type_parameter_constraints_clauses_opt,
-	statement_list_opt,
-	for_condition_opt,
-	struct_member_declarations_opt,
-	class_modifiers_opt,
-	expression_opt,
-	delegate_modifiers_opt,
-	for_iterator_opt,
-	object_or_collection_initializer_opt,
-	event_modifiers_opt,
-	dim_separators_opt,
-	constructor_initializer_opt,
-	member_initializer_list_opt,
-	using_directives_opt,
-	commas_opt,
-	class_member_declarations_opt,
-	constructor_modifiers_opt,
-	EXTERN_opt,
-	argument_list_opt ]
 		
 # ADD OPT RULES HERE (CFG VARIABLES THAT HAVE EMPTY PRODUCTIONS)
 # implicit_anonymous_function_parameter_list_opt
@@ -143,24 +93,215 @@ precedence = (
 	('left', 'TIMES', 'DIVIDE', 'MOD')
 )
 
+
+
+#--------------------------------------------------------------------------------------------------
+# Grammar Productions for C#
+
 #defining a rule for empty productions
 def p_empty(p)
 	'empty :'
 	pass
 
-#defining function to create _opt rules 
-def _create_empty_rule(self, opt_rules = []):
-        """ Given a rule name, creates an optional ply.yacc rule
-            for it. The name of the optional rule is
-            <rulename>_opt
-        """
-	for i in opt_rules :
-		def optrule(self, p):
-			'%s : empty' %(i)
+def implicit_anonymous_function_parameter_list_opt(p): 
+ 	 'implicit_anonymous_function_parameter_list_opt : empty 
+ 	 	 	 | implicit_anonymous_function_parameter_list' 
 
+def generic_dimension_specifier_opt(p): 
+ 	 'generic_dimension_specifier_opt : empty 
+ 	 	 	 | generic_dimension_specifier' 
 
-#--------------------------------------------------------------------------------------------------
-# Grammar Productions for C#
+def method_modifiers_opt(p): 
+ 	 'method_modifiers_opt : empty 
+ 	 	 	 | method_modifiers' 
+
+def variant_type_parameter_list_opt(p): 
+ 	 'variant_type_parameter_list_opt : empty 
+ 	 	 	 | variant_type_parameter_list' 
+
+def formal_parameter_list_opt(p): 
+ 	 'formal_parameter_list_opt : empty 
+ 	 	 	 | formal_parameter_list' 
+
+def get_accessor_declaration_opt(p): 
+ 	 'get_accessor_declaration_opt : empty 
+ 	 	 	 | get_accessor_declaration' 
+
+def indexer_modifiers_opt(p): 
+ 	 'indexer_modifiers_opt : empty 
+ 	 	 	 | indexer_modifiers' 
+
+def rank_specifiers_opt(p): 
+ 	 'rank_specifiers_opt : empty 
+ 	 	 	 | rank_specifiers' 
+
+def STMT_TERMINATOR_opt(p): 
+ 	 'STMT_TERMINATOR_opt : empty 
+ 	 	 	 | STMT_TERMINATOR' 
+
+def enum_member_declarations_opt(p): 
+ 	 'enum_member_declarations_opt : empty 
+ 	 	 	 | enum_member_declarations' 
+
+def for_initializer_opt(p): 
+ 	 'for_initializer_opt : empty 
+ 	 	 	 | for_initializer' 
+
+def constant_modifiers_opt(p): 
+ 	 'constant_modifiers_opt : empty 
+ 	 	 	 | constant_modifiers' 
+
+def set_accessor_declaration_opt(p): 
+ 	 'set_accessor_declaration_opt : empty 
+ 	 	 	 | set_accessor_declaration' 
+
+def enum_modifiers_opt(p): 
+ 	 'enum_modifiers_opt : empty 
+ 	 	 	 | enum_modifiers' 
+
+def enum_base_opt(p): 
+ 	 'enum_base_opt : empty 
+ 	 	 	 | enum_base' 
+
+def default_argument_opt(p): 
+ 	 'default_argument_opt : empty 
+ 	 	 	 | default_argument' 
+
+def array_initializer_opt(p): 
+ 	 'array_initializer_opt : empty 
+ 	 	 	 | array_initializer' 
+
+def struct_modifiers_opt(p): 
+ 	 'struct_modifiers_opt : empty 
+ 	 	 	 | struct_modifiers' 
+
+def accessor_modifier_opt(p): 
+ 	 'accessor_modifier_opt : empty 
+ 	 	 	 | accessor_modifier' 
+
+def switch_sections_opt(p): 
+ 	 'switch_sections_opt : empty 
+ 	 	 	 | switch_sections' 
+
+def namespace_member_declarations_opt(p): 
+ 	 'namespace_member_declarations_opt : empty 
+ 	 	 	 | namespace_member_declarations' 
+
+def explicit_anonymous_function_signature_opt(p): 
+ 	 'explicit_anonymous_function_signature_opt : empty 
+ 	 	 	 | explicit_anonymous_function_signature' 
+
+def property_modifiers_opt(p): 
+ 	 'property_modifiers_opt : empty 
+ 	 	 	 | property_modifiers' 
+
+def parameter_modifier_opt(p): 
+ 	 'parameter_modifier_opt : empty 
+ 	 	 	 | parameter_modifier' 
+
+def field_modifiers_opt(p): 
+ 	 'field_modifiers_opt : empty 
+ 	 	 	 | field_modifiers' 
+
+def variable_initializer_list_opt(p): 
+ 	 'variable_initializer_list_opt : empty 
+ 	 	 	 | variable_initializer_list' 
+
+def member_declarator_list_opt(p): 
+ 	 'member_declarator_list_opt : empty 
+ 	 	 	 | member_declarator_list' 
+
+def "partial"_opt(p): 
+ 	 '"partial"_opt : empty 
+ 	 	 	 | "partial"' 
+
+def class_base_opt(p): 
+ 	 'class_base_opt : empty 
+ 	 	 	 | class_base' 
+
+def explicit_anonymous_function_parameter_list_opt(p): 
+ 	 'explicit_anonymous_function_parameter_list_opt : empty 
+ 	 	 	 | explicit_anonymous_function_parameter_list' 
+
+def argument_name_opt(p): 
+ 	 'argument_name_opt : empty 
+ 	 	 	 | argument_name' 
+
+def type_parameter_constraints_clauses_opt(p): 
+ 	 'type_parameter_constraints_clauses_opt : empty 
+ 	 	 	 | type_parameter_constraints_clauses' 
+
+def statement_list_opt(p): 
+ 	 'statement_list_opt : empty 
+ 	 	 	 | statement_list' 
+
+def for_condition_opt(p): 
+ 	 'for_condition_opt : empty 
+ 	 	 	 | for_condition' 
+
+def struct_member_declarations_opt(p): 
+ 	 'struct_member_declarations_opt : empty 
+ 	 	 	 | struct_member_declarations' 
+
+def class_modifiers_opt(p): 
+ 	 'class_modifiers_opt : empty 
+ 	 	 	 | class_modifiers' 
+
+def expression_opt(p): 
+ 	 'expression_opt : empty 
+ 	 	 	 | expression' 
+
+def delegate_modifiers_opt(p): 
+ 	 'delegate_modifiers_opt : empty 
+ 	 	 	 | delegate_modifiers' 
+
+def for_iterator_opt(p): 
+ 	 'for_iterator_opt : empty 
+ 	 	 	 | for_iterator' 
+
+def object_or_collection_initializer_opt(p): 
+ 	 'object_or_collection_initializer_opt : empty 
+ 	 	 	 | object_or_collection_initializer' 
+
+def event_modifiers_opt(p): 
+ 	 'event_modifiers_opt : empty 
+ 	 	 	 | event_modifiers' 
+
+def dim_separators_opt(p): 
+ 	 'dim_separators_opt : empty 
+ 	 	 	 | dim_separators' 
+
+def constructor_initializer_opt(p): 
+ 	 'constructor_initializer_opt : empty 
+ 	 	 	 | constructor_initializer' 
+
+def member_initializer_list_opt(p): 
+ 	 'member_initializer_list_opt : empty 
+ 	 	 	 | member_initializer_list' 
+
+def using_directives_opt(p): 
+ 	 'using_directives_opt : empty 
+ 	 	 	 | using_directives' 
+
+def commas_opt(p): 
+ 	 'commas_opt : empty 
+ 	 	 	 | commas' 
+
+def class_member_declarations_opt(p): 
+ 	 'class_member_declarations_opt : empty 
+ 	 	 	 | class_member_declarations' 
+
+def constructor_modifiers_opt(p): 
+ 	 'constructor_modifiers_opt : empty 
+ 	 	 	 | constructor_modifiers' 
+
+def EXTERN_opt(p): 
+ 	 'EXTERN_opt : empty 
+ 	 	 	 | EXTERN' 
+
+def argument_list_opt(p): 
+ 	 'argument_list_opt : empty 
+ 	 	 	 | argument_list' 
 
 # Compilation unit marks the beginning of the program
 def p_compilation_unit(p):
