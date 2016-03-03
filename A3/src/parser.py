@@ -923,7 +923,6 @@ def p_class_member_declaration(p):
 	"""class_member_declaration : constant_declaration
 				| field_declaration
 				| method_declaration
-				| operator_declaration
 				| constructor_declaration
 				| destructor_declaration
 				| static_constructor_declaration
@@ -1047,75 +1046,6 @@ def p_method_body(p):
 				| STMT_TERMINATOR
 	"""
 
-def p_operator_declaration(p):
-	"""operator_declaration :  operator_modifiers operator_declarator operator_body
-	"""
-
-def p_operator_modifiers(p):
-	"""operator_modifiers : operator_modifier
-				| operator_modifiers operator_modifier
-	"""
-
-def p_operator_modifier(p):
-	"""operator_modifier : PUBLIC
-				| STATIC
-				| EXTERN
-	"""
-
-def p_operator_declarator(p):
-	"""operator_declarator : unary_operator_declarator
-				| binary_operator_declarator
-				| conversion_operator_declarator
-	"""
-
-def p_unary_operator_declarator(p):
-	"""unary_operator_declarator : type OPERATOR overloadable_unary_operator LPAREN type IDENTIFIER RPAREN
-	"""
-
-def p_overloadable_unary_operator(p):
-	"""overloadable_unary_operator : PLUS
-				| MINUS
-				| LNOT
-				| NOT
-				| INCREMENT
-				| DECREMENT
-				| TRUE
-				| FALSE
-	"""
-
-def p_binary_operator_declarator(p):
-	"""binary_operator_declarator : type OPERATOR overloadable_binary_operator LPAREN type IDENTIFIER COMMA type IDENTIFIER RPAREN
-	"""
-
-def p_overloadable_binary_operator(p):
-	"""overloadable_binary_operator : PLUS
-				| MINUS
-				| TIMES
-				| DIVIDE
-				| MOD
-				| AND
-				| OR
-				| XOR
-				| LSHIFT
-				| RSHIFT
-				| EQ
-				| NE
-				| GT
-				| LT
-				| GE
-				| LE
-	"""
-
-def p_conversion_operator_declarator(p):
-	"""conversion_operator_declarator : IMPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
-				| EXPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
-	"""
-
-def p_operator_body(p):
-	"""operator_body : block
-				| STMT_TERMINATOR
-	"""
-
 def p_constructor_declaration(p):
 	"""constructor_declaration :  constructor_modifiers_opt constructor_declarator constructor_body
 	"""
@@ -1203,7 +1133,6 @@ def p_struct_member_declaration(p):
 	"""struct_member_declaration : constant_declaration
 				| field_declaration
 				| method_declaration
-				| operator_declaration
 				| constructor_declaration
 				| static_constructor_declaration
 				| type_declaration

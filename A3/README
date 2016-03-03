@@ -32,3 +32,8 @@ might be included in the future versions.
 18.	Variance Annotation
 19.	Constraints
 20.	Null Coalescing Expression
+21.	Operator Overloading
+22.	Null Assignments
+23.	Indexers
+24.	Events
+25.	Properties
