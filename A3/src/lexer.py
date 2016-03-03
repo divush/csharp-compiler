@@ -115,8 +115,8 @@ tokens = [
 	'ANDEQUAL', 'OREQUAL', 'XOREQUAL', 'LSHIFTEQUAL', 'RSHIFTEQUAL',
 	'LAMBDADEC',
 
-	# Delimiters: ( ) { } [ ] , . ; :
-	'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'PERIOD', 'STMT_TERMINATOR', 'COLON',
+	# Delimiters: ( ) { } [ ] , . ; : ::
+	'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'PERIOD', 'STMT_TERMINATOR', 'COLON', 'DOUBLE_COLON',
 	# Others: \n // ...
 	'NEWLINE', 'COMMENT', 'ELLIPSIS', 'PREPROCESSOR'
 
@@ -181,6 +181,7 @@ t_COMMA            = r','
 t_PERIOD           = r'\.'
 t_STMT_TERMINATOR  = r';'
 t_COLON            = r':'
+t_DOUBLE_COLON     = r'::'
 t_ELLIPSIS         = r'\.\.\.'
 
 

@@ -6,7 +6,7 @@ opt_rules = [ 'implicit_anonymous_function_parameter_list_opt',
 	'get_accessor_declaration_opt',
 	'indexer_modifiers_opt',
 	'rank_specifiers_opt',
-	'STMT_TERMINATOR_opt',
+	'smt_terminator_opt',
 	'enum_member_declarations_opt',
 	'for_initializer_opt',
 	'constant_modifiers_opt',
@@ -46,7 +46,7 @@ opt_rules = [ 'implicit_anonymous_function_parameter_list_opt',
 	'commas_opt',
 	'class_member_declarations_opt',
 	'constructor_modifiers_opt',
-	'EXTERN_opt',
+	'extern_opt',
 	'argument_list_opt' ]
 
 for i in opt_rules :

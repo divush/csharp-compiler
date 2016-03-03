@@ -14,12 +14,6 @@ else:
 	print("Usage: ./parser file.cs")
 	exit(0)
 
-# Read the input program
-inputfile = open(filename, 'r')
-data = inputfile.read()
-# lexer.input(data)
-# Now we can access the tokens in the program as lexer.token()
-
 ###################################################################################################
 
 # Precedence and associativity of operators
@@ -369,12 +363,8 @@ def p_non_assignment_expression(p):
 				| lambda_expression
 	"""
 def p_conditional_expression(p):
-	"""conditional_expression : null_coalescing_expression
-				| null_coalescing_expression CONDOP expression COLON expression
-	"""
-def p_null_coalescing_expression(p):
-	"""null_coalescing_expression : conditional_or_expression
-				| conditional_or_expression "??" null_coalescing_expression
+	"""conditional_expression : conditional_or_expression
+				| conditional_or_expression CONDOP expression COLON expression
 	"""
 def p_conditional_or_expression(p):
 	"""conditional_or_expression : conditional_and_expression
@@ -618,7 +608,7 @@ def p_typeof_expression(p):
 
 def p_unbound_type_name(p):
 	"""unbound_type_name : IDENTIFIER generic_dimension_specifier_opt
-				| IDENTIFIER "::" IDENTIFIER generic_dimension_specifier_opt
+				| IDENTIFIER DOUBLE_COLON IDENTIFIER generic_dimension_specifier_opt
 				| unbound_type_name MEMBERACCESS IDENTIFIER generic_dimension_specifier_opt
 	"""
 
@@ -913,7 +903,7 @@ def p_namespace_member_declaration(p):
 	"""
 
 def p_namespace_declaration(p):
-	"""namespace_declaration : "namespace" qualified_IDENTIFIER namespace_body smt_terminator_opt
+	"""namespace_declaration : NAMESPACE qualified_IDENTIFIER namespace_body smt_terminator_opt
 	"""
 
 def p_qualified_IDENTIFIER(p):
@@ -954,8 +944,7 @@ def p_class_modifier(p):
 	"""
 
 def p_class_base(p):
-	"""class_base:
-				| COLON class_type
+	"""class_base : COLON class_type
 	"""
 
 def p_class_body(p):
@@ -1090,7 +1079,7 @@ def p_default_argument(p):
 	"""
 
 def p_parameter_array(p):
-	"""parameter_array :  "params" array_type IDENTIFIER
+	"""parameter_array :  PARAMS array_type IDENTIFIER
 	"""
 
 def p_method_body(p):
@@ -1127,7 +1116,7 @@ def p_accessor_declarations(p):
 	"""
 
 def p_get_accessor_declaration(p):
-	"""get_accessor_declaration :  accessor_modifier_opt "get" accessor_body
+	"""get_accessor_declaration :  accessor_modifier_opt GET accessor_body
 	"""
 
 def p_accessor_modifier(p):
@@ -1144,12 +1133,12 @@ def p_accessor_body(p):
 	"""
 
 def p_set_accessor_declaration(p):
-	"""set_accessor_declaration :  accessor_modifier_opt "set" accessor_body
+	"""set_accessor_declaration :  accessor_modifier_opt SET accessor_body
 	"""
 
 def p_event_declaration(p):
-	"""event_declaration :  event_modifiers_opt "event" type variable_declarators STMT_TERMINATOR
-				|  event_modifiers_opt "event" type member_name LBRACE event_accessor_declarations RBRACE
+	"""event_declaration :  event_modifiers_opt EVENT type variable_declarators STMT_TERMINATOR
+				|  event_modifiers_opt EVENT type member_name LBRACE event_accessor_declarations RBRACE
 	"""
 
 def p_event_modifiers(p):
@@ -1270,8 +1259,8 @@ def p_overloadable_binary_operator(p):
 	"""
 
 def p_conversion_operator_declarator(p):
-	"""conversion_operator_declarator : "implicit" OPERATOR type LPAREN type IDENTIFIER RPAREN
-				| "explicit" OPERATOR type LPAREN type IDENTIFIER RPAREN
+	"""conversion_operator_declarator : IMPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
+				| EXPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
 	"""
 
 def p_operator_body(p):
@@ -1301,7 +1290,7 @@ def p_constructor_declarator(p):
 	"""
 
 def p_constructor_initializer(p):
-	"""constructor_initializer: COLON BASE LPAREN argument_list_opt RPAREN
+	"""constructor_initializer : COLON BASE LPAREN argument_list_opt RPAREN
 				| COLON THIS LPAREN argument_list_opt RPAREN
 	"""
 
@@ -1376,7 +1365,7 @@ def p_struct_member_declaration(p):
 	"""
 
 def p_enum_declaration(p):
-	"""enum_declaration :  enum_modifiers_opt "enum" IDENTIFIER enum_base_opt enum_body smt_terminator_opt
+	"""enum_declaration :  enum_modifiers_opt ENUM IDENTIFIER enum_base_opt enum_body smt_terminator_opt
 	"""
 
 def p_enum_modifiers(p):
@@ -1431,3 +1420,18 @@ def p_delegate_modifier(p):
 				| INTERNAL
 				| PRIVATE
 	"""
+
+
+# Error rule for syntax errors
+def p_error(p):
+    print("Syntax error in input!")
+
+###################################################################################################
+# Build the parser now
+parser = yacc.yacc(start='compilation_unit')
+
+# Read the input program
+inputfile = open(filename, 'r')
+data = inputfile.read()
+result = parser.parse(data)
+print(result)
