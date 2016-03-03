@@ -38,8 +38,7 @@ precedence = (
 
 # Compilation unit marks the beginning of the program
 def p_compilation_unit(p):
-	"""compilation_unit : using_directives_opt
-				| namespace_member_declarations_opt
+	"""compilation_unit : using_directives_opt namespace_member_declarations_opt
 	"""
 
 # Using directives
@@ -809,8 +808,7 @@ def p_method_declaration(p):
 	"""
 
 def p_method_header(p):
-	"""method_header : return_type member_name
-				| LPAREN formal_parameter_list_opt RPAREN
+	"""method_header : return_type member_name LPAREN formal_parameter_list_opt RPAREN
 	"""
 
 # def p_method_modifiers(p):
