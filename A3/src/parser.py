@@ -50,7 +50,7 @@ data = inputfile.read()
 # field_modifiers_opt
 # variable_initializer_list_opt
 # member_declarator_list_opt
-# "partial"_opt
+# partial_opt
 # class_base_opt
 # explicit_anonymous_function_parameter_list_opt
 # argument_name_opt
@@ -99,7 +99,7 @@ precedence = (
 # Grammar Productions for C#
 
 #defining a rule for empty productions
-def p_empty(p)
+def p_empty(p):
 	'empty :'
 	pass
 
@@ -212,9 +212,9 @@ def p_member_declarator_list_opt(p):
  	 """member_declarator_list_opt : empty 
  	 	 	 | member_declarator_list""" 
 
-def p_"partial"_opt(p): 
- 	 """"partial"_opt : empty 
- 	 	 	 | "partial"""" 
+def p_partial_opt(p): 
+ 	 """partial_opt : empty 
+ 	 	 	 | PARTIAL""" 
 
 def p_class_base_opt(p): 
  	 """class_base_opt : empty 
@@ -991,7 +991,7 @@ def p_type_declaration(p):
 	"""
 
 def p_class_declaration(p):
-	"""class_declaration : class_modifiers_opt "partial"_opt CLASS IDENTIFIER
+	"""class_declaration : class_modifiers_opt partial_opt CLASS IDENTIFIER
 				| class_base_opt class_body STMT_TERMINATOR_opt
 	"""
 
@@ -1091,7 +1091,7 @@ def p_method_declaration(p):
 	"""
 
 def p_method_header(p):
-	"""method_header :  method_modifiers_opt "partial"_opt return_type member_name
+	"""method_header :  method_modifiers_opt partial_opt return_type member_name
 				| LPAREN formal_parameter_list_opt RPAREN
 	"""
 
@@ -1393,7 +1393,7 @@ def p_static_constructor_body(p):
 	"""
 
 def p_struct_declaration(p):
-	"""struct_declaration :  struct_modifiers_opt "partial"_opt STRUCT IDENTIFIER
+	"""struct_declaration :  struct_modifiers_opt partial_opt STRUCT IDENTIFIER
 				| struct_body STMT_TERMINATOR_opt
 	"""
 

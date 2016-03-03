@@ -25,7 +25,7 @@ opt_rules = [ 'implicit_anonymous_function_parameter_list_opt',
 	'field_modifiers_opt',
 	'variable_initializer_list_opt',
 	'member_declarator_list_opt',
-	'"partial"_opt',
+	'partial_opt',
 	'class_base_opt',
 	'explicit_anonymous_function_parameter_list_opt',
 	'argument_name_opt',
@@ -49,13 +49,7 @@ opt_rules = [ 'implicit_anonymous_function_parameter_list_opt',
 	'EXTERN_opt',
 	'argument_list_opt' ]
 
-#defining function to create _opt rules 
-# def _create_empty_rule(opt_rules = []):
-        # """ Given a rule name, creates an optional ply.yacc rule
-            # for it. The name of the optional rule is
-            # <rulename>_opt
-        # """
 for i in opt_rules :
         rulename = i[0:-4]
-        print "def p_%s(p): \n \t \"\"\"%s : empty \n \t \t \t | %s\"\"\" \n" %(i, i, rulename)
+        print "def p_%s(p): \n\t\"\"\"%s : empty \n\t\t\t | %s\"\"\" \n" %(i, i, rulename)
 
