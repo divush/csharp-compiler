@@ -52,21 +52,9 @@ def p_method_modifiers_opt(p):
 	"""method_modifiers_opt : empty 
 			| method_modifiers""" 
 
-def p_variant_type_parameter_list_opt(p): 
-	"""variant_type_parameter_list_opt : empty 
-			| variant_type_parameter_list""" 
-
 def p_formal_parameter_list_opt(p): 
 	"""formal_parameter_list_opt : empty 
 			| formal_parameter_list""" 
-
-def p_get_accessor_declaration_opt(p): 
-	"""get_accessor_declaration_opt : empty 
-			| get_accessor_declaration""" 
-
-def p_indexer_modifiers_opt(p): 
-	"""indexer_modifiers_opt : empty 
-			| indexer_modifiers""" 
 
 def p_rank_specifiers_opt(p): 
 	"""rank_specifiers_opt : empty 
@@ -87,10 +75,6 @@ def p_for_initializer_opt(p):
 def p_constant_modifiers_opt(p): 
 	"""constant_modifiers_opt : empty 
 			| constant_modifiers""" 
-
-def p_set_accessor_declaration_opt(p): 
-	"""set_accessor_declaration_opt : empty 
-			| set_accessor_declaration""" 
 
 def p_enum_modifiers_opt(p): 
 	"""enum_modifiers_opt : empty 
@@ -148,10 +132,6 @@ def p_member_declarator_list_opt(p):
 	"""member_declarator_list_opt : empty 
 			| member_declarator_list""" 
 
-def p_partial_opt(p): 
-	"""partial_opt : empty 
-			| PARTIAL""" 
-
 def p_class_base_opt(p): 
 	"""class_base_opt : empty 
 			| class_base""" 
@@ -162,11 +142,7 @@ def p_explicit_anonymous_function_parameter_list_opt(p):
 
 def p_argument_name_opt(p): 
 	"""argument_name_opt : empty 
-			| argument_name""" 
-
-def p_type_parameter_constraints_clauses_opt(p): 
-	"""type_parameter_constraints_clauses_opt : empty 
-			| type_parameter_constraints_clauses""" 
+			| argument_name"""  
 
 def p_statement_list_opt(p): 
 	"""statement_list_opt : empty 
@@ -199,10 +175,6 @@ def p_for_iterator_opt(p):
 def p_object_or_collection_initializer_opt(p): 
 	"""object_or_collection_initializer_opt : empty 
 			| object_or_collection_initializer""" 
-
-def p_event_modifiers_opt(p): 
-	"""event_modifiers_opt : empty 
-			| event_modifiers""" 
 
 def p_dim_separators_opt(p): 
 	"""dim_separators_opt : empty 
@@ -311,7 +283,6 @@ def p_reference_type(p):
 def p_class_type(p):
 	"""class_type : type_name
 				| OBJECT
-				| DYNAMIC
 				| STRING
 	"""
 def p_array_type(p):
@@ -326,6 +297,12 @@ def p_rank_specifiers(p):
 	"""
 def p_rank_specifier(p):
 	"""rank_specifier : LBRACKET dim_separators_opt RBRACKET
+	"""
+
+def p_literal(p):
+	"""literal : INTCONST
+				| STRCONST
+				| CHCONST
 	"""
 
 # Separators like ','	
@@ -463,7 +440,6 @@ def p_parenthesized_expression(p):
 def p_member_access(p):
 	"""member_access : primary_expression MEMBERACCESS IDENTIFIER
 				| predefined_type MEMBERACCESS IDENTIFIER
-				| qualified_alias_member MEMBERACCESS IDENTIFIER
 	"""
 
 # Types
@@ -663,7 +639,6 @@ def p_local_variable_declaration(p):
 	"""
 def p_local_variable_type(p):
 	"""local_variable_type : type
-				| VAR
 	"""
 def p_local_variable_declarators(p):
 	"""local_variable_declarators : local_variable_declarator
@@ -923,7 +898,7 @@ def p_type_declaration(p):
 	"""
 
 def p_class_declaration(p):
-	"""class_declaration : class_modifiers_opt partial_opt CLASS IDENTIFIER
+	"""class_declaration : class_modifiers_opt CLASS IDENTIFIER
 				| class_base_opt class_body smt_terminator_opt
 	"""
 
@@ -960,9 +935,6 @@ def p_class_member_declaration(p):
 	"""class_member_declaration : constant_declaration
 				| field_declaration
 				| method_declaration
-				| property_declaration
-				| event_declaration
-				| indexer_declaration
 				| operator_declaration
 				| constructor_declaration
 				| destructor_declaration
@@ -1022,7 +994,7 @@ def p_method_declaration(p):
 	"""
 
 def p_method_header(p):
-	"""method_header :  method_modifiers_opt partial_opt return_type member_name
+	"""method_header :  method_modifiers_opt return_type member_name
 				| LPAREN formal_parameter_list_opt RPAREN
 	"""
 
@@ -1087,10 +1059,6 @@ def p_method_body(p):
 				| STMT_TERMINATOR
 	"""
 
-def p_property_declaration(p):
-	"""property_declaration :  property_modifiers_opt type member_name LBRACE accessor_declarations RBRACE
-	"""
-
 def p_property_modifiers(p):
 	"""property_modifiers : property_modifier
 				| property_modifiers property_modifier
@@ -1110,15 +1078,6 @@ def p_property_modifier(p):
 				| EXTERN
 	"""
 
-def p_accessor_declarations(p):
-	"""accessor_declarations : get_accessor_declaration set_accessor_declaration_opt
-				| set_accessor_declaration get_accessor_declaration_opt
-	"""
-
-def p_get_accessor_declaration(p):
-	"""get_accessor_declaration :  accessor_modifier_opt GET accessor_body
-	"""
-
 def p_accessor_modifier(p):
 	"""accessor_modifier : PROTECTED
 				| INTERNAL
@@ -1130,73 +1089,6 @@ def p_accessor_modifier(p):
 def p_accessor_body(p):
 	"""accessor_body : block
 				| STMT_TERMINATOR
-	"""
-
-def p_set_accessor_declaration(p):
-	"""set_accessor_declaration :  accessor_modifier_opt SET accessor_body
-	"""
-
-def p_event_declaration(p):
-	"""event_declaration :  event_modifiers_opt EVENT type variable_declarators STMT_TERMINATOR
-				|  event_modifiers_opt EVENT type member_name LBRACE event_accessor_declarations RBRACE
-	"""
-
-def p_event_modifiers(p):
-	"""event_modifiers : event_modifier
-				| event_modifiers event_modifier
-	"""
-
-def p_event_modifier(p):
-	"""event_modifier : NEW
-				| PUBLIC
-				| PROTECTED
-				| INTERNAL
-				| PRIVATE
-				| STATIC
-				| VIRTUAL
-				| SEALED
-				| OVERRIDE
-				| ABSTRACT
-				| EXTERN
-	"""
-
-def p_event_accessor_declarations(p):
-	"""event_accessor_declarations : add_accessor_declaration remove_accessor_declaration
-				| remove_accessor_declaration add_accessor_declaration
-	"""
-
-def p_add_accessor_declaration(p):
-	"""add_accessor_declaration :  ADD block
-	"""
-
-def p_remove_accessor_declaration(p):
-	"""remove_accessor_declaration :  REMOVE block
-	"""
-
-def p_indexer_declaration(p):
-	"""indexer_declaration :  indexer_modifiers_opt indexer_declarator LBRACE accessor_declarations RBRACE
-	"""
-
-def p_indexer_modifiers(p):
-	"""indexer_modifiers : indexer_modifier
-				| indexer_modifiers indexer_modifier
-	"""
-
-def p_indexer_modifier(p):
-	"""indexer_modifier : NEW
-				| PUBLIC
-				| PROTECTED
-				| INTERNAL
-				| PRIVATE
-				| VIRTUAL
-				| SEALED
-				| OVERRIDE
-				| ABSTRACT
-				| EXTERN
-	"""
-
-def p_indexer_declarator(p):
-	"""indexer_declarator : type THIS LBRACKET formal_parameter_list RBRACKET
 	"""
 
 def p_operator_declaration(p):
@@ -1324,7 +1216,7 @@ def p_static_constructor_body(p):
 	"""
 
 def p_struct_declaration(p):
-	"""struct_declaration :  struct_modifiers_opt partial_opt STRUCT IDENTIFIER
+	"""struct_declaration :  struct_modifiers_opt STRUCT IDENTIFIER
 				| struct_body smt_terminator_opt
 	"""
 
@@ -1355,9 +1247,6 @@ def p_struct_member_declaration(p):
 	"""struct_member_declaration : constant_declaration
 				| field_declaration
 				| method_declaration
-				| property_declaration
-				| event_declaration
-				| indexer_declaration
 				| operator_declaration
 				| constructor_declaration
 				| static_constructor_declaration
@@ -1404,8 +1293,8 @@ def p_enum_member_declaration(p):
 
 def p_delegate_declaration(p):
 	"""delegate_declaration :  delegate_modifiers_opt DELEGATE return_type
-				| IDENTIFIER variant_type_parameter_list_opt
-				| LPAREN formal_parameter_list_opt RPAREN type_parameter_constraints_clauses_opt STMT_TERMINATOR
+				| IDENTIFIER
+				| LPAREN formal_parameter_list_opt RPAREN STMT_TERMINATOR
 	"""
 
 def p_delegate_modifiers(p):

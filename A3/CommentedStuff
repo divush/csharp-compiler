@@ -377,3 +377,83 @@ def p_variance_annotation(p):
 	"""
 
 delegates
+
+def p_property_declaration(p):
+	"""property_declaration :  property_modifiers_opt type member_name LBRACE accessor_declarations RBRACE
+	"""
+
+def p_accessor_declarations(p):
+	"""accessor_declarations : get_accessor_declaration set_accessor_declaration_opt
+				| set_accessor_declaration get_accessor_declaration_opt
+	"""
+
+def p_get_accessor_declaration(p):
+	"""get_accessor_declaration :  accessor_modifier_opt GET accessor_body
+	"""
+
+def p_set_accessor_declaration(p):
+	"""set_accessor_declaration :  accessor_modifier_opt SET accessor_body
+	"""
+
+def p_event_declaration(p):
+	"""event_declaration :  event_modifiers_opt EVENT type variable_declarators STMT_TERMINATOR
+				|  event_modifiers_opt EVENT type member_name LBRACE event_accessor_declarations RBRACE
+	"""
+
+def p_event_accessor_declarations(p):
+	"""event_accessor_declarations : add_accessor_declaration remove_accessor_declaration
+				| remove_accessor_declaration add_accessor_declaration
+	"""
+
+def p_add_accessor_declaration(p):
+	"""add_accessor_declaration :  ADD block
+	"""
+
+def p_remove_accessor_declaration(p):
+	"""remove_accessor_declaration :  REMOVE block
+	"""
+
+def p_indexer_declaration(p):
+	"""indexer_declaration :  indexer_modifiers_opt indexer_declarator LBRACE accessor_declarations RBRACE
+	"""
+
+def p_event_modifiers(p):
+	"""event_modifiers : event_modifier
+				| event_modifiers event_modifier
+	"""
+
+def p_event_modifier(p):
+	"""event_modifier : NEW
+				| PUBLIC
+				| PROTECTED
+				| INTERNAL
+				| PRIVATE
+				| STATIC
+				| VIRTUAL
+				| SEALED
+				| OVERRIDE
+				| ABSTRACT
+				| EXTERN
+	"""
+
+def p_indexer_modifiers(p):
+	"""indexer_modifiers : indexer_modifier
+				| indexer_modifiers indexer_modifier
+	"""
+
+def p_indexer_modifier(p):
+	"""indexer_modifier : NEW
+				| PUBLIC
+				| PROTECTED
+				| INTERNAL
+				| PRIVATE
+				| VIRTUAL
+				| SEALED
+				| OVERRIDE
+				| ABSTRACT
+				| EXTERN
+	"""
+
+def p_indexer_declarator(p):
+	"""indexer_declarator : type THIS LBRACKET formal_parameter_list RBRACKET
+	"""
