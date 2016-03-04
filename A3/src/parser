@@ -1,4 +1,4 @@
 #!/bin/bash
-./parser.py
+python3 ./parser.py
 ./make_html 2> index.html
 xdg-open index.html
