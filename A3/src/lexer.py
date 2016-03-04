@@ -3,31 +3,51 @@
 #  Lexer for generating tokens in C#  language
 # ------------------------------------------------------------------
 import ply.lex as lex
+import sys
+# import itertools
 
 # THE LIST OF RESERVED KEYWORDS IN C# 
 reserved = {
+	'abstract' : 'ABSTRACT',
 	'break' : 'BREAK',
 	'char' : 'CHAR',
 	'continue' : 'CONTINUE',
 	'do' : 'DO',
-	'interface' : 'INTERFACE',
+	'event' : 'EVENT',
+	'finally' : 'FINALLY',
+	'foreach' : 'FOREACH',
+	'in' : 'IN',
+	'internal' : 'INTERNAL',
 	'namespace' : 'NAMESPACE',
+	'operator' : 'OPERATOR',
 	'params' : 'PARAMS',
+	'readonly' : 'READONLY',
+	'sealed' : 'SEALED',
 	'static' : 'STATIC',
 	'this' : 'THIS',
 	'typeof' : 'TYPEOF',
+	'unsafe' : 'UNSAFE',
 	'void' : 'VOID',
 	'as' : 'AS',
 	'byte' : 'BYTE',
+	'checked' : 'CHECKED',
 	'decimal' : 'DECIMAL',
 	'double' : 'DOUBLE',
+	'explicit' : 'EXPLICIT',
+	'fixed' : 'FIXED',
 	'goto' : 'GOTO',
+	'in' : 'IN',
 	'is' : 'IS',
 	'new' : 'NEW',
+	'out' : 'OUT',
+	'private' : 'PRIVATE',
+	'ref' : 'REF',
 	'short' : 'SHORT',
 	'string' : 'STRING',
+	'throw' : 'THROW',
 	'uint' : 'UINT',
 	'ushort' : 'USHORT',
+	'volatile' : 'VOLATILE',
 	'base' : 'BASE',
 	'case' : 'CASE',
 	'class' : 'CLASS',
@@ -37,20 +57,36 @@ reserved = {
 	'float' : 'FLOAT',
 	'if' : 'IF',
 	'int' : 'INT',
+	'lock' : 'LOCK',
+	'null' : 'NULL',
+	'out' : 'OUT',
+	'protected' : 'PROTECTED',
 	'return' : 'RETURN',
+	'sizeof' : 'SIZEOF',
 	'struct' : 'STRUCT',
+	'TRUE' : 'TRUE',
 	'ulong' : 'ULONG',
 	'using' : 'USING',
 	'while' : 'WHILE',
 	'bool' : 'BOOL',
+	'catch' : 'CATCH',
 	'const' : 'CONST',
 	'delegate' : 'DELEGATE',
 	'enum' : 'ENUM',
+	'FALSE' : 'FALSE',
 	'for' : 'FOR',
+	'implicit' : 'IMPLICIT',
+	'interface' : 'INTERFACE',
 	'long' : 'LONG',
 	'object' : 'OBJECT',
+	'override' : 'OVERRIDE',
+	'public' : 'PUBLIC',
 	'sbyte' : 'SBYTE',
-	'switch' : 'SWITCH'
+	'stackalloc' : 'STACKALLOC',
+	'switch' : 'SWITCH',
+	'try' : 'TRY',
+	'unchecked' : 'UNCHECKED',
+	'virtual' : 'VIRTUAL'
 }
 
 # THE LIST OF TOKENS
@@ -59,7 +95,7 @@ tokens = [
 	'IDENTIFIER', 'INTCONST', 'CHCONST', 'STRCONST',
 
 	# Primary Operators: . ?. ++ -- ->
-	'MEMBERACCESS', 'INCREMENT', 'DECREMENT',
+	'MEMBERACCESS', 'CONDMEMBACCESS', 'INCREMENT', 'DECREMENT', 'ARROW',
 	# Unary Operators: ~ ! 
 	'NOT', 'LNOT',
 	# Multiplicative Operators: * / %
@@ -81,10 +117,10 @@ tokens = [
 	'ANDEQUAL', 'OREQUAL', 'XOREQUAL', 'LSHIFTEQUAL', 'RSHIFTEQUAL',
 	'LAMBDADEC',
 
-	# Delimiters: ( ) { } [ ] , . ; : ::
-	'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'STMT_TERMINATOR', 'COLON', 'DOUBLE_COLON',
+	# Delimiters: ( ) { } [ ] , . ; :
+	'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'PERIOD', 'STMT_TERMINATOR', 'COLON',
 	# Others: \n // ...
-	'NEWLINE', 'COMMENT'
+	'NEWLINE', 'COMMENT', 'ELLIPSIS', 'PREPROCESSOR'
 
 ] + list(reserved.values())
 
@@ -98,8 +134,10 @@ def t_NEWLINE(t):
 
 # Operators
 t_MEMBERACCESS		= r'\.'
+t_CONDMEMBACCESS	= r'\?\.'
 t_INCREMENT			= r'\+\+'
 t_DECREMENT			= r'--'
+t_ARROW				= r'->'
 t_NOT 				= r'~'
 t_LNOT				= r'!'
 t_TIMES				= r'\*'
@@ -142,11 +180,12 @@ t_RBRACKET         = r'\]'
 t_LBRACE           = r'\{'
 t_RBRACE           = r'\}'
 t_COMMA            = r','
+t_PERIOD           = r'\.'
 t_STMT_TERMINATOR  = r';'
 t_COLON            = r':'
-t_DOUBLE_COLON     = r'::'
+t_ELLIPSIS         = r'\.\.\.'
 
-
+# Identifiers and Keywords
 def t_IDENTIFIER(t):
 	r'[a-zA-Z_@][a-zA-Z_0-9]*'
 	t.type = reserved.get(t.value,'IDENTIFIER')    #  Check for reserved words
@@ -166,10 +205,16 @@ def t_COMMENT(t):
 	r' /\*(.|\n)*?\*/'
 	t.lineno += t.value.count('\n')
 
+# Preprocessor directive (ignored)
+def t_PREPROCESSOR(t):
+	r'\#(.)*?\n'
+	t.lineno += 1
+
 # Error handling rule
 def t_error(t):
-	print("{}: Illegal character {}".format(t.lineno, t.value[0]))
+	print("Illegal character '%s'" % t.value[0])
 	t.lexer.skip(1)
+
 
 #  Build the lexer
 lexer = lex.lex()
