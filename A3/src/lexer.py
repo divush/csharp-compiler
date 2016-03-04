@@ -4,7 +4,6 @@
 # ------------------------------------------------------------------
 import ply.lex as lex
 import sys
-# import itertools
 
 # THE LIST OF RESERVED KEYWORDS IN C# 
 reserved = {
@@ -13,7 +12,6 @@ reserved = {
 	'char' : 'CHAR',
 	'continue' : 'CONTINUE',
 	'do' : 'DO',
-	'event' : 'EVENT',
 	'finally' : 'FINALLY',
 	'foreach' : 'FOREACH',
 	'in' : 'IN',
@@ -76,7 +74,6 @@ reserved = {
 	'FALSE' : 'FALSE',
 	'for' : 'FOR',
 	'implicit' : 'IMPLICIT',
-	'interface' : 'INTERFACE',
 	'long' : 'LONG',
 	'object' : 'OBJECT',
 	'override' : 'OVERRIDE',
@@ -118,9 +115,9 @@ tokens = [
 	'LAMBDADEC',
 
 	# Delimiters: ( ) { } [ ] , . ; :
-	'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'PERIOD', 'STMT_TERMINATOR', 'COLON',
+	'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACKET', 'RBRACKET', 'COMMA', 'STMT_TERMINATOR', 'COLON',
 	# Others: \n // ...
-	'NEWLINE', 'COMMENT', 'ELLIPSIS', 'PREPROCESSOR'
+	'NEWLINE', 'COMMENT', 'PREPROCESSOR'
 
 ] + list(reserved.values())
 
@@ -180,10 +177,8 @@ t_RBRACKET         = r'\]'
 t_LBRACE           = r'\{'
 t_RBRACE           = r'\}'
 t_COMMA            = r','
-t_PERIOD           = r'\.'
 t_STMT_TERMINATOR  = r';'
 t_COLON            = r':'
-t_ELLIPSIS         = r'\.\.\.'
 
 # Identifiers and Keywords
 def t_IDENTIFIER(t):

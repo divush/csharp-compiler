@@ -1,5 +1,12 @@
 #!/usr/bin/python3
 # Parser for C# in Python
+
+# Grammar Specification Reference
+# https://msdn.microsoft.com/en-in/library/aa664812(v=vs.71).aspx
+# With some modifications to resolve conflicts
+
+# Authors: Divyanshu Shende, Pranshu Gupta, Prashant Kumar, Rahul Tudu
+# Compiler Design: CS335A, Group 25, Indian Institute of Technology, Kanpur
 ###################################################################################################
 
 import sys
@@ -120,6 +127,7 @@ def p_argument(p):
 def p_primary_expression(p):
 	"""primary_expression : parenthesized_expression
 		| primary_expression_no_parenthesis
+		| anonymous_method_expression
 	"""
 def p_primary_expression_no_parenthesis(p):
 	"""primary_expression_no_parenthesis : literal
@@ -332,6 +340,7 @@ def p_assignment_operator(p):
 	"""
 def p_expression(p):
 	"""expression : conditional_expression
+		| lambda_expression
 		| assignment
 	"""
 def p_constant_expression(p):
@@ -579,6 +588,37 @@ def p_fixed_pointer_declarators(p):
 def p_fixed_pointer_declarator(p):
 	"""fixed_pointer_declarator : IDENTIFIER EQUALS expression
 	"""
+
+# Lambda Expressions
+def p_lambda_expression(p):
+	"""lambda_expression : explicit_anonymous_function_signature LAMBDADEC block
+						| explicit_anonymous_function_signature LAMBDADEC expression
+	"""
+
+# Anonymous Method Expression
+def p_anonymous_method_expression(p):
+	"""anonymous_method_expression : DELEGATE explicit_anonymous_function_signature_opt block
+	"""
+def p_explicit_anonymous_function_signature_opt(p):
+	"""explicit_anonymous_function_signature_opt : explicit_anonymous_function_signature
+												| empty
+	"""
+def p_explicit_anonymous_function_signature(p):
+	"""explicit_anonymous_function_signature : LPAREN explicit_anonymous_function_parameter_list_opt RPAREN
+	"""
+def p_explicit_anonymous_function_parameter_list_opt(p):
+	"""explicit_anonymous_function_parameter_list_opt : explicit_anonymous_function_parameter_list
+														| empty
+	"""
+def p_explicit_anonymous_function_parameter_list(p):
+	"""explicit_anonymous_function_parameter_list : explicit_anonymous_function_parameter
+													| explicit_anonymous_function_parameter_list COMMA explicit_anonymous_function_parameter
+	"""
+def p_explicit_anonymous_function_parameter(p):
+	"""explicit_anonymous_function_parameter : type IDENTIFIER
+	"""	
+
+# Compilation Unit
 def p_compilation_unit(p):
 	"""compilation_unit : using_directives_opt
 		| using_directives_opt namespace_member_declarations
@@ -881,6 +921,9 @@ def p_enum_member_declaration(p):
 def p_delegate_declaration(p):
 	"""delegate_declaration :  modifiers_opt DELEGATE return_type IDENTIFIER LPAREN formal_parameter_list_opt RPAREN STMT_TERMINATOR
 	"""
+
+# Anonymous Functions
+
 
 def p_empty(p):
 	"""empty :"""

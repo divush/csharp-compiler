@@ -1,39 +1,62 @@
 PARSER FOR C# IN PYTHON 
+Assignment 3: Group 25
+Authors: Divyanshu Shende, Pranshu Gupta, Prashant Kumar, Rahul Tudu
 ===================================================================================================
 
 C# Grammar Specification
 ---------------------------------------------------------------------------------------------------
-C# Grammar Specification can be seen here:
-https://slps.github.io/zoo/cs/csharp-msft-ls-4.0.html
-Source used for this grammar: Microsoft, C# Language Specification, Version 4.0, 2010.
+https://msdn.microsoft.com/en-in/library/aa664812(v=vs.71).aspx
+We have done some modifications in the grammar to resolve conflicts and to simplify the 
+implementation.
 
-
-Unsupported Features
+Description of Component Files
 ---------------------------------------------------------------------------------------------------
-As of now, following features of the C# Language are not implemented in the parser. These features 
-might be included in the future versions.
+parser.py > Parser for language to be compiled. It uses PLY and hence yacc implementation.
+lexer.py > Lexer for language to be compiled. It uses PLY and hence lex implementation.
+parser > Shell script to parse given test file and generate html output via html.cpp.
+html.cpp > Code for generating html output. Invoked by parser shell script.
+
+Commands to be executed
+---------------------------------------------------------------------------------------------------
+$ cd asgn3/
+$ make
+$ bin/parser test/test1.cs
+
+Note : The last command also opens the html file in the default web browser.
+
+Description of intermediate files
+---------------------------------------------------------------------------------------------------
+output.txt > Stores the yacc output.
+for_tree.txt > Stores the reduction rules used by the parser (extracted from output.txt).
+parser.txt > Stores the reverse of parser.txt. Essentially gives rightmost derivations in order.
+out.txt > Stores sentential forms for each step in the derivation.
+
+Output files
+---------------------------------------------------------------------------------------------------
+right_derivation.html > The html file that contains the derivation represented by sentential forms with colour for the non-terminal being expanded in the next step.
+
+Implementation Details
+---------------------------------------------------------------------------------------------------
+We have tried to include most of the feature of the C# language in this version of the parser. However, to avoid grammar conflicts and simplify the implementation, we had to leave out some of the features of the language. As of now, following features of the C# Language are NOT implemented in the parser. These features might be included in the future versions.
+
 1.	Query related rules
 2.	From, Where clauses
 3.	Orderings
 4.	Attributes
 5.	Extern Alias Directives
 6.	Positional Arguments
-7.	Checked/Unchecked Expressions
-8.	Anonymous Function Parameter Modifiers (REF/OUT)
-9.	Labeled Statements
-10.	Foreach Statement
-11.	Throw Statement
-12.	Try/Catch Statements
-13.	Resource Acquisition (using())
-14.	Yeild Statements
-15.	Using Alias Directives
-16.	Qualified Alias Member
-17.	Interfaces
-18.	Variance Annotation
-19.	Constraints
-20.	Null Coalescing Expression
-21.	Operator Overloading
-22.	Null Assignments
-23.	Indexers
-24.	Events
-25.	Properties
+7.	Anonymous Function Parameter Modifiers (REF/OUT)
+8.	Yeild Statements
+9.	Qualified Alias Member
+10.	Interfaces
+11.	Variance Annotation
+12.	Constraints
+13.	Null Coalescing Expression
+14.	Null Assignments
+15.	Indexers
+16.	Events
+17.	Properties
+
+***************************************************************
+This does not affect the very functionality of the Language
+***************************************************************

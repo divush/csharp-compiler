@@ -1,4 +1,4 @@
 #!/bin/bash
-python3 ./parser.py
-./make_html 2> index.html
-xdg-open index.html
+python3 bin/parser.py $1 2> output.txt
+./bin/make_html
+xdg-open right_derivation.html
