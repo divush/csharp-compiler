@@ -6,16 +6,13 @@ import ply.lex as lex
 
 # THE LIST OF RESERVED KEYWORDS IN C# 
 reserved = {
-	'abstract' : 'ABSTRACT',
 	'break' : 'BREAK',
 	'char' : 'CHAR',
 	'continue' : 'CONTINUE',
 	'do' : 'DO',
-	'internal' : 'INTERNAL',
+	'interface' : 'INTERFACE',
 	'namespace' : 'NAMESPACE',
 	'params' : 'PARAMS',
-	'readonly' : 'READONLY',
-	'sealed' : 'SEALED',
 	'static' : 'STATIC',
 	'this' : 'THIS',
 	'typeof' : 'TYPEOF',
@@ -27,12 +24,10 @@ reserved = {
 	'goto' : 'GOTO',
 	'is' : 'IS',
 	'new' : 'NEW',
-	'private' : 'PRIVATE',
 	'short' : 'SHORT',
 	'string' : 'STRING',
 	'uint' : 'UINT',
 	'ushort' : 'USHORT',
-	'volatile' : 'VOLATILE',
 	'base' : 'BASE',
 	'case' : 'CASE',
 	'class' : 'CLASS',
@@ -42,7 +37,6 @@ reserved = {
 	'float' : 'FLOAT',
 	'if' : 'IF',
 	'int' : 'INT',
-	'protected' : 'PROTECTED',
 	'return' : 'RETURN',
 	'struct' : 'STRUCT',
 	'ulong' : 'ULONG',
@@ -55,11 +49,8 @@ reserved = {
 	'for' : 'FOR',
 	'long' : 'LONG',
 	'object' : 'OBJECT',
-	'override' : 'OVERRIDE',
-	'public' : 'PUBLIC',
 	'sbyte' : 'SBYTE',
-	'switch' : 'SWITCH',
-	'virtual' : 'VIRTUAL'
+	'switch' : 'SWITCH'
 }
 
 # THE LIST OF TOKENS
