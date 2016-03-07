@@ -91,9 +91,14 @@ def p_class_type(p):
 					| STRING
 	"""
 def p_pointer_type(p):
-	"""pointer_type : type TIMES
-		| VOID TIMES
+	"""pointer_type : type dereferencer
+		| VOID dereferencer
 	"""
+
+def p_dereferencer(p):
+	"""dereferencer : TIMES
+	"""
+
 def p_array_type(p):
 	"""array_type : array_type rank_specifier
 		| simple_type rank_specifier
@@ -266,7 +271,7 @@ def p_type_quals(p):
 	"""
 def p_type_qual (p):
 	"""type_qual  : rank_specifier 
-		| TIMES
+		| dereferencer
 	"""
 def p_multiplicative_expression(p):
 	"""multiplicative_expression : unary_expression

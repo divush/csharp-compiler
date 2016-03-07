@@ -9,4 +9,4 @@ all:
 
 clean:
 	rm -r bin/
-	rm for_tree.txt output.txt out.txt parser.out parser.txt parsetab.py right_derivation.html
+	rm for_tree.txt output.txt out.txt parser.out parser.txt parsetab.py right_derivation.html errors.txt

@@ -4,6 +4,7 @@
 #include<fstream>
 #include<stdlib.h>
 #include<vector>
+#include<stack>
 using namespace std;
 
 struct node
@@ -37,6 +38,37 @@ int main()
             if(word[length-1] == ']')
             {
                 outfile<<"\n";
+                if((word.substr(0,word.length()-1) == "IDENTIFIER"))
+                {
+                    infile>>word;
+                    infile>>word;
+                    string ch1;
+                    ch1 = word[1];
+                    if(ch1=="\'")
+                    {
+                    outfile<<"_[IDENTIFIER -> ";
+                    word = word.substr(2,word.length()-4);
+                    outfile<<word<<"]\n";
+                    }
+                    break;
+                }
+
+                if((word.substr(0,word.length()-1) == "INTCONST"))
+                {
+                    string ch2;
+                    infile>>word;
+                    infile>>word;
+                    ch2 = word[1];
+                    if(ch2=="\'")
+                    {
+                    outfile<<"_[INTCONST -> ";
+                    word = word.substr(2,word.length()-4);
+                    outfile<<word<<"]\n";
+                    }
+                    break;
+
+
+                }
                 break;
             }
             }
@@ -54,8 +86,11 @@ int main()
     outfile.open("parser.txt",ios_base::out);
 
     string a[100000];
+    stack<int> A;
+    int count_ = 0;
     string str ="";
     int i = 0;
+    int line_no = 1;
     while(infile>>word)
     {
         int length = word.length();
@@ -76,6 +111,14 @@ int main()
             str = word;
             continue;
         }
+        if(word[0] == '_')
+        {
+            word = word.substr(2,length - 2);
+            str = word;
+            count_++;
+            A.push(i);
+            continue;
+        }
 
         else
         {
@@ -84,16 +127,32 @@ int main()
 
 
     }
-
-
-
-
     infile.close();
+
     int j;
+    line_no = A.top();
+    A.pop();
+    for(j=i-1;j>=0;j--)
+    {
+           if(j==line_no)
+           {
+               string temp;
+               temp = a[j];
+               a[j] = a[j-1];
+               a[j-1] = temp;
+               if(!A.empty())
+               {
+               line_no = A.top();
+               A.pop();
+               }
+           }
+    }
+
     for(j=i-1;j>=0;j--)
     {
            outfile<<a[j]<<"\n";
     }
+
     outfile.close();
 
    infile.open("parser.txt",ios_base::in);

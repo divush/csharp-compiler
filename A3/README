@@ -56,6 +56,7 @@ We have tried to include most of the feature of the C# language in this version 
 15.	Indexers
 16.	Events
 17.	Properties
+18. Preprocessor directives
 
 ***************************************************************
 This does not affect the very functionality of the Language
