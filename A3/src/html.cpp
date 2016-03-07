@@ -25,6 +25,11 @@ int main()
     string word;
     while (infile >> word)
     {
+        if(word == "Error")
+        {
+            outfile<<"[Error -> Error]\n";
+            continue;
+        }
         if(word == "Reduce")
     {
         infile>>word;
@@ -95,6 +100,7 @@ int main()
     {
         int length = word.length();
 
+
         if(word[length - 1] == ']')
         {
             word = word.substr(0,length);
@@ -147,13 +153,20 @@ int main()
                }
            }
     }
-
+    int yes = 0;
     for(j=i-1;j>=0;j--)
     {
+
            outfile<<a[j]<<"\n";
+           if(a[j] == "Error -> Error]")
+           {
+               yes = 1;
+               break;
+           }
     }
 
     outfile.close();
+
 
    infile.open("parser.txt",ios_base::in);
    outfile.open("out.txt",ios_base::out);
@@ -313,6 +326,20 @@ int main()
        }
 
 
+   }
+   if(yes == 1)
+   {
+       fstream file;
+       file.open("errors.txt",ios_base::in);
+       string wor;
+       string final_ ="";
+       out_html<<"<font size = \"4\" face = \"DotumChe\"";
+       out_html<<"style=\"color:red;\">";
+       while(file>>wor)
+       {
+           out_html<<wor<<"&nbsp";
+       }
+       out_html<<"</font>\n";
    }
    out_html<<"</center>\n";
    out_html<<"</body>";
