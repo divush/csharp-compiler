@@ -42,15 +42,22 @@ def setregister(register, content):
 	registers[register] = content
 
 # getreg function... return register for the variable. spilling implemented here.
-def getReg(variable, instrno):
+def getReg(variable, instrno, assembly):
 	#instrno is the line number!
 	if variable in registers.values():
 		for x in registers.keys():
 			if registers[x] == variable:
-				return x
+				#assembly = assembly + 'case1' + str(registers) + '\n'
+				return x, assembly
 	for x in registers.keys():
 		if registers[x] == None:
-			return x
+			#assembly = assembly + 'case2\n'
+			#print("calling setregister")
+			#print(registers)
+			setregister(x, variable)
+			#print(registers)
+			setlocation(variable, x)
+			return x, assembly
 	instrvardict = nextuseTable[instrno - 1]
 	farthestnextuse = max(instrvardict.keys())
 	for var in instrvardict:
@@ -62,8 +69,8 @@ def getReg(variable, instrno):
 			break;
 	#regspill contais register to be spilled!!
 	assembly = assembly + "movl " + regspill + ", " + var + "\n"
-
-	return regspill
+	#assembly = assembly + 'case3\n'
+	return regspill, assembly
 
 # Returns the location of the variable from the addrss descriptor table
 def getlocation(variable):
@@ -92,14 +99,14 @@ def translate(instruction):
 		if operator == '+':
 			if isnumber(operand1) and isnumber(operand2):
 				# Get the register to store the result
-				regdest = getReg(result, line)
+				regdest, assembly = getReg(result, line, assembly)
 				assembly = assembly + "movl $" + str(int(operand1)+int(operand2)) + ", " + regdest + "\n"
 				# Update the address descriptor entry for result variable to say where it is stored no
 				setregister(regdest, result)
 				setlocation(result, regdest)
 			elif isnumber(operand1) and not isnumber(operand2):
 				# Get the register to store the result
-				regdest = getReg(result, line)
+				regdest, assembly = getReg(result, line, assembly)
 				loc2 = getlocation(operand2)
 				# Move the first operand to the destination register
 				assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
@@ -111,7 +118,7 @@ def translate(instruction):
 				setlocation(result, regdest)				
 			elif not isnumber(operand1) and isnumber(operand2):
 				# Get the register to store the result
-				regdest = getReg(result, line)
+				regdest, assembly = getReg(result, line, assembly)
 				loc1 = getlocation(operand1)
 				# Move the first operand to the destination register
 				assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
@@ -124,7 +131,7 @@ def translate(instruction):
 				setlocation(result, regdest)				
 			elif not isnumber(operand1) and not isnumber(operand2):
 				# Get the register to store the result
-				regdest = getReg(result, line)
+				regdest, assembly = getReg(result, line, assembly)
 				# Get the locations of the operands
 				loc1 = getlocation(operand1)
 				loc2 = getlocation(operand2)
@@ -149,14 +156,14 @@ def translate(instruction):
 		elif operator == '-':
 			if isnumber(operand1) and isnumber(operand2):
 				# Get the register to store the result
-				regdest = getReg(result, line)
+				regdest, assembly = getReg(result, line, assembly)
 				assembly = assembly + "movl $" + str(int(operand2)-int(operand1)) + ", " + regdest + "\n"
 				# Update the address descriptor entry for result variable to say where it is stored no
 				setregister(regdest, result)
 				setlocation(result, regdest)
 			elif isnumber(operand1) and not isnumber(operand2):
 				# Get the register to store the result
-				regdest = getReg(result, line)
+				regdest, assembly = getReg(result, line, assembly)
 				loc2 = getlocation(operand2)
 				# Move the first operand to the destination register
 				if loc2 != "mem":
@@ -168,7 +175,7 @@ def translate(instruction):
 				setlocation(result, regdest)				
 			elif not isnumber(operand1) and isnumber(operand2):
 				# Get the register to store the result
-				regdest = getReg(result, line)
+				regdest, assembly = getReg(result, line, assembly)
 				loc1 = getlocation(operand1)
 				# Move the first operand to the destination register
 				assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
@@ -181,7 +188,7 @@ def translate(instruction):
 				setlocation(result, regdest)				
 			elif not isnumber(operand1) and not isnumber(operand2):
 				# Get the register to store the result
-				regdest = getReg(result, line)
+				regdest, assembly = getReg(result, line, assembly)
 				# Get the locations of the operands
 				loc1 = getlocation(operand1)
 				loc2 = getlocation(operand2)
@@ -350,7 +357,7 @@ def translate(instruction):
 			loc1 = getlocation(operand1)
 			loc2 = getlocation(operand2)
 			#Get the register for comparing the operands
-			reg1 = getReg(operand1, line)
+			reg1, assembly = getReg(operand1, line, assembly)
 			#generating assembly instructions
 			if loc1 != "mem":
 				assembly = assembly + "movl " + loc1 + ", " + reg1 + "\n"
@@ -451,14 +458,14 @@ def translate(instruction):
 			# If both the source and the destination reside in the memory
 			loc2 = getlocation(source)
 			if loc1 == "mem" and loc2 == "mem":				
-				regdest = getReg(destination, line)
+				regdest, assembly = getReg(destination, line, assembly)
 				assembly = assembly + "movl " + source + ", " + regdest + "\n"
 				# Update the address descriptor entry for result variable to say where it is stored no
 				setregister(regdest, destination)
 				setlocation(destination, regdest)			
 			# If the source is in a register
 			elif loc1 == "mem" and loc2 != "mem":
-				regdest = getReg(destination, line)
+				regdest, assembly = getReg(destination, line, assembly)
 				assembly = assembly + "movl " + loc2 + ", " + regdest + "\n"
 				# Update the address descriptor entry for result variable to say where it is stored no
 				setregister(regdest, destination)
@@ -528,6 +535,8 @@ for i in range(len(instrlist)):
 	elif 'label' in instrlist[i]:
 		leaders.append(int(instrlist[i][0]))
 leaders = list(set(leaders))
+#print(len(leaders))
+#print(leaders)
 leaders.sort()
 
 # Constructing the Basic Blocks as nodes

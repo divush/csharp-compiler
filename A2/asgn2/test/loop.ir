@@ -1,0 +1,16 @@
+1, =, res, 0
+2, =, i, 0
+3, goto, 14
+4, =, j, 0
+5, goto, 12
+6, =, k, 0
+7, goto, 10
+8, +, res, res, 1
+9, +, k, k, 1
+10, ifgoto, <=, k, 2, 8
+11, +, j, j, 1
+12, ifgoto, <=, j, 2, 6
+13, +, i, i, 1
+14, ifgoto, <=, i, 2, 4
+15, print, res
+16, exit

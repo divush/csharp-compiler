@@ -1,0 +1,9 @@
+1, =, i, 2
+2, =, j, 2
+3, ifgoto, ==, i, 0, 7
+4, -, k, i, j
+5, print, k
+6, goto, 9
+7, +, k, i, j
+8, print, k
+9, exit

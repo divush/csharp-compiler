@@ -1,0 +1,13 @@
+1, =, g, 5
+2, call, myfunc
+3, function, myfunc
+4, =, g.0, g
+5, ifgoto, ==, g.0, 0, 7
+6, ifgoto, !=, g.0, 0, 8 
+7, exit
+8, =, g.1, g
+9, print, g
+10, =, g.2, g
+11, -, g.3, 1, g.2
+12, =, g, g.3
+13, call, myfunc

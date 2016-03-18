@@ -2,7 +2,7 @@
 2, =, b, 7
 3, +, a, a, b
 4, ifgoto, <=, a, 50, 2
-5, call, foo
+5, print, a
 6, exit
 7, function, foo
 8, /, a, a, b
