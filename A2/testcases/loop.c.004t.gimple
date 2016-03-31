@@ -1,0 +1,36 @@
+main ()
+{
+  const char * restrict D.2055;
+  int i;
+  int j;
+  int k;
+  int res;
+
+  res = 0;
+  i = 0;
+  goto <D.2052>;
+  <D.2051>:
+  j = 0;
+  goto <D.2049>;
+  <D.2048>:
+  k = 0;
+  goto <D.2046>;
+  <D.2045>:
+  res = res + 1;
+  k = k + 1;
+  <D.2046>:
+  if (k <= 9) goto <D.2045>; else goto <D.2047>;
+  <D.2047>:
+  j = j + 1;
+  <D.2049>:
+  if (j <= 9) goto <D.2048>; else goto <D.2050>;
+  <D.2050>:
+  i = i + 1;
+  <D.2052>:
+  if (i <= 9) goto <D.2051>; else goto <D.2053>;
+  <D.2053>:
+  D.2055 = (const char * restrict) &"res = %d\n"[0];
+  printf (D.2055, res);
+}
+
+

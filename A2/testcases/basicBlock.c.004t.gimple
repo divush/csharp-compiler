@@ -1,0 +1,30 @@
+main ()
+{
+  int D.1730;
+  int D.1731;
+  int D.1732;
+  int D.1733;
+  int D.1734;
+  int a;
+  int b;
+  int c;
+  int d;
+  int eval;
+  extern int printf (const char *, ...);
+
+  a = 0;
+  b = 10;
+  c = 20;
+  d = 40;
+  D.1730 = b / a;
+  D.1731 = D.1730 + a;
+  D.1732 = d * 2;
+  eval = D.1731 + D.1732;
+  D.1733 = c * d;
+  eval = D.1733 + eval;
+  printf ("%d", eval);
+  D.1734 = 0;
+  return D.1734;
+}
+
+

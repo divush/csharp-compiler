@@ -1,0 +1,38 @@
+main ()
+{
+  int D.1732;
+  int D.1736;
+  int i;
+  int j;
+  int sum;
+  extern int printf (const char *, ...);
+
+  j = 1;
+  sum = 0;
+  i = 0;
+  j = 1;
+  goto <D.1728>;
+  <D.1727>:
+  {
+    extern int printf (const char *, ...);
+
+    D.1732 = j % 10;
+    if (D.1732 == 0) goto <D.1733>; else goto <D.1734>;
+    <D.1733>:
+    printf ("%d", j);
+    goto <D.1735>;
+    <D.1734>:
+    sum = sum + i;
+    <D.1735>:
+  }
+  i = i + 1;
+  j = i * 2;
+  <D.1728>:
+  if (i <= 99) goto <D.1727>; else goto <D.1729>;
+  <D.1729>:
+  printf ("%d", sum);
+  D.1736 = 0;
+  return D.1736;
+}
+
+

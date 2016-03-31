@@ -1,0 +1,25 @@
+1, =, j, 1
+2, =, sum, 0
+3, =, i, 0
+4, =, j, 1
+5, goto, 19
+6, label, D.1727
+7, %, D.1732, j, 10
+8, ifgoto, == D.1732, 0, 10
+9, ifgoto, !=, D.1732, 0, 13
+10, label, D.1733
+11, print, j
+12, goto, 15
+13, label, D.1734
+14, +, sum, sum, i
+15, label, D.1735
+16, label, D.temp1
+17, +, i, i, 1
+18, *, j, i, 2
+19, label, D.1728
+20, ifgoto, <=, i, 99, 6
+21, ifgoto, >, i, 99, 22
+22, label, D.1729
+23, print, sum
+24, =, D.1736, 0
+25, return, D.1736
