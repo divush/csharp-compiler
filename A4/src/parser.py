@@ -47,8 +47,8 @@ class symbol_table:
 	def __init__(self, reserved):
 		self.table.fromkeys(list(reserved.keys()))
 
-	def Insert(ident,scope):
-		self.table[ident] = scope
+	def Insert(ident, vartype, scope):
+		self.table[ident] = [vartype, scope]
 		pass
 
 	def Lookup(ident):
@@ -57,7 +57,7 @@ class symbol_table:
 		else:
 			return None
 
-# C.2 Syntactic grammar 
+symtab = symbol_table() 
 
 # C.2.1 Basic concepts 
 def p_namespace_name(p):
@@ -122,7 +122,7 @@ def p_pointer_type(p):
 	"""pointer_type : type dereferencer
 		| VOID dereferencer
 	"""
-	
+
 def p_dereferencer(p):
 	"""dereferencer : TIMES
 	"""
@@ -402,6 +402,7 @@ def p_expression(p):
 		| lambda_expression
 		| assignment
 	"""
+
 def p_constant_expression(p):
 	"""constant_expression : expression
 	"""
@@ -414,6 +415,7 @@ def p_statement(p):
 		| declaration_statement
 		| embedded_statement
 	"""
+	p[0] = p[1]
 def p_embedded_statement(p):
 	"""embedded_statement : block
 		| empty_statement
@@ -444,6 +446,8 @@ def p_statement_list(p):
 def p_empty_statement(p):
 	"""empty_statement : STMT_TERMINATOR
 	"""
+	p[0] = p[1]
+
 def p_labeled_statement(p):
 	"""labeled_statement : IDENTIFIER COLON statement
 	"""
