@@ -308,16 +308,42 @@ def p_multiplicative_expression(p):
 		| multiplicative_expression DIVIDE unary_expression
 		| multiplicative_expression MOD unary_expression
 	"""
+	if len(p) == 2:
+		p[0] = p[1]
+	elif len(p) == 4:
+		if p[2] == "TIMES":
+			p[0] = p[1] * p[3]
+		elif p[2] == "DIVIDE":
+			p[0] = p[1] / p[3]
+		elif p[2] == "MOD":
+			p[0] = p[1] % p[3]
+
 def p_additive_expression(p):
 	"""additive_expression : multiplicative_expression
 		| additive_expression PLUS multiplicative_expression
 		| additive_expression MINUS multiplicative_expression
 	"""
+	if len(p) == 2:
+		p[0] = p[1]
+	elif len(p) == 4:
+		if p[2] == "PLUS":
+			p[0] = p[1] + p[3]
+		elif p[2] == "MINUS":
+			p[0] = p[1] - p[3]
+
 def p_shift_expression(p):
 	"""shift_expression : additive_expression 
 		| shift_expression LSHIFT additive_expression
 		| shift_expression RSHIFT additive_expression
 	"""
+	if len(p) == 2:
+		p[0] = p[1]
+	elif len(p) == 4:
+		if p[2] == "LSHIFT":
+			p[0] = p[1] << p[3]
+		elif p[2] == "RSHIFT":
+			p[0] = p[1] >> p[3]
+
 def p_relational_expression(p):
 	"""relational_expression : shift_expression
 		| relational_expression LT shift_expression
