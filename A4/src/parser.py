@@ -63,32 +63,39 @@ class symbol_table:
 def p_namespace_name(p):
 	"""namespace_name : qualified_identifier
 	"""
+	p[0] = p[1]
 def p_type_name(p):
 	"""type_name : qualified_identifier
 	"""
+	p[0] = p[1]
 # C.2.2 Types 
 def p_type(p):
 	"""type : non_array_type
 		| array_type
 	"""
+	p[0] = p[1]
 def p_non_array_type(p):
 	"""non_array_type : simple_type
 		| type_name
 	"""
+	p[0] = p[1]
 def p_simple_type(p):
 	"""simple_type : primitive_type
 		| class_type
 		| pointer_type
 	"""
+	p[0] = p[1]
 def p_primitive_type(p):
 	"""primitive_type : numeric_type
 		| BOOL
 	"""
+	p[0] = p[1]
 def p_numeric_type(p):
 	"""numeric_type : integral_type
 		| floating_point_type
 		| DECIMAL
 	"""
+	p[0] = p[1]
 def p_integral_type(p):
 	"""integral_type : SBYTE 
 					| BYTE 
@@ -100,19 +107,22 @@ def p_integral_type(p):
 					| ULONG 
 					| CHAR
 	"""
+	p[0] = p[1]
 def p_floating_point_type(p):
 	"""floating_point_type : FLOAT 
 						| DOUBLE
 	"""
+	p[0] = p[1]
 def p_class_type(p):
 	"""class_type : OBJECT 
 					| STRING
 	"""
+	p[0] = p[1]
 def p_pointer_type(p):
 	"""pointer_type : type dereferencer
 		| VOID dereferencer
 	"""
-
+	
 def p_dereferencer(p):
 	"""dereferencer : TIMES
 	"""
