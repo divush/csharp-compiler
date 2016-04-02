@@ -122,7 +122,7 @@ def p_pointer_type(p):
 	"""pointer_type : type dereferencer
 		| VOID dereferencer
 	"""
-	
+	p[0] = pointer(p[1])
 def p_dereferencer(p):
 	"""dereferencer : TIMES
 	"""
@@ -132,6 +132,7 @@ def p_array_type(p):
 		| simple_type rank_specifier
 		| qualified_identifier rank_specifier
 	"""
+
 def p_rank_specifier(p):
 	"""rank_specifier : LBRACKET dim_separators_opt RBRACKET
 	"""
@@ -656,6 +657,7 @@ def p_compilation_unit(p):
 	"""compilation_unit : using_directives_opt
 		| using_directives_opt namespace_member_declarations
 	"""
+
 def p_using_directives_opt(p):
 	"""using_directives_opt : empty 
 		| using_directives
