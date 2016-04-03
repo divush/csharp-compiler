@@ -122,27 +122,35 @@ def p_pointer_type(p):
 	"""pointer_type : type dereferencer
 		| VOID dereferencer
 	"""
-	# 
+	p[0] = pointer(p[1]) 
 def p_dereferencer(p):
 	"""dereferencer : TIMES
 	"""
 
+# This constructs a new 'array data type'
 def p_array_type(p):
 	"""array_type : array_type rank_specifier
 		| simple_type rank_specifier
 		| qualified_identifier rank_specifier
 	"""
-
+	# p[1] is the type of array elements and p[2] gives the length of the array type
+	p[0] = create_array_type(p[1], p[2])
 def p_rank_specifier(p):
 	"""rank_specifier : LBRACKET dim_separators_opt RBRACKET
 	"""
+	p[0] = p[2]
 def p_dim_separators_opt(p): 
 	"""dim_separators_opt : empty 
-			| dim_separators""" 
+			| dim_separators"""
+	p[0] = p[1] 
 def p_dim_separators(p):
 	"""dim_separators : COMMA
 				| dim_separators COMMA
 	"""
+	if len(p) == 2:
+		p[0] = 1
+	else:
+		p[0] = p[1] + 1
 
 # C.2.3 Variables 
 def p_variable_reference(p):
