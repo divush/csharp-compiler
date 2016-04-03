@@ -127,6 +127,10 @@ def t_NEWLINE(t):
 	r'\n+'
 	t.lexer.lineno += len(t.value)
 
+def find_tok_column(t):
+    last_cr = lexer.lexdata.rfind('\n', 0, token.lexpos)
+    return token.lexpos - last_cr
+
 # Operators
 t_MEMBERACCESS		= r'\.'
 t_CONDMEMBACCESS	= r'\?\.'

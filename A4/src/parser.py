@@ -507,13 +507,9 @@ def p_embedded_statement(p):
 		| selection_statement
 		| iteration_statement
 		| jump_statement
-		| try_statement
 		| checked_statement
 		| unchecked_statement
-		| lock_statement
-		| using_statement
 		| unsafe_statement
-		| fixed_statement
 	"""
 	p[0] = p[1]
 def p_block(p):
@@ -548,18 +544,16 @@ def p_declaration_statement(p):
 	"""declaration_statement : local_variable_declaration STMT_TERMINATOR
 		| local_constant_declaration STMT_TERMINATOR
 	"""
-
+	p[0] = p[1]
 def p_local_variable_declaration(p):
 	"""local_variable_declaration : type variable_declarators
 	"""
+
 def p_variable_declarators(p):
 	"""variable_declarators : variable_declarator
 		| variable_declarators COMMA variable_declarator
 	"""
-	if len(p) == 2:
-		p[0] = [p[1]]
-	else:
-		p[0] = p[1].append(p[3])
+
 def p_variable_declarator(p):
 	"""variable_declarator : IDENTIFIER
 		| IDENTIFIER EQUALS variable_initializer
@@ -567,23 +561,18 @@ def p_variable_declarator(p):
 def p_variable_initializer(p):
 	"""variable_initializer : expression
 		| array_initializer
-		| stackalloc_initializer
 	"""
 	p[0] = p[1]
-def p_stackalloc_initializer(p):
-	"""stackalloc_initializer : STACKALLOC type LBRACKET expression RBRACKET
-	""" 
+
 def p_local_constant_declaration(p):
 	"""local_constant_declaration : CONST type constant_declarators
 	"""
+
 def p_constant_declarators(p):
 	"""constant_declarators : constant_declarator
 		| constant_declarators COMMA constant_declarator
 	"""
-	if len(p) == 2:
-		p[0] = [p[1]]
-	else:
-		p[0] = p[1].append(p[3])	
+	
 def p_constant_declarator(p):
 	"""constant_declarator : IDENTIFIER EQUALS constant_expression
 	"""
@@ -610,12 +599,18 @@ def p_if_statement(p):
 	"""if_statement : IF LPAREN boolean_expression RPAREN embedded_statement
 		| IF LPAREN boolean_expression RPAREN embedded_statement ELSE embedded_statement
 	"""
+	if len(p) == 6:
+		p[0] = create_if_statement(p[3], p[5])
+	else:
+		p[0] = create_if_else_statement(p[3], p[5], p[7])
 def p_switch_statement(p):
 	"""switch_statement : SWITCH LPAREN expression RPAREN switch_block
 	"""
+	p[0] = create_switch_statement(p[3], p[5])
 def p_switch_block(p):
 	"""switch_block : LBRACE switch_sections_opt RBRACE
 	"""
+	p[0] = p[2]
 def p_switch_sections_opt(p):
 	"""switch_sections_opt : empty 
 		| switch_sections
@@ -632,6 +627,7 @@ def p_switch_sections(p):
 def p_switch_section(p):
 	"""switch_section : switch_labels statement_list
 	"""
+	p[0] = create_switch_section(p[1], p[2])
 def p_switch_labels(p):
 	"""switch_labels : switch_label
 		| switch_labels switch_label
@@ -644,11 +640,13 @@ def p_switch_label(p):
 	"""switch_label : CASE constant_expression COLON
 		| DEFAULT COLON
 	"""
+	if len(p) == 4:
+		p[0] = p[2]
+	else:
+		p[0] = p[1]
 def p_iteration_statement(p):
 	"""iteration_statement : while_statement
-		| do_statement
 		| for_statement
-		| foreach_statement
 	"""
 	p[0] = p[1]
 def p_unsafe_statement(p):
@@ -658,12 +656,11 @@ def p_unsafe_statement(p):
 def p_while_statement(p):
 	"""while_statement : WHILE LPAREN boolean_expression RPAREN embedded_statement
 	"""
-def p_do_statement(p):
-	"""do_statement : DO embedded_statement WHILE LPAREN boolean_expression RPAREN STMT_TERMINATOR
-	"""
+	p[0] = create_while_statement(p[3], p[5])
 def p_for_statement(p):
 	"""for_statement : FOR LPAREN for_initializer_opt STMT_TERMINATOR for_condition_opt STMT_TERMINATOR for_iterator_opt RPAREN embedded_statement
 	"""
+	p[0] = create_for_statement(p[3], p[5], p[7], p[9])
 def p_for_initializer_opt(p):
 	"""for_initializer_opt : empty 
 		| for_initializer
@@ -700,13 +697,10 @@ def p_statement_expression_list(p):
 		p[0] = [p[1]]
 	else:
 		p[0] = p[1].append(p[3])
-def p_foreach_statement(p):
-	"""foreach_statement : FOREACH LPAREN type IDENTIFIER IN expression RPAREN embedded_statement
-	"""
+
 def p_jump_statement(p):
 	"""jump_statement : break_statement
 		| continue_statement
-		| goto_statement
 		| return_statement
 		| throw_statement
 	"""
@@ -714,17 +708,16 @@ def p_jump_statement(p):
 def p_break_statement(p):
 	"""break_statement : BREAK STMT_TERMINATOR
 	"""
+	p[0] = p[1]
 def p_continue_statement(p):
 	"""continue_statement : CONTINUE STMT_TERMINATOR
 	"""
-def p_goto_statement(p):
-	"""goto_statement : GOTO IDENTIFIER STMT_TERMINATOR
-		| GOTO CASE constant_expression STMT_TERMINATOR
-		| GOTO DEFAULT STMT_TERMINATOR
-	"""
+	p[0] = p[1]
+
 def p_return_statement(p):
 	"""return_statement : RETURN expression_opt STMT_TERMINATOR
 	"""
+	p[0] = create_return_statement(p[2])
 def p_expression_opt(p):
 	"""expression_opt : empty 
 		| expression
@@ -733,73 +726,83 @@ def p_expression_opt(p):
 def p_throw_statement(p):
 	"""throw_statement : THROW expression_opt STMT_TERMINATOR
 	"""
-def p_try_statement(p):
-	"""try_statement : TRY block catch_clauses
-		| TRY block finally_clause
-		| TRY block catch_clauses finally_clause
-	"""
-def p_catch_clauses(p):
-	"""catch_clauses : catch_clause
-		| catch_clauses catch_clause
-	"""
-	if len(p) == 2:
-		p[0] = [p[1]]
-	else:
-		p[0] = p[1].append(p[2])
-def p_catch_clause(p):
-	"""catch_clause : CATCH LPAREN class_type identifier_opt RPAREN block
-		| CATCH LPAREN type_name identifier_opt RPAREN block
-		| CATCH block
-	"""
+	p[0] = create_throw_statement()
+
+# def p_try_statement(p):
+# 	"""try_statement : TRY block catch_clauses
+# 		| TRY block finally_clause
+# 		| TRY block catch_clauses finally_clause
+# 	"""
+# def p_catch_clauses(p):
+# 	"""catch_clauses : catch_clause
+# 		| catch_clauses catch_clause
+# 	"""
+# 	if len(p) == 2:
+# 		p[0] = [p[1]]
+# 	else:
+# 		p[0] = p[1].append(p[2])
+# def p_catch_clause(p):
+# 	"""catch_clause : CATCH LPAREN class_type identifier_opt RPAREN block
+# 		| CATCH LPAREN type_name identifier_opt RPAREN block
+# 		| CATCH block
+# 	"""
+
 def p_identifier_opt(p):
 	"""identifier_opt : empty 
 		| IDENTIFIER
 	"""
-def p_finally_clause(p):
-	"""finally_clause : FINALLY block
-	"""
+	p[0] = p[1]
+
+# def p_finally_clause(p):
+# 	"""finally_clause : FINALLY block
+# 	"""
 def p_checked_statement(p):
 	"""checked_statement : CHECKED block
 	"""
+	p[0] = p[2]
 def p_unchecked_statement(p):
 	"""unchecked_statement : UNCHECKED block
 	"""
-def p_lock_statement(p):
-	"""lock_statement : LOCK LPAREN expression RPAREN embedded_statement
-	"""
-def p_using_statement(p):
-	"""using_statement : USING LPAREN resource_acquisition RPAREN embedded_statement
-	"""
-def p_resource_acquisition(p):
-	"""resource_acquisition : local_variable_declaration
-		| expression
-	"""
-def p_fixed_statement(p):
-	"""fixed_statement : FIXED LPAREN	type fixed_pointer_declarators RPAREN embedded_statement
-	"""
-def p_fixed_pointer_declarators(p):
-	"""fixed_pointer_declarators : fixed_pointer_declarator
-		| fixed_pointer_declarators COMMA fixed_pointer_declarator
-	"""
-def p_fixed_pointer_declarator(p):
-	"""fixed_pointer_declarator : IDENTIFIER EQUALS expression
-	"""
+	p[0] = p[2]
+
+# def p_lock_statement(p):
+# 	"""lock_statement : LOCK LPAREN expression RPAREN embedded_statement
+# 	"""
+# def p_using_statement(p):
+# 	"""using_statement : USING LPAREN resource_acquisition RPAREN embedded_statement
+# 	"""
+# def p_resource_acquisition(p):
+# 	"""resource_acquisition : local_variable_declaration
+# 		| expression
+# 	"""
+# def p_fixed_statement(p):
+# 	"""fixed_statement : FIXED LPAREN	type fixed_pointer_declarators RPAREN embedded_statement
+# 	"""
+# def p_fixed_pointer_declarators(p):
+# 	"""fixed_pointer_declarators : fixed_pointer_declarator
+# 		| fixed_pointer_declarators COMMA fixed_pointer_declarator
+# 	"""
+# def p_fixed_pointer_declarator(p):
+# 	"""fixed_pointer_declarator : IDENTIFIER EQUALS expression
+# 	"""
 
 # Lambda Expressions
 def p_lambda_expression(p):
 	"""lambda_expression : explicit_anonymous_function_signature LAMBDADEC block
 						| explicit_anonymous_function_signature LAMBDADEC expression
 	"""
+	p[0] = create_lambda_expression(p[1], p[3])
 
-# Anonymous Method Expression
-def p_anonymous_method_expression(p):
-	"""anonymous_method_expression : DELEGATE explicit_anonymous_function_signature_opt block
-	"""
-def p_explicit_anonymous_function_signature_opt(p):
-	"""explicit_anonymous_function_signature_opt : explicit_anonymous_function_signature
-												| empty
-	"""
-	p[0] = p[1]
+# # Anonymous Method Expression
+# def p_anonymous_method_expression(p):
+# 	"""anonymous_method_expression : DELEGATE explicit_anonymous_function_signature_opt block
+# 	"""	
+# def p_explicit_anonymous_function_signature_opt(p):
+# 	"""explicit_anonymous_function_signature_opt : explicit_anonymous_function_signature
+# 												| empty
+# 	"""
+# 	p[0] = p[1]
+
 def p_explicit_anonymous_function_signature(p):
 	"""explicit_anonymous_function_signature : LPAREN explicit_anonymous_function_parameter_list_opt RPAREN
 	"""
@@ -820,16 +823,14 @@ def p_explicit_anonymous_function_parameter_list(p):
 def p_explicit_anonymous_function_parameter(p):
 	"""explicit_anonymous_function_parameter : type IDENTIFIER
 	"""	
-
+	p[0] = [p[1],p[2]]
+	
 # Compilation Unit
 def p_compilation_unit(p):
 	"""compilation_unit : using_directives_opt
 		| using_directives_opt namespace_member_declarations
 	"""
-	if len(p) == 2:
-		p[0] = astree(p[1])
-	elif len(p) == 3:
-		p[0] = astree(p[1].extend(p[2]))
+
 
 def p_using_directives_opt(p):
 	"""using_directives_opt : empty 
