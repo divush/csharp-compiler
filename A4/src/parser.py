@@ -122,6 +122,7 @@ def p_pointer_type(p):
 	"""pointer_type : type dereferencer
 		| VOID dereferencer
 	"""
+	# 
 def p_dereferencer(p):
 	"""dereferencer : TIMES
 	"""
@@ -147,21 +148,31 @@ def p_dim_separators(p):
 def p_variable_reference(p):
 	"""variable_reference : expression
 	"""
+	p[0] = p[1]
 # C.2.4 Expressions 
 def p_argument_list(p):
 	"""argument_list : argument
 		| argument_list COMMA argument
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[3])
 def p_argument(p):
 	"""argument : expression
 		| REF variable_reference
 		| OUT variable_reference
 	"""
+	if len(p) == 2:
+		p[0] = p[1]
+	else:
+		p[0] = p[2]
 def p_primary_expression(p):
 	"""primary_expression : parenthesized_expression
 		| primary_expression_no_parenthesis
 		| anonymous_method_expression
 	"""
+	p[0] = p[1]
 def p_primary_expression_no_parenthesis(p):
 	"""primary_expression_no_parenthesis : literal
 		| array_creation_expression
@@ -176,20 +187,24 @@ def p_primary_expression_no_parenthesis(p):
 		| checked_expression
 		| unchecked_expression
 	"""
+	p[0] = p[1]
 # Literal
 def p_literal(p):
 	"""literal : INTCONST
 				| STRCONST
 				| CHCONST
 	"""
+	p[0] = p[1].value
 def p_parenthesized_expression(p):
 	"""parenthesized_expression : LPAREN expression RPAREN
 	"""
+	p[0] = p[2]
 def p_member_access(p):
 	"""member_access : primary_expression MEMBERACCESS IDENTIFIER
 		| primitive_type MEMBERACCESS IDENTIFIER
 		| class_type MEMBERACCESS IDENTIFIER
 	"""
+
 def p_invocation_expression(p):
 	"""invocation_expression : primary_expression_no_parenthesis LPAREN argument_list_opt RPAREN
 		| qualified_identifier LPAREN argument_list_opt RPAREN
@@ -198,6 +213,7 @@ def p_argument_list_opt(p):
 	"""argument_list_opt : empty 
 		| argument_list
 	"""
+	p[0] = p[1]
 def p_element_access(p):
 	"""element_access : primary_expression LBRACKET expression_list RBRACKET
 		| qualified_identifier LBRACKET expression_list RBRACKET
@@ -206,6 +222,10 @@ def p_expression_list(p):
 	"""expression_list : expression
 		| expression_list COMMA expression
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[3])
 def p_this_access(p):
 	"""this_access : THIS
 	"""
@@ -222,6 +242,7 @@ def p_post_decrement_expression(p):
 def p_new_expression(p):
 	"""new_expression : object_creation_expression
 	"""
+	p[0] = p[1]
 def p_object_creation_expression(p):
 	"""object_creation_expression : NEW type LPAREN argument_list_opt RPAREN
 	"""
@@ -233,6 +254,7 @@ def p_array_initializer_opt(p):
 	"""array_initializer_opt : empty 
 		| array_initializer
 	"""
+	p[0] = p[1]
 def p_typeof_expression(p):
 	"""typeof_expression : TYPEOF LPAREN type RPAREN
 		| TYPEOF LPAREN VOID RPAREN
@@ -259,12 +281,14 @@ def p_postfix_expression(p):
 		| post_decrement_expression
 		| pointer_member_access
 	"""
+	p[0] = p[1]
 def p_unary_expression_not_plusminus(p):
 	"""unary_expression_not_plusminus : postfix_expression
 		| LNOT unary_expression
 		| NOT unary_expression
 		| cast_expression
 	"""
+	p[0] = p[1]
 def p_pre_increment_expression(p):
 	"""pre_increment_expression : INCREMENT unary_expression
 	"""
@@ -280,6 +304,7 @@ def p_unary_expression(p):
 		| pre_decrement_expression
 		| addressof_expression
 	"""
+	p[0] = p[1]
 
 def p_cast_expression(p):
 	"""cast_expression : LPAREN expression RPAREN unary_expression_not_plusminus
@@ -293,14 +318,20 @@ def p_type_quals_opt(p):
 	"""type_quals_opt : empty 
 		| type_quals
 	"""
+	p[0] = p[1]
 def p_type_quals(p):
 	"""type_quals : type_qual
 		| type_quals type_qual
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_type_qual (p):
 	"""type_qual  : rank_specifier 
 		| dereferencer
 	"""
+	p[0] = p[1]
 def p_multiplicative_expression(p):
 	"""multiplicative_expression : unary_expression
 		| multiplicative_expression TIMES unary_expression	
@@ -397,18 +428,21 @@ def p_assignment_operator(p):
 							| RSHIFTEQUAL
 							| LSHIFTEQUAL
 	"""
+	p[0] = p[1]
 def p_expression(p):
 	"""expression : conditional_expression
 		| lambda_expression
 		| assignment
 	"""
-
+	p[0] = p[1]
 def p_constant_expression(p):
 	"""constant_expression : expression
 	"""
+	p[0] = p[1]
 def p_boolean_expression(p):
 	"""boolean_expression : expression
 	"""
+	p[0] = p[1]
 # C.2.5 Statements 
 def p_statement(p):
 	"""statement : labeled_statement
@@ -431,18 +465,24 @@ def p_embedded_statement(p):
 		| unsafe_statement
 		| fixed_statement
 	"""
+	p[0] = p[1]
 def p_block(p):
 	"""block : LBRACE statement_list_opt RBRACE
 	"""
+	p[0] = p[2]
 def p_statement_list_opt(p):
 	"""statement_list_opt : empty 
 		| statement_list
 	"""
-
+	p[0] = p[1]
 def p_statement_list(p):
 	"""statement_list : statement
 		| statement_list statement
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_empty_statement(p):
 	"""empty_statement : STMT_TERMINATOR
 	"""
@@ -451,6 +491,7 @@ def p_empty_statement(p):
 def p_labeled_statement(p):
 	"""labeled_statement : IDENTIFIER COLON statement
 	"""
+
 def p_declaration_statement(p):
 	"""declaration_statement : local_variable_declaration STMT_TERMINATOR
 		| local_constant_declaration STMT_TERMINATOR
@@ -462,6 +503,10 @@ def p_variable_declarators(p):
 	"""variable_declarators : variable_declarator
 		| variable_declarators COMMA variable_declarator
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[3])
 def p_variable_declarator(p):
 	"""variable_declarator : IDENTIFIER
 		| IDENTIFIER EQUALS variable_initializer
@@ -471,6 +516,7 @@ def p_variable_initializer(p):
 		| array_initializer
 		| stackalloc_initializer
 	"""
+	p[0] = p[1]
 def p_stackalloc_initializer(p):
 	"""stackalloc_initializer : STACKALLOC type LBRACKET expression RBRACKET
 	""" 
@@ -481,12 +527,17 @@ def p_constant_declarators(p):
 	"""constant_declarators : constant_declarator
 		| constant_declarators COMMA constant_declarator
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[3])	
 def p_constant_declarator(p):
 	"""constant_declarator : IDENTIFIER EQUALS constant_expression
 	"""
 def p_expression_statement(p):
 	"""expression_statement : statement_expression STMT_TERMINATOR
 	"""
+	p[0] = p[1]
 def p_statement_expression(p):
 	"""statement_expression : invocation_expression
 		| object_creation_expression
@@ -496,10 +547,12 @@ def p_statement_expression(p):
 		| pre_increment_expression
 		| pre_decrement_expression
 	"""
+	p[0] = p[1]
 def p_selection_statement(p):
 	"""selection_statement : if_statement
 		| switch_statement
 	"""
+	p[0] = p[1]
 def p_if_statement(p):
 	"""if_statement : IF LPAREN boolean_expression RPAREN embedded_statement
 		| IF LPAREN boolean_expression RPAREN embedded_statement ELSE embedded_statement
@@ -514,10 +567,15 @@ def p_switch_sections_opt(p):
 	"""switch_sections_opt : empty 
 		| switch_sections
 	"""
+	p[0] = p[1]
 def p_switch_sections(p):
 	"""switch_sections : switch_section
 		| switch_sections switch_section
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_switch_section(p):
 	"""switch_section : switch_labels statement_list
 	"""
@@ -525,6 +583,10 @@ def p_switch_labels(p):
 	"""switch_labels : switch_label
 		| switch_labels switch_label
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_switch_label(p):
 	"""switch_label : CASE constant_expression COLON
 		| DEFAULT COLON
@@ -535,9 +597,11 @@ def p_iteration_statement(p):
 		| for_statement
 		| foreach_statement
 	"""
+	p[0] = p[1]
 def p_unsafe_statement(p):
 	"""unsafe_statement : UNSAFE block
 	"""
+	p[0] = p[1]
 def p_while_statement(p):
 	"""while_statement : WHILE LPAREN boolean_expression RPAREN embedded_statement
 	"""
@@ -551,28 +615,38 @@ def p_for_initializer_opt(p):
 	"""for_initializer_opt : empty 
 		| for_initializer
 	"""
+	p[0] = p[1]
 def p_for_condition_opt(p):
 	"""for_condition_opt : empty 
 		| for_condition
 	"""
+	p[0] = p[1]
 def p_for_iterator_opt(p):
 	"""for_iterator_opt : empty 
 		| for_iterator
 	"""
+	p[0] = p[1]
 def p_for_initializer(p):
 	"""for_initializer : local_variable_declaration
 		| statement_expression_list
 	"""
+	p[0] = p[1]
 def p_for_condition(p):
 	"""for_condition : boolean_expression
 	"""
+	p[0] = p[1]
 def p_for_iterator(p):
 	"""for_iterator : statement_expression_list
 	"""
+	p[0] = p[1]
 def p_statement_expression_list(p):
 	"""statement_expression_list : statement_expression
 		| statement_expression_list COMMA statement_expression
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[3])
 def p_foreach_statement(p):
 	"""foreach_statement : FOREACH LPAREN type IDENTIFIER IN expression RPAREN embedded_statement
 	"""
@@ -583,6 +657,7 @@ def p_jump_statement(p):
 		| return_statement
 		| throw_statement
 	"""
+	p[0] = p[1]
 def p_break_statement(p):
 	"""break_statement : BREAK STMT_TERMINATOR
 	"""
@@ -601,6 +676,7 @@ def p_expression_opt(p):
 	"""expression_opt : empty 
 		| expression
 	"""
+	p[0] = p[1]
 def p_throw_statement(p):
 	"""throw_statement : THROW expression_opt STMT_TERMINATOR
 	"""
@@ -613,6 +689,10 @@ def p_catch_clauses(p):
 	"""catch_clauses : catch_clause
 		| catch_clauses catch_clause
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_catch_clause(p):
 	"""catch_clause : CATCH LPAREN class_type identifier_opt RPAREN block
 		| CATCH LPAREN type_name identifier_opt RPAREN block
@@ -666,17 +746,24 @@ def p_explicit_anonymous_function_signature_opt(p):
 	"""explicit_anonymous_function_signature_opt : explicit_anonymous_function_signature
 												| empty
 	"""
+	p[0] = p[1]
 def p_explicit_anonymous_function_signature(p):
 	"""explicit_anonymous_function_signature : LPAREN explicit_anonymous_function_parameter_list_opt RPAREN
 	"""
+	p[0] = p[2]
 def p_explicit_anonymous_function_parameter_list_opt(p):
 	"""explicit_anonymous_function_parameter_list_opt : explicit_anonymous_function_parameter_list
 														| empty
 	"""
+	p[0] = p[1]
 def p_explicit_anonymous_function_parameter_list(p):
 	"""explicit_anonymous_function_parameter_list : explicit_anonymous_function_parameter
 													| explicit_anonymous_function_parameter_list COMMA explicit_anonymous_function_parameter
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_explicit_anonymous_function_parameter(p):
 	"""explicit_anonymous_function_parameter : type IDENTIFIER
 	"""	
@@ -686,18 +773,25 @@ def p_compilation_unit(p):
 	"""compilation_unit : using_directives_opt
 		| using_directives_opt namespace_member_declarations
 	"""
+	if len(p) == 2:
+		p[0] = astree(p[1])
+	elif len(p) == 3:
+		p[0] = astree(p[1].extend(p[2]))
 
 def p_using_directives_opt(p):
 	"""using_directives_opt : empty 
 		| using_directives
 	"""
+	p[0] = p[1]
 def p_namespace_member_declarations_opt(p):
 	"""namespace_member_declarations_opt : empty 
 		| namespace_member_declarations
 	"""
+	p[0] = p[1]
 def p_namespace_declaration(p):
 	"""namespace_declaration :  NAMESPACE qualified_identifier namespace_body comma_opt
 	"""
+
 def p_comma_opt(p):
 	"""comma_opt : empty 
 		| STMT_TERMINATOR
@@ -719,6 +813,10 @@ def p_using_directives(p):
 	"""using_directives : using_directive
 		| using_directives using_directive
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_using_directive(p):
 	"""using_directive : using_alias_directive
 		| using_namespace_directive
@@ -733,27 +831,37 @@ def p_namespace_member_declarations(p):
 	"""namespace_member_declarations : namespace_member_declaration
 		| namespace_member_declarations namespace_member_declaration
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_namespace_member_declaration(p):
 	"""namespace_member_declaration : namespace_declaration
 		| type_declaration
 	"""
+	p[0] = p[1]
 def p_type_declaration(p):
 	"""type_declaration : class_declaration
 		| struct_declaration
 		| enum_declaration
 		| delegate_declaration
 	"""
-
+	p[0] = p[1]
 # Modifiers
  
 def p_modifiers_opt(p):
 	"""modifiers_opt : empty 
 		| modifiers
 	"""
+	p[0] = p[1]
 def p_modifiers(p):
 	"""modifiers : modifier
 		| modifiers modifier
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_modifier(p):
 	"""modifier : ABSTRACT
 		| EXTERN
@@ -770,7 +878,7 @@ def p_modifier(p):
 		| VIRTUAL
 		| VOLATILE
 	"""
-
+	p[0] = p[1]
 # C.2.6 Classes 
 def p_class_declaration(p):
 	"""class_declaration :  modifiers_opt CLASS IDENTIFIER class_base_opt class_body comma_opt
@@ -779,6 +887,7 @@ def p_class_base_opt(p):
 	"""class_base_opt : empty 
 		| class_base
 	"""
+	p[0] = p[1]
 def p_class_base(p):
 	"""class_base : COLON class_type
 	"""
@@ -789,10 +898,15 @@ def p_class_member_declarations_opt(p):
 	"""class_member_declarations_opt : empty 
 		| class_member_declarations
 	"""
+	p[0] = p[1]
 def p_class_member_declarations(p):
 	"""class_member_declarations : class_member_declaration
 		| class_member_declarations class_member_declaration
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_class_member_declaration(p):
 	"""class_member_declaration : constant_declaration
 		| field_declaration
@@ -802,6 +916,7 @@ def p_class_member_declaration(p):
 		| destructor_declaration 
 		| type_declaration
 	"""
+	p[0] = p[1]
 def p_constant_declaration(p):
 	"""constant_declaration :  modifiers_opt CONST type constant_declarators STMT_TERMINATOR
 	"""
@@ -820,22 +935,30 @@ def p_formal_parameter_list_opt(p):
 	"""formal_parameter_list_opt : empty 
 		| formal_parameter_list
 	"""
+	p[0] = p[1]
 def p_return_type(p):
 	"""return_type : type
 		| VOID
 	"""
+	p[0] = p[1]
 def p_method_body(p):
 	"""method_body : block
 		| STMT_TERMINATOR
 	"""
+	p[0] = p[1]
 def p_formal_parameter_list(p):
 	"""formal_parameter_list : formal_parameter
 		| formal_parameter_list COMMA formal_parameter
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_formal_parameter(p):
 	"""formal_parameter : fixed_parameter
 		| parameter_array
 	"""
+	p[0] = p[1]
 def p_fixed_parameter(p):
 	"""fixed_parameter :  parameter_modifier_opt type IDENTIFIER
 	"""
@@ -844,6 +967,7 @@ def p_parameter_modifier_opt(p):
 		| REF
 		| OUT
 	"""
+	p[0] = p[1]
 def p_parameter_array(p):
 	"""parameter_array :  PARAMS type IDENTIFIER
 	"""
@@ -856,6 +980,7 @@ def p_operator_declarator(p):
 	"""operator_declarator : overloadable_operator_declarator
 		| conversion_operator_declarator
 	"""
+	p[0] = p[1]
 def p_overloadable_operator_declarator(p):
 	"""overloadable_operator_declarator : type OPERATOR overloadable_operator LPAREN type IDENTIFIER RPAREN
 		| type OPERATOR overloadable_operator LPAREN type IDENTIFIER COMMA type IDENTIFIER RPAREN
@@ -884,6 +1009,7 @@ def p_overloadable_operator(p):
 							| GE
 							| LE
 	"""
+	p[0] = p[1]
 def p_conversion_operator_declarator(p):
 	"""conversion_operator_declarator : IMPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
 		| EXPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
@@ -898,6 +1024,7 @@ def p_constructor_initializer_opt(p):
 	"""constructor_initializer_opt : empty 
 		| constructor_initializer
 	"""
+	p[0] = p[1]
 def p_constructor_initializer(p):
 	"""constructor_initializer : COLON BASE LPAREN argument_list_opt RPAREN
 		| COLON THIS LPAREN argument_list_opt RPAREN
@@ -910,26 +1037,34 @@ def p_operator_body(p):
 	"""operator_body : block
 		| STMT_TERMINATOR
 	"""
+	p[0] = p[1]
 def p_constructor_body(p):
 	"""constructor_body : block
 		| STMT_TERMINATOR
 	"""
-
+	p[0] = p[1]
 # C.2.7 Structs 
 def p_struct_declaration(p):
 	"""struct_declaration :  modifiers_opt STRUCT IDENTIFIER struct_body comma_opt
 	"""
+
 def p_struct_body(p):
 	"""struct_body : LBRACE struct_member_declarations_opt RBRACE
 	"""
+	p[0] = p[2]
 def p_struct_member_declarations_opt(p):
 	"""struct_member_declarations_opt : empty 
 		| struct_member_declarations
 	"""
+	p[0] = p[1]
 def p_struct_member_declarations(p):
 	"""struct_member_declarations : struct_member_declaration
 		| struct_member_declarations struct_member_declaration
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_struct_member_declaration(p):
 	"""struct_member_declaration : constant_declaration
 		| field_declaration
@@ -938,7 +1073,7 @@ def p_struct_member_declaration(p):
 		| constructor_declaration
 		| type_declaration
 	"""
-
+	p[0] = p[1]
 # C.2.8 Arrays 
 def p_array_initializer(p):
 	"""array_initializer : LBRACE variable_initializer_list_opt RBRACE
@@ -948,11 +1083,15 @@ def p_variable_initializer_list_opt(p):
 	"""variable_initializer_list_opt : empty 
 		| variable_initializer_list
 	"""
+	p[0] = p[1]
 def p_variable_initializer_list(p):
 	"""variable_initializer_list : variable_initializer
 		| variable_initializer_list COMMA variable_initializer
 	"""
-
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 # C.2.10 Enums 
 def p_enum_declaration(p):
 	"""enum_declaration :  modifiers_opt ENUM IDENTIFIER enum_base_opt enum_body comma_opt
@@ -961,6 +1100,7 @@ def p_enum_base_opt(p):
 	"""enum_base_opt : empty 
 		| enum_base
 	"""
+	p[0] = p[1]
 def p_enum_base(p):
 	"""enum_base : COLON integral_type
 	"""
@@ -972,10 +1112,15 @@ def p_enum_member_declarations_opt(p):
 	"""enum_member_declarations_opt : empty 
 		| enum_member_declarations
 	"""
+	p[0] = p[1]
 def p_enum_member_declarations(p):
 	"""enum_member_declarations : enum_member_declaration
 		| enum_member_declarations COMMA enum_member_declaration
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_enum_member_declaration(p):
 	"""enum_member_declaration :  IDENTIFIER
 		|  IDENTIFIER EQUALS constant_expression
@@ -991,7 +1136,7 @@ def p_delegate_declaration(p):
 
 def p_empty(p):
 	"""empty :"""
-	pass
+	p[0] = None
 
 # Error rule for syntax errors
 def p_error(p):
