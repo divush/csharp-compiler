@@ -12,6 +12,7 @@
 import sys
 import ply.yacc as yacc
 from lexer import *
+from irgen import *
 
 ###################################################################################################
 
@@ -42,22 +43,22 @@ precedence = (
 #It contains identifier:scope pairs.
 #symbol_table.Insert(identifier, scope) ---> add ident:scope pair to the table.
 #symbol_table.Insert(identifier) ---> look for ident entry in table. if found, return lexeme, else return None.
-class symbol_table:
-	self.table={}
-	def __init__(self, reserved):
-		self.table.fromkeys(list(reserved.keys()))
+# class symbol_table:
+# 	self.table={}
+# 	def __init__(self, reserved):
+# 		self.table.fromkeys(list(reserved.keys()))
 
-	def Insert(ident, vartype, scope):
-		self.table[ident] = [vartype, scope]
-		pass
+# 	def Insert(ident, vartype, scope):
+# 		self.table[ident] = [vartype, scope]
+# 		pass
 
-	def Lookup(ident):
-		if ident in self.table.keys:
-			return ident
-		else:
-			return None
+# 	def Lookup(ident):
+# 		if ident in self.table.keys:
+# 			return ident
+# 		else:
+# 			return None
 
-symtab = symbol_table() 
+# symtab = symbol_table() 
 
 # C.2.1 Basic concepts 
 def p_namespace_name(p):
@@ -122,11 +123,11 @@ def p_pointer_type(p):
 	"""pointer_type : type dereferencer
 		| VOID dereferencer
 	"""
-	p[0] = pointer(p[1]) 
+	p[0] = pointer(p[1])
 def p_dereferencer(p):
 	"""dereferencer : TIMES
 	"""
-
+	p[0] = p[1]
 # This constructs a new 'array data type'
 def p_array_type(p):
 	"""array_type : array_type rank_specifier
@@ -202,7 +203,7 @@ def p_literal(p):
 				| STRCONST
 				| CHCONST
 	"""
-	p[0] = p[1].value
+	p[0] = p[1]
 def p_parenthesized_expression(p):
 	"""parenthesized_expression : LPAREN expression RPAREN
 	"""
@@ -212,18 +213,13 @@ def p_member_access(p):
 		| primitive_type MEMBERACCESS IDENTIFIER
 		| class_type MEMBERACCESS IDENTIFIER
 	"""
-	exp, identifier = p[1], p[3]
-	if is_member(exp, identifier):
-		p[0] = get_value(exp, identifier)
-	else:
-		# print syntax error
-		pass
+	p[0] = get_member_value(p[1], p[3])
+
 def p_invocation_expression(p):
 	"""invocation_expression : primary_expression_no_parenthesis LPAREN argument_list_opt RPAREN
 		| qualified_identifier LPAREN argument_list_opt RPAREN
 	"""
-	method, parameters = p[1], p[3]
-	p[0] = invoke_method(method, parameters)  
+	p[0] = function_call(p[1], p[3])  
 def p_argument_list_opt(p):
 	"""argument_list_opt : empty 
 		| argument_list
@@ -247,17 +243,20 @@ def p_expression_list(p):
 def p_this_access(p):
 	"""this_access : THIS
 	"""
-	p[0] = p[1].value
+	p[0] = p[1]
 def p_base_access(p):
 	"""base_access : BASE MEMBERACCESS IDENTIFIER
 		| BASE LBRACKET expression_list RBRACKET
 	"""
+
 def p_post_increment_expression(p):
 	"""post_increment_expression : postfix_expression INCREMENT
 	"""
+	p[0] = post_increment_expression(p[1])
 def p_post_decrement_expression(p):
 	"""post_decrement_expression : postfix_expression DECREMENT
 	"""
+	p[0] = post_decrement_expression(p[1])
 def p_new_expression(p):
 	"""new_expression : object_creation_expression
 	"""
@@ -265,10 +264,17 @@ def p_new_expression(p):
 def p_object_creation_expression(p):
 	"""object_creation_expression : NEW type LPAREN argument_list_opt RPAREN
 	"""
+	p[0] = create_new_object(p[2], p[4])
 def p_array_creation_expression(p):
 	"""array_creation_expression : NEW non_array_type LBRACKET expression_list RBRACKET array_initializer_opt
 		| NEW array_type array_initializer
 	"""
+	if len(p) == 7:
+		# Array creation of the form e.g., new int[5] {1, 2, 3, 4, 5}
+		p[0] = create_array_from_basic(p[2], p[4], p[5])
+	else:
+		p[0] = create_array_from_array(p[2], p[3])
+
 def p_array_initializer_opt(p):
 	"""array_initializer_opt : empty 
 		| array_initializer
@@ -278,21 +284,27 @@ def p_typeof_expression(p):
 	"""typeof_expression : TYPEOF LPAREN type RPAREN
 		| TYPEOF LPAREN VOID RPAREN
 	"""
+	p[0] = typeof_expr([3])
 def p_checked_expression(p):
 	"""checked_expression : CHECKED LPAREN expression RPAREN
 	"""
+	p[0] = p[3]
 def p_unchecked_expression(p):
 	"""unchecked_expression : UNCHECKED LPAREN expression RPAREN
 	"""
+	p[0] = p[3]
 def p_pointer_member_access(p):
 	"""pointer_member_access : postfix_expression ARROW IDENTIFIER
 	"""
+	p[0] = get_member_value_via_pointer(p[1], p[3])
 def p_addressof_expression(p):
 	"""addressof_expression : AND unary_expression
 	"""
+	p[0] = address_of(p[2])
 def p_sizeof_expression(p):
 	"""sizeof_expression : SIZEOF LPAREN type RPAREN
 	"""
+	p[0] = sizeof(p[3])
 def p_postfix_expression(p):
 	"""postfix_expression : primary_expression
 		| qualified_identifier
@@ -305,15 +317,22 @@ def p_unary_expression_not_plusminus(p):
 	"""unary_expression_not_plusminus : postfix_expression
 		| LNOT unary_expression
 		| NOT unary_expression
-		| cast_expression
 	"""
-	p[0] = p[1]
+	if len(p) == 2:
+		p[0] = p[1]
+	elif len(p) == 3:
+		if p[1] == 'LNOT':
+			p[0] = logical_not_of(p[2])
+		elif p[1] == 'NOT':
+			p[0] = not_of(p[2])
 def p_pre_increment_expression(p):
 	"""pre_increment_expression : INCREMENT unary_expression
 	"""
+	p[0] = pre_increment_expression(p[2])
 def p_pre_decrement_expression(p):
 	"""pre_decrement_expression : DECREMENT unary_expression
 	"""
+	p[0] = pre_decrement_expression(p[2])
 def p_unary_expression(p):
 	"""unary_expression : unary_expression_not_plusminus
 		| PLUS unary_expression
@@ -325,14 +344,6 @@ def p_unary_expression(p):
 	"""
 	p[0] = p[1]
 
-def p_cast_expression(p):
-	"""cast_expression : LPAREN expression RPAREN unary_expression_not_plusminus
-		| LPAREN multiplicative_expression TIMES RPAREN unary_expression 
-		| LPAREN qualified_identifier rank_specifier type_quals_opt RPAREN unary_expression	
-		| LPAREN primitive_type type_quals_opt RPAREN unary_expression
-		| LPAREN class_type type_quals_opt RPAREN unary_expression
-		| LPAREN VOID type_quals_opt RPAREN unary_expression
-	"""
 def p_type_quals_opt(p):
 	"""type_quals_opt : empty 
 		| type_quals
@@ -359,13 +370,8 @@ def p_multiplicative_expression(p):
 	"""
 	if len(p) == 2:
 		p[0] = p[1]
-	elif len(p) == 4:
-		if p[2] == "TIMES":
-			p[0] = p[1] * p[3]
-		elif p[2] == "DIVIDE":
-			p[0] = p[1] / p[3]
-		elif p[2] == "MOD":
-			p[0] = p[1] % p[3]
+	else:
+		p[0] = expression(p[1], p[2], p[3])
 
 def p_additive_expression(p):
 	"""additive_expression : multiplicative_expression
@@ -374,11 +380,8 @@ def p_additive_expression(p):
 	"""
 	if len(p) == 2:
 		p[0] = p[1]
-	elif len(p) == 4:
-		if p[2] == "PLUS":
-			p[0] = p[1] + p[3]
-		elif p[2] == "MINUS":
-			p[0] = p[1] - p[3]
+	else:
+		p[0] = expression(p[1], p[2], p[3])
 
 def p_shift_expression(p):
 	"""shift_expression : additive_expression 
@@ -387,11 +390,8 @@ def p_shift_expression(p):
 	"""
 	if len(p) == 2:
 		p[0] = p[1]
-	elif len(p) == 4:
-		if p[2] == "LSHIFT":
-			p[0] = p[1] << p[3]
-		elif p[2] == "RSHIFT":
-			p[0] = p[1] >> p[3]
+	else:
+		p[0] = expression(p[1], p[2], p[3])
 
 def p_relational_expression(p):
 	"""relational_expression : shift_expression
@@ -399,41 +399,72 @@ def p_relational_expression(p):
 		| relational_expression GT shift_expression
 		| relational_expression LE shift_expression
 		| relational_expression GE shift_expression
-		| relational_expression IS type
-		| relational_expression AS type
 	"""
+	if len(p) == 2:
+		p[0] = p[1]
+	else:
+		p[0] = expression(p[1], p[2], p[3])
 def p_equality_expression(p):
 	"""equality_expression : relational_expression
 		| equality_expression EQ relational_expression
 		| equality_expression NE relational_expression
 	"""
+	if len(p) == 2:
+		p[0] = p[1]
+	else:
+		p[0] = expression(p[1], p[2], p[3])
 def p_and_expression(p):
 	"""and_expression : equality_expression
 		| and_expression AND equality_expression
 	"""
+	if len(p) == 2:
+		p[0] = p[1]
+	else:
+		p[0] = create_and_expression(p[1], p[3])
 def p_exclusive_or_expression(p):
 	"""exclusive_or_expression : and_expression
 		| exclusive_or_expression XOR and_expression
 	"""
+	if len(p) == 2:
+		p[0] = p[1]
+	else:
+		p[0] = create_xor_expression(p[1], p[3])	
 def p_inclusive_or_expression(p):
 	"""inclusive_or_expression : exclusive_or_expression
 		| inclusive_or_expression OR exclusive_or_expression
 	"""
+	if len(p) == 2:
+		p[0] = p[1]
+	else:
+		p[0] = create_xor_expression(p[1], p[3])
 def p_conditional_and_expression(p):
 	"""conditional_and_expression : inclusive_or_expression
 		| conditional_and_expression CAND inclusive_or_expression
 	"""
+	if len(p) == 2:
+		p[0] = p[1]
+	else:
+		p[0] = create_cand_expression(p[1], p[3])
 def p_conditional_or_expression(p):
 	"""conditional_or_expression : conditional_and_expression
 		| conditional_or_expression COR conditional_and_expression
 	"""
+	if len(p) == 2:
+		p[0] = p[1]
+	else:
+		p[0] = create_cor_expression(p[1], p[3])
 def p_conditional_expression(p):
 	"""conditional_expression : conditional_or_expression
 		| conditional_or_expression CONDOP expression COLON expression
 	"""
+	if len(p) == 2:
+		p[0] = p[1]
+	else:
+		p[0] = condop_expression(p[1], p[3], p[5])
 def p_assignment(p):
 	"""assignment : unary_expression assignment_operator expression
 	"""
+	p[0] = assignment(p[1], p[2], p[3])
 def p_assignment_operator(p):
 	"""assignment_operator : EQUALS 
 							| PLUSEQUAL
@@ -510,11 +541,14 @@ def p_empty_statement(p):
 def p_labeled_statement(p):
 	"""labeled_statement : IDENTIFIER COLON statement
 	"""
+	p[0] = create_labeled_statement(p[1], p[3])
 
+# Declaration Statements
 def p_declaration_statement(p):
 	"""declaration_statement : local_variable_declaration STMT_TERMINATOR
 		| local_constant_declaration STMT_TERMINATOR
 	"""
+
 def p_local_variable_declaration(p):
 	"""local_variable_declaration : type variable_declarators
 	"""
