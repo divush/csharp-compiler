@@ -222,16 +222,20 @@ def p_invocation_expression(p):
 	"""invocation_expression : primary_expression_no_parenthesis LPAREN argument_list_opt RPAREN
 		| qualified_identifier LPAREN argument_list_opt RPAREN
 	"""
-	
+	method, parameters = p[1], p[3]
+	p[0] = invoke_method(method, parameters)  
 def p_argument_list_opt(p):
 	"""argument_list_opt : empty 
 		| argument_list
 	"""
 	p[0] = p[1]
+# This is for accessing an element of an array with a given index
 def p_element_access(p):
 	"""element_access : primary_expression LBRACKET expression_list RBRACKET
 		| qualified_identifier LBRACKET expression_list RBRACKET
 	"""
+	array, index = p[1], p[2]
+	p[0] = get_array_element(array, index)
 def p_expression_list(p):
 	"""expression_list : expression
 		| expression_list COMMA expression
@@ -243,6 +247,7 @@ def p_expression_list(p):
 def p_this_access(p):
 	"""this_access : THIS
 	"""
+	p[0] = p[1].value
 def p_base_access(p):
 	"""base_access : BASE MEMBERACCESS IDENTIFIER
 		| BASE LBRACKET expression_list RBRACKET
