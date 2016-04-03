@@ -212,11 +212,17 @@ def p_member_access(p):
 		| primitive_type MEMBERACCESS IDENTIFIER
 		| class_type MEMBERACCESS IDENTIFIER
 	"""
-
+	exp, identifier = p[1], p[3]
+	if is_member(exp, identifier):
+		p[0] = get_value(exp, identifier)
+	else:
+		# print syntax error
+		pass
 def p_invocation_expression(p):
 	"""invocation_expression : primary_expression_no_parenthesis LPAREN argument_list_opt RPAREN
 		| qualified_identifier LPAREN argument_list_opt RPAREN
 	"""
+	
 def p_argument_list_opt(p):
 	"""argument_list_opt : empty 
 		| argument_list
