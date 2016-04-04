@@ -11,13 +11,23 @@ from lexer import *
 
 # Implement the symbol table and all the IR methods here
 
-sym_tab = []
+sym_tab = [dict()]
 
 def push_scope():
 	sym_tab.append([])
 
 def pop_scope():
 	sym_tab.pop()
+
+def insert(varname, vartype, varval, size):
+	if lookup(varname):
+		print("Error: ", varname, "declared before in this scope.")
+	else:
+		sym_tab[-1][varname] = {'type':vartype, 'size':size, 'val':varval}
+
+def lookup(varname):
+	return varname in sym_tab[-1]
+
 
 class array_typ:
 	def __init__(typ, length):
@@ -109,7 +119,7 @@ def declare_variables(modifiers, typ, declarators):
 		width = typ.size
 		if len(decl) == 2:
 			varval = decl[1]
-		add_to_symbol_table(varname, vartype, varval, size)
+		insert(varname, vartype, varval, size)
 
 
 def declare_constants(modifiers, typ, declarators):
