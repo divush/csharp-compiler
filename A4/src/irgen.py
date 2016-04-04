@@ -11,11 +11,31 @@ from lexer import *
 
 # Implement the symbol table and all the IR methods here
 
-def pointer(type):
+sym_tab = []
+
+def push_scope():
+	sym_tab.append([])
+
+def pop_scope():
+	sym_tab.pop()
+
+class array_typ:
+	def __init__(typ, length):
+		self.sub_typ = typ
+		self.length = length
+		self.size = typ.size * length
+
+class pointer:
+	def __init__(typ):
+		self.sub_typ = typ
+		self.size = 4
+	 
+def create_array_from_basic(typ, dims, init):
 	pass
 
-def create_array_type(type, length):
-	pass
+def create_array_from_array(typ, init):
+	return 
+
 
 def get_member_value(expr, identifier):
 	pass
@@ -32,16 +52,10 @@ def post_increment_expression(expr):
 def post_decrement_expression(expr):
 	pass
 
-def create_new_object(type, parameters):
+def create_new_object(typ, parameters):
 	pass
 
-def create_array_from_basic(type, dims, init):
-	pass
-
-def create_array_from_array(type, init):
-	pass
-
-def typeof_expr(type):
+def typof_expr(typ):
 	pass
 
 def get_member_value_via_pointer(object_ptr, member):
@@ -89,10 +103,16 @@ def assignment(expr1, op, expr2):
 def create_labeled_statement(label, stmt):
 	pass
 
-def declare_variables(modifiers, type, declarators):
-	pass
+def declare_variables(modifiers, typ, declarators):
+	for decl in declarators:
+		varname, varval = decl[0], None
+		width = typ.size
+		if len(decl) == 2:
+			varval = decl[1]
+		add_to_symbol_table(varname, vartype, varval, size)
 
-def declare_constants(modifiers, type, declarators):
+
+def declare_constants(modifiers, typ, declarators):
 	pass
 
 def create_if_statement(cond, expr):

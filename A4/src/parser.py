@@ -12,6 +12,7 @@
 import sys
 import ply.yacc as yacc
 from lexer import *
+from copy import *
 from irgen import *
 
 ###################################################################################################
@@ -151,7 +152,7 @@ def p_dim_separators(p):
 	if len(p) == 2:
 		p[0] = 1
 	else:
-		p[0] = deepcopy(p[1]) + 1
+		p[0] = p[1] + 1
 
 # C.2.3 Variables 
 def p_variable_reference(p):
@@ -553,7 +554,10 @@ def p_variable_declarators(p):
 	"""variable_declarators : variable_declarator
 		| variable_declarators COMMA variable_declarator
 	"""
-
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1] + [p[3]]
 def p_variable_declarator(p):
 	"""variable_declarator : IDENTIFIER
 		| IDENTIFIER EQUALS variable_initializer
