@@ -735,29 +735,6 @@ def p_expression_opt(p):
 	"""
 	p[0] = deepcopy(p[1])
 
-# def p_throw_statement(p):
-# 	"""throw_statement : THROW expression_opt STMT_TERMINATOR
-# 	"""
-# 	p[0] = create_throw_statement()
-# def p_try_statement(p):
-# 	"""try_statement : TRY block catch_clauses
-# 		| TRY block finally_clause
-# 		| TRY block catch_clauses finally_clause
-# 	"""
-# def p_catch_clauses(p):
-# 	"""catch_clauses : catch_clause
-# 		| catch_clauses catch_clause
-# 	"""
-# 	if len(p) == 2:
-# 		p[0] = [deepcopy(p[1])]
-# 	else:
-# 		p[0] = deepcopy(p[1]).append(deepcopy(p[2]))
-# def p_catch_clause(p):
-# 	"""catch_clause : CATCH LPAREN class_type identifier_opt RPAREN block
-# 		| CATCH LPAREN type_name identifier_opt RPAREN block
-# 		| CATCH block
-# 	"""
-
 def p_identifier_opt(p):
 	"""identifier_opt : empty 
 		| IDENTIFIER
@@ -776,43 +753,12 @@ def p_unchecked_statement(p):
 	"""
 	p[0] = deepcopy(p[2])
 
-# def p_lock_statement(p):
-# 	"""lock_statement : LOCK LPAREN expression RPAREN embedded_statement
-# 	"""
-# def p_using_statement(p):
-# 	"""using_statement : USING LPAREN resource_acquisition RPAREN embedded_statement
-# 	"""
-# def p_resource_acquisition(p):
-# 	"""resource_acquisition : local_variable_declaration
-# 		| expression
-# 	"""
-# def p_fixed_statement(p):
-# 	"""fixed_statement : FIXED LPAREN	type fixed_pointer_declarators RPAREN embedded_statement
-# 	"""
-# def p_fixed_pointer_declarators(p):
-# 	"""fixed_pointer_declarators : fixed_pointer_declarator
-# 		| fixed_pointer_declarators COMMA fixed_pointer_declarator
-# 	"""
-# def p_fixed_pointer_declarator(p):
-# 	"""fixed_pointer_declarator : IDENTIFIER EQUALS expression
-# 	"""
-
 # Lambda Expressions
 def p_lambda_expression(p):
 	"""lambda_expression : explicit_anonymous_function_signature LAMBDADEC block
 						| explicit_anonymous_function_signature LAMBDADEC expression
 	"""
 	p[0] = create_lambda_expression(p[1], p[3])
-
-# # Anonymous Method Expression
-# def p_anonymous_method_expression(p):
-# 	"""anonymous_method_expression : DELEGATE explicit_anonymous_function_signature_opt block
-# 	"""	
-# def p_explicit_anonymous_function_signature_opt(p):
-# 	"""explicit_anonymous_function_signature_opt : explicit_anonymous_function_signature
-# 												| empty
-# 	"""
-# 	p[0] = deepcopy(p[1])
 
 def p_explicit_anonymous_function_signature(p):
 	"""explicit_anonymous_function_signature : LPAREN explicit_anonymous_function_parameter_list_opt RPAREN
@@ -1044,16 +990,6 @@ def p_formal_parameter(p):
 	"""
 	p[0] = deepcopy(p[1])
 
-# def p_fixed_parameter(p):
-# 	"""fixed_parameter :  parameter_modifier_opt type IDENTIFIER
-# 	"""
-# def p_parameter_modifier_opt(p):
-# 	"""parameter_modifier_opt : empty 
-# 		| REF
-# 		| OUT
-# 	"""
-
-	p[0] = deepcopy(p[1])
 def p_parameter_array(p):
 	"""parameter_array :  PARAMS type IDENTIFIER
 	"""
@@ -1100,10 +1036,7 @@ def p_overloadable_operator(p):
 							| LE
 	"""
 	p[0] = deepcopy(p[1])
-# def p_conversion_operator_declarator(p):
-# 	"""conversion_operator_declarator : IMPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
-# 		| EXPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
-# 	"""
+
 def p_constructor_declaration(p):
 	"""constructor_declaration :  modifiers_opt constructor_declarator constructor_body
 	"""
@@ -1226,12 +1159,6 @@ def p_enum_member_declaration(p):
 		p[0] = deepcopy(p[1])
 	else:
 		p[0] = [deepcopy(p[1]), deepcopy(p[3])]
-
-# C.2.11 Delegates 
-# def p_delegate_declaration(p):
-# 	"""delegate_declaration :  modifiers_opt DELEGATE return_type IDENTIFIER LPAREN formal_parameter_list_opt RPAREN STMT_TERMINATOR
-# 	"""
-# 	p[0] = create_delegate(p[1], p[3], p[4], p[6])
 
 def p_push_scope(p):
 	"""push_scope : empty

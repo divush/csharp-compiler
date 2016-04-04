@@ -52,6 +52,7 @@ count = 0
 TAC=[]
 def emit(lineir):
 	TAC.append(lineir)
+	return [None, TAC]
 
 def create_array_from_basic(typ, dims, init):
 	pass
@@ -116,8 +117,8 @@ def expression(operand1, operator, operand2):
 	tvar_size = max(op1_l[3], op2_l[3])
 	insert(varname=tvar, vartype=tvar_type, varval=None, size=tvar_size, modifiers=None, category="temp")
 	temp = str(operator)+", " + tvar +", " + str(operand1)+", " + str(operand2)
-	emit(temp)
-	return tvar
+	# emit(temp)
+	return [tvar, temp]
 
 def create_and_expression(and_expr, clause):
 	count = count + 1
@@ -132,8 +133,8 @@ def create_and_expression(and_expr, clause):
 	tvar = "t"+str(count)
 	temp = "&, " + tvar + ", "+ str(and_expr) + ", " + str(clause)
 	insert(varname=tvar, vartype="int", varval=None, size=max(op1_l[3], op2_l[3]), modifiers=None, category="temp")
-	emit(temp)
-	return tvar
+	# emit(temp)
+	return [tvar, temp]
 
 def create_xor_expression(xor_expr, clause):
 	count = count + 1
@@ -148,8 +149,8 @@ def create_xor_expression(xor_expr, clause):
 	tvar = "t"+str(count)
 	temp = "^, " + tvar + ", "+ str(and_expr) + ", " + str(clause)
 	insert(varname=tvar, vartype="int", varval=None, size=max(op1_l[3], op2_l[3]), modifiers=None, category="temp")
-	emit(temp)
-	return tvar
+	# emit(temp)
+	return [tvar, temp]
 
 def create_or_expression(or_expr, clause):
 	count = count + 1
@@ -164,17 +165,53 @@ def create_or_expression(or_expr, clause):
 	tvar = "t"+str(count)
 	temp = "|, " + tvar + ", "+ str(and_expr) + ", " + str(clause)
 	insert(varname=tvar, vartype="int", varval=None, size=max(op1_l[3], op2_l[3]), modifiers=None, category="temp")
-	emit(temp)
-	return tvar
+	# emit(temp)
+	return [tvar, temp]
 
 def create_cand_expression(cand_expr, clause):
-	pass
+	count = count + 1
+	op1_l = lookup(cand_expr)
+	op2_l = lookup(clause)
+	if op1_l is None:
+		print("Error: Variable "+ op1[0] + " not delared!")
+		exit()
+	if op2_l is None:
+		print("Error: Variable "+ op2[0] + " not delared!")
+		exit()
+	tvar = "t"+str(count)
+	temp = "&&, " + tvar + ", "+ str(and_expr) + ", " + str(clause)
+	insert(varname=tvar, vartype="bool", varval=None, size=max(op1_l[3], op2_l[3]), modifiers=None, category="temp")
+	# emit(temp)
+	return [tvar, temp]
 
 def create_cor_expression(cor_expr, clause):
-	pass
+	count = count + 1
+	op1_l = lookup(cand_expr)
+	op2_l = lookup(clause)
+	if op1_l is None:
+		print("Error: Variable "+ op1[0] + " not delared!")
+		exit()
+	if op2_l is None:
+		print("Error: Variable "+ op2[0] + " not delared!")
+		exit()
+	tvar = "t"+str(count)
+	temp = "||, " + tvar + ", "+ str(and_expr) + ", " + str(clause)
+	insert(varname=tvar, vartype="bool", varval=None, size=max(op1_l[3], op2_l[3]), modifiers=None, category="temp")
+	# emit(temp)
+	return [tvar, temp]
 
 def condop_expression(cond, expr1, expr2):
-	pass
+	count = count + 1
+	op1_l = lookup(expr1)
+	op2_l = lookup(expr2)
+	if op1_l is None:
+		print("Error: Variable "+ op1[0] + " not delared!")
+		exit()
+	if op2_l is None:
+		print("Error: Variable "+ op2[0] + " not delared!")
+		exit()
+	temp = "if, " + str(cond) + ", " + str(expr1) + ", else, " + str(expr2)
+	return [None, temp]
 
 def assignment(expr1, op, expr2):
 	e1 = lookup(expr1)
@@ -187,6 +224,7 @@ def assignment(expr1, op, expr2):
 		exit()
 	e1[2] = e2[2]
 	temp = str(op) + ", " + str(expr1) + ", " + str(expr2)
+	return [None, temp]
 
 def create_labeled_statement(label, stmt):
 	pass
@@ -223,7 +261,7 @@ def create_switch_section(label, stmts):
 def create_while_statement(cond, block):
 	pass
 
-def create_for_statement(init, cond, iter, stmts):
+def create_for_statement(initializer, condition, itereration, stmts):
 	pass
 
 def create_return_statement(expr):
