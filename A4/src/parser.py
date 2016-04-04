@@ -436,7 +436,7 @@ def p_inclusive_or_expression(p):
 	if len(p) == 2:
 		p[0] = p[1]
 	else:
-		p[0] = create_xor_expression(p[1], p[3])
+		p[0] = create_or_expression(p[1], p[3])
 def p_conditional_and_expression(p):
 	"""conditional_and_expression : inclusive_or_expression
 		| conditional_and_expression CAND inclusive_or_expression
@@ -548,7 +548,7 @@ def p_declaration_statement(p):
 def p_local_variable_declaration(p):
 	"""local_variable_declaration : type variable_declarators
 	"""
-	p[0] = declare_variables(p[1], p[2])
+	p[0] = declare_variables([], p[1], p[2])
 def p_variable_declarators(p):
 	"""variable_declarators : variable_declarator
 		| variable_declarators COMMA variable_declarator
@@ -571,7 +571,7 @@ def p_variable_initializer(p):
 def p_local_constant_declaration(p):
 	"""local_constant_declaration : CONST type constant_declarators
 	"""
-	p[0] = declare_constants(p[2],p[3])
+	p[0] = declare_constants([], p[2],p[3])
 def p_constant_declarators(p):
 	"""constant_declarators : constant_declarator
 		| constant_declarators COMMA constant_declarator
@@ -710,7 +710,6 @@ def p_jump_statement(p):
 	"""jump_statement : break_statement
 		| continue_statement
 		| return_statement
-		| throw_statement
 	"""
 	p[0] = p[1]
 def p_break_statement(p):
@@ -731,11 +730,11 @@ def p_expression_opt(p):
 		| expression
 	"""
 	p[0] = p[1]
-def p_throw_statement(p):
-	"""throw_statement : THROW expression_opt STMT_TERMINATOR
-	"""
-	p[0] = create_throw_statement()
 
+# def p_throw_statement(p):
+# 	"""throw_statement : THROW expression_opt STMT_TERMINATOR
+# 	"""
+# 	p[0] = create_throw_statement()
 # def p_try_statement(p):
 # 	"""try_statement : TRY block catch_clauses
 # 		| TRY block finally_clause
@@ -866,9 +865,9 @@ def p_qualified_identifier(p):
 		| qualifier IDENTIFIER
 	"""
 	if len(p) == 2:
-		p[0] = p[1]
+		p[0] = [p[1]]
 	else:
-		p[0] = create_member(p[1], p[2])
+		p[0] = p[1] + [p[2]]
 def p_qualifier(p):
 	"""qualifier : IDENTIFIER MEMBERACCESS 
 		| qualifier IDENTIFIER MEMBERACCESS 
@@ -880,7 +879,7 @@ def p_qualifier(p):
 def p_namespace_body(p):
 	"""namespace_body : LBRACE using_directives_opt namespace_member_declarations_opt RBRACE
 	"""
-	p[0] = create_namespace_body(p[2],p[3])
+	p[0] = [p[2],p[3]]
 def p_using_directives(p):
 	"""using_directives : using_directive
 		| using_directives using_directive
@@ -999,11 +998,11 @@ def p_class_member_declaration(p):
 def p_constant_declaration(p):
 	"""constant_declaration :  modifiers_opt CONST type constant_declarators STMT_TERMINATOR
 	"""
-	p[0] = create_constant(p[1],p[3],p[4])
+	p[0] = declare_constants(p[1],p[3],p[4])
 def p_field_declaration(p):
 	"""field_declaration :  modifiers_opt type variable_declarators STMT_TERMINATOR
 	"""
-	p[0] = create_field(p[1],p[2],p[3])
+	p[0] = declare_variables(p[1],p[2],p[3])
 def p_method_declaration(p):
 	"""method_declaration : method_header method_body
 	"""
@@ -1012,7 +1011,7 @@ def p_method_header(p):
 	"""method_header :  modifiers_opt type qualified_identifier LPAREN formal_parameter_list_opt RPAREN
 					 |  modifiers_opt VOID qualified_identifier LPAREN formal_parameter_list_opt RPAREN
 	"""
-	p[0] = create_method_header(p[1], p[2], p[3], p[5])
+	p[0] = [p[1], p[2], p[3], p[5]]
 def p_formal_parameter_list_opt(p):
 	"""formal_parameter_list_opt : empty 
 		| formal_parameter_list
