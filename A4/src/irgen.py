@@ -20,13 +20,19 @@ def pop_scope():
 	sym_tab.pop()
 
 def insert(varname, vartype, varval, size):
-	if lookup(varname):
+	if varname in sym_tab[-1]:
 		print("Error: ", varname, "declared before in this scope.")
+		exit()
 	else:
 		sym_tab[-1][varname] = {'type':vartype, 'size':size, 'val':varval}
 
 def lookup(varname):
-	return varname in sym_tab[-1]
+	i = len(sym_tab) - 1
+	while i >= 0:
+		if varname in sym_tab[i]:
+			return i
+		i = i - 1
+	return -1
 
 
 class array_typ:
