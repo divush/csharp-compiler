@@ -106,10 +106,10 @@ def expression(operand1, operator, operand2):
 	op1_l = lookup(operand1)
 	op2_l = lookup(operand2)
 	if op1_l is None:
-		print("Error: Variable "+ operand1 + " not delared!")
+		print("Error: Variable "+ op1[0] + " not delared!")
 		exit()
 	if op2_l is None:
-		print("Error: Variable "+ operand2 + " not delared!")
+		print("Error: Variable "+ op2[0] + " not delared!")
 		exit()
 	tvar = "t"+str(count)
 	tvar_type = op1_l[1]
@@ -138,7 +138,16 @@ def condop_expression(cond, expr1, expr2):
 	pass
 
 def assignment(expr1, op, expr2):
-	pass
+	e1 = lookup(expr1)
+	e2 = lookup(expr2)
+	if e1 is None:
+		print("Error: Variable "+ e1[0] + " not delared!")
+		exit()
+	if e2 is None:
+		print("Error: Variable "+ e2[0] + " not delared!")
+		exit()
+	e1[2] = e2[2]
+	temp = str(op) + ", " + str(expr1) + ", " + str(expr2)
 
 def create_labeled_statement(label, stmt):
 	pass
