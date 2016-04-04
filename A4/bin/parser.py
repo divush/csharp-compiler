@@ -180,6 +180,7 @@ def p_argument(p):
 def p_primary_expression(p):
 	"""primary_expression : parenthesized_expression
 		| primary_expression_no_parenthesis
+		| anonymous_method_expression
 	"""
 	p[0] = deepcopy(p[1])
 def p_primary_expression_no_parenthesis(p):
@@ -867,6 +868,7 @@ def p_type_declaration(p):
 	"""type_declaration : class_declaration
 		| struct_declaration
 		| enum_declaration
+		| delegate_declaration
 	"""
 	p[0] = deepcopy(p[1])
 # Modifiers
@@ -1163,7 +1165,7 @@ def p_push_scope(p):
 	"""
 	push_scope()
 
-def p_pop_scope(p):
+def p_pop_scope():
 	"""pop_scope : empty
 	"""
 	pop_scope()

@@ -1,0 +1,3 @@
+#!/bin/bash
+pwd
+python3 parser.py $1
