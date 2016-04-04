@@ -114,7 +114,7 @@ def expression(operand1, operator, operand2):
 	tvar = "t"+str(count)
 	tvar_type = op1_l[1]
 	tvar_size = max(op1_l[3], op2_l[3])
-	insert(tvar, tvar_type, None, None, category="temp")
+	insert(varname=tvar, vartype=tvar_type, varval=None, size=tvar_size, modifiers=None, category="temp")
 	temp = str(operator)+", " + tvar +", " + str(operand1)+", " + str(operand2)
 	emit(temp)
 	return tvar
