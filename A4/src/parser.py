@@ -548,7 +548,7 @@ def p_declaration_statement(p):
 def p_local_variable_declaration(p):
 	"""local_variable_declaration : type variable_declarators
 	"""
-
+	p[0] = declare_variables(p[1], p[2])
 def p_variable_declarators(p):
 	"""variable_declarators : variable_declarator
 		| variable_declarators COMMA variable_declarator
@@ -558,6 +558,10 @@ def p_variable_declarator(p):
 	"""variable_declarator : IDENTIFIER
 		| IDENTIFIER EQUALS variable_initializer
 	"""
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = [p[1], p[2]]
 def p_variable_initializer(p):
 	"""variable_initializer : expression
 		| array_initializer
@@ -567,15 +571,19 @@ def p_variable_initializer(p):
 def p_local_constant_declaration(p):
 	"""local_constant_declaration : CONST type constant_declarators
 	"""
-
+	p[0] = declare_constants(p[2],p[3])
 def p_constant_declarators(p):
 	"""constant_declarators : constant_declarator
 		| constant_declarators COMMA constant_declarator
 	"""
-	
+	if len(p) == 2:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1] + [p[2]]
 def p_constant_declarator(p):
 	"""constant_declarator : IDENTIFIER EQUALS constant_expression
 	"""
+	p[0] = [p[1],p[3]]
 def p_expression_statement(p):
 	"""expression_statement : statement_expression STMT_TERMINATOR
 	"""
