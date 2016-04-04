@@ -568,7 +568,7 @@ def p_variable_declarator(p):
 		p[0] = [deepcopy(p[1]), deepcopy(p[2])]
 def p_variable_initializer(p):
 	"""variable_initializer : expression
-		| array_initializer
+							| array_initializer
 	"""
 	p[0] = deepcopy(p[1])
 

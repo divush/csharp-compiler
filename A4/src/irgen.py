@@ -14,28 +14,31 @@ from lexer import *
 sym_tab = [dict()]
 
 def push_scope():
-	sym_tab.append([])
+	sym_tab.append({})
 
 def pop_scope():
 	sym_tab.pop()
 
-def insert(varname, vartype, varval, size):
+def insert(varname, vartype, varval, size, modifiers, category):
 	if varname in sym_tab[-1]:
 		print("Error: ", varname, "declared before in this scope.")
 		exit()
 	else:
-		sym_tab[-1][varname] = {'type':vartype, 'size':size, 'val':varval}
+		sym_tab[-1][varname] = {'type':vartype, 'size':size, 'val':varval, 'modifiers':modifiers, 'category':category}
 
 def lookup(varname):
 	i = len(sym_tab) - 1
 	while i >= 0:
 		if varname in sym_tab[i]:
-			return i
+			typ = sym_tab[i][varname]['type']
+			size = sym_tab[i][varname]['size'] 
+			val = sym_tab[i][varname]['val']
+			return [i, typ, size, val]
 		i = i - 1
-	return -1
+	return None
 
 
-class array_typ:
+class array_type:
 	def __init__(typ, length):
 		self.sub_typ = typ
 		self.length = length
@@ -125,11 +128,16 @@ def declare_variables(modifiers, typ, declarators):
 		width = typ.size
 		if len(decl) == 2:
 			varval = decl[1]
-		insert(varname, vartype, varval, size)
+		insert(varname, vartype, varval, size, modifiers, 'variable')
 
 
 def declare_constants(modifiers, typ, declarators):
-	pass
+	for decl in declarators:
+		varname, varval = decl[0], None
+		width = typ.size
+		if len(decl) == 2:
+			varval = decl[1]
+		insert(varname, vartype, varval, size, modifiers, 'constant')
 
 def create_if_statement(cond, expr):
 	pass
@@ -156,7 +164,9 @@ def create_lambda_expression(params, stmts):
 	pass
 
 def create_namespace(name, body):
-	pass
+	using_directives, member_decls = body[0], body[1]
+	
+
 
 def create_identifier_alias(identifier, qual_identifier):
 	pass
