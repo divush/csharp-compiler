@@ -120,13 +120,52 @@ def expression(operand1, operator, operand2):
 	return tvar
 
 def create_and_expression(and_expr, clause):
-	pass
+	count = count + 1
+	op1_l = lookup(and_expr)
+	op2_l = lookup(clause)
+	if op1_l is None:
+		print("Error: Variable "+ op1[0] + " not delared!")
+		exit()
+	if op2_l is None:
+		print("Error: Variable "+ op2[0] + " not delared!")
+		exit()
+	tvar = "t"+str(count)
+	temp = "&, " + tvar + ", "+ str(and_expr) + ", " + str(clause)
+	insert(varname=tvar, vartype="int", varval=None, size=max(op1_l[3], op2_l[3]), modifiers=None, category="temp")
+	emit(temp)
+	return tvar
 
 def create_xor_expression(xor_expr, clause):
-	pass
+	count = count + 1
+	op1_l = lookup(and_expr)
+	op2_l = lookup(clause)
+	if op1_l is None:
+		print("Error: Variable "+ op1[0] + " not delared!")
+		exit()
+	if op2_l is None:
+		print("Error: Variable "+ op2[0] + " not delared!")
+		exit()
+	tvar = "t"+str(count)
+	temp = "^, " + tvar + ", "+ str(and_expr) + ", " + str(clause)
+	insert(varname=tvar, vartype="int", varval=None, size=max(op1_l[3], op2_l[3]), modifiers=None, category="temp")
+	emit(temp)
+	return tvar
 
 def create_or_expression(or_expr, clause):
-	pass
+	count = count + 1
+	op1_l = lookup(and_expr)
+	op2_l = lookup(clause)
+	if op1_l is None:
+		print("Error: Variable "+ op1[0] + " not delared!")
+		exit()
+	if op2_l is None:
+		print("Error: Variable "+ op2[0] + " not delared!")
+		exit()
+	tvar = "t"+str(count)
+	temp = "|, " + tvar + ", "+ str(and_expr) + ", " + str(clause)
+	insert(varname=tvar, vartype="int", varval=None, size=max(op1_l[3], op2_l[3]), modifiers=None, category="temp")
+	emit(temp)
+	return tvar
 
 def create_cand_expression(cand_expr, clause):
 	pass
