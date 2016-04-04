@@ -165,9 +165,9 @@ def p_argument_list(p):
 		| argument_list COMMA argument
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[3]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[3])]
 def p_argument(p):
 	"""argument : expression
 		| REF variable_reference
@@ -238,9 +238,9 @@ def p_expression_list(p):
 		| expression_list COMMA expression
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[3]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[3])]
 def p_this_access(p):
 	"""this_access : THIS
 	"""
@@ -355,9 +355,9 @@ def p_type_quals(p):
 		| type_quals type_qual
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_type_qual (p):
 	"""type_qual  : rank_specifier 
 		| dereferencer
@@ -527,9 +527,9 @@ def p_statement_list(p):
 		| statement_list statement
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_empty_statement(p):
 	"""empty_statement : STMT_TERMINATOR
 	"""
@@ -563,9 +563,9 @@ def p_variable_declarator(p):
 		| IDENTIFIER EQUALS variable_initializer
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = [p[1], p[2]]
+		p[0] = [deepcopy(p[1]), deepcopy(p[2])]
 def p_variable_initializer(p):
 	"""variable_initializer : expression
 		| array_initializer
@@ -581,13 +581,13 @@ def p_constant_declarators(p):
 		| constant_declarators COMMA constant_declarator
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_constant_declarator(p):
 	"""constant_declarator : IDENTIFIER EQUALS constant_expression
 	"""
-	p[0] = [p[1],p[3]]
+	p[0] = [deepcopy(p[1]),deepcopy(p[3])]
 def p_expression_statement(p):
 	"""expression_statement : statement_expression STMT_TERMINATOR
 	"""
@@ -633,9 +633,9 @@ def p_switch_sections(p):
 		| switch_sections switch_section
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_switch_section(p):
 	"""switch_section : switch_labels statement_list
 	"""
@@ -645,9 +645,9 @@ def p_switch_labels(p):
 		| switch_labels switch_label
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_switch_label(p):
 	"""switch_label : CASE constant_expression COLON
 		| DEFAULT COLON
@@ -706,9 +706,9 @@ def p_statement_expression_list(p):
 		| statement_expression_list COMMA statement_expression
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[3]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[3])]
 
 def p_jump_statement(p):
 	"""jump_statement : break_statement
@@ -749,9 +749,9 @@ def p_expression_opt(p):
 # 		| catch_clauses catch_clause
 # 	"""
 # 	if len(p) == 2:
-# 		p[0] = [p[1]]
+# 		p[0] = [deepcopy(p[1])]
 # 	else:
-# 		p[0] = deepcopy(p[1]).append(p[2])
+# 		p[0] = deepcopy(p[1]).append(deepcopy(p[2]))
 # def p_catch_clause(p):
 # 	"""catch_clause : CATCH LPAREN class_type identifier_opt RPAREN block
 # 		| CATCH LPAREN type_name identifier_opt RPAREN block
@@ -828,22 +828,22 @@ def p_explicit_anonymous_function_parameter_list(p):
 													| explicit_anonymous_function_parameter_list COMMA explicit_anonymous_function_parameter
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_explicit_anonymous_function_parameter(p):
 	"""explicit_anonymous_function_parameter : type IDENTIFIER
 	"""	
-	p[0] = [p[1],p[2]]
+	p[0] = [deepcopy(p[1]),deepcopy(p[2])]
 
 # Compilation Unit
 def p_compilation_unit(p):
 	"""compilation_unit : using_directives_opt
 		| using_directives_opt namespace_member_declarations
 	"""
-	p[0] = [p[1]]
+	p[0] = [deepcopy(p[1])]
 	if len(p) == 3:
-		p[0].append(p[1])
+		p[0].append(deepcopy(p[1]))
 
 def p_using_directives_opt(p):
 	"""using_directives_opt : empty 
@@ -869,29 +869,29 @@ def p_qualified_identifier(p):
 		| qualifier IDENTIFIER
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_qualifier(p):
 	"""qualifier : IDENTIFIER MEMBERACCESS 
 		| qualifier IDENTIFIER MEMBERACCESS 
 	"""
 	if len(p) == 3:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_namespace_body(p):
 	"""namespace_body : LBRACE push_scope using_directives_opt namespace_member_declarations_opt pop_scope RBRACE
 	"""
-	p[0] = [p[3],p[4]]
+	p[0] = [deepcopy(p[3]),deepcopy(p[4])]
 def p_using_directives(p):
 	"""using_directives : using_directive
 		| using_directives using_directive
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_using_directive(p):
 	"""using_directive : using_alias_directive
 		| using_namespace_directive
@@ -910,9 +910,9 @@ def p_namespace_member_declarations(p):
 		| namespace_member_declarations namespace_member_declaration
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_namespace_member_declaration(p):
 	"""namespace_member_declaration : namespace_declaration
 		| type_declaration
@@ -937,9 +937,9 @@ def p_modifiers(p):
 		| modifiers modifier
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_modifier(p):
 	"""modifier : ABSTRACT
 		| EXTERN
@@ -986,9 +986,9 @@ def p_class_member_declarations(p):
 		| class_member_declarations class_member_declaration
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_class_member_declaration(p):
 	"""class_member_declaration : constant_declaration
 		| field_declaration
@@ -1015,7 +1015,7 @@ def p_method_header(p):
 	"""method_header :  modifiers_opt type qualified_identifier LPAREN formal_parameter_list_opt RPAREN
 					 |  modifiers_opt VOID qualified_identifier LPAREN formal_parameter_list_opt RPAREN
 	"""
-	p[0] = [p[1], p[2], p[3], p[5]]
+	p[0] = [deepcopy(p[1]), deepcopy(p[2]), deepcopy(p[3]), deepcopy(p[5])]
 def p_formal_parameter_list_opt(p):
 	"""formal_parameter_list_opt : empty 
 		| formal_parameter_list
@@ -1036,9 +1036,9 @@ def p_formal_parameter_list(p):
 		| formal_parameter_list COMMA formal_parameter
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_formal_parameter(p):
 	"""formal_parameter : parameter_array
 	"""
@@ -1057,7 +1057,7 @@ def p_formal_parameter(p):
 def p_parameter_array(p):
 	"""parameter_array :  PARAMS type IDENTIFIER
 	"""
-	p[0] = [p[2],p[3]]
+	p[0] = [deepcopy(p[2]),deepcopy(p[3])]
  
 def p_operator_declaration(p):
 	"""operator_declaration :  modifiers_opt operator_declarator operator_body
@@ -1072,9 +1072,9 @@ def p_overloadable_operator_declarator(p):
 										| type OPERATOR overloadable_operator LPAREN type IDENTIFIER COMMA type IDENTIFIER RPAREN
 	"""
 	if len(p) == 8:
-		p[0] = [p[1], p[3], p[5], p[6]]
+		p[0] = [deepcopy(p[1]), deepcopy(p[3]), deepcopy(p[5]), deepcopy(p[6])]
 	else:
-		p[0] = [p[1], p[3], p[5], p[6], p[8], p[9]]
+		p[0] = [deepcopy(p[1]), deepcopy(p[3]), deepcopy(p[5]), deepcopy(p[6]), deepcopy(p[8]), deepcopy(p[9])]
 def p_overloadable_operator(p):
 	"""overloadable_operator : PLUS 
 							| MINUS 
@@ -1111,7 +1111,7 @@ def p_constructor_declaration(p):
 def p_constructor_declarator(p):
 	"""constructor_declarator : IDENTIFIER LPAREN formal_parameter_list_opt RPAREN constructor_initializer_opt
 	"""
-	p[0] = [p[1], p[3], p[5]]
+	p[0] = [deepcopy(p[1]), deepcopy(p[3]), deepcopy(p[5])]
 def p_constructor_initializer_opt(p):
 	"""constructor_initializer_opt : empty 
 		| constructor_initializer
@@ -1121,7 +1121,7 @@ def p_constructor_initializer(p):
 	"""constructor_initializer : COLON BASE LPAREN argument_list_opt RPAREN
 							   | COLON THIS LPAREN argument_list_opt RPAREN
 	"""
-	p[0] = [p[2], p[4]]
+	p[0] = [deepcopy(p[2]), deepcopy(p[4])]
 def p_destructor_declaration(p):
 	"""destructor_declaration :  modifiers_opt NOT IDENTIFIER LPAREN RPAREN block
 	"""
@@ -1155,9 +1155,9 @@ def p_struct_member_declarations(p):
 		| struct_member_declarations struct_member_declaration
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_struct_member_declaration(p):
 	"""struct_member_declaration : constant_declaration
 		| field_declaration
@@ -1183,9 +1183,9 @@ def p_variable_initializer_list(p):
 		| variable_initializer_list COMMA variable_initializer
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 # C.2.10 Enums 
 def p_enum_declaration(p):
 	"""enum_declaration :  modifiers_opt ENUM IDENTIFIER enum_base_opt enum_body stmt_term_opt
@@ -1215,9 +1215,9 @@ def p_enum_member_declarations(p):
 		| enum_member_declarations COMMA enum_member_declaration
 	"""
 	if len(p) == 2:
-		p[0] = [p[1]]
+		p[0] = [deepcopy(p[1])]
 	else:
-		p[0] = deepcopy(p[1]) + [p[2]]
+		p[0] = deepcopy(p[1]) + [deepcopy(p[2])]
 def p_enum_member_declaration(p):
 	"""enum_member_declaration :  IDENTIFIER
 		|  IDENTIFIER EQUALS constant_expression
@@ -1225,7 +1225,7 @@ def p_enum_member_declaration(p):
 	if len(p) == 2:
 		p[0] = deepcopy(p[1])
 	else:
-		p[0] = [p[1], p[3]]
+		p[0] = [deepcopy(p[1]), deepcopy(p[3])]
 
 # C.2.11 Delegates 
 # def p_delegate_declaration(p):
