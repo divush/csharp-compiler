@@ -824,13 +824,15 @@ def p_explicit_anonymous_function_parameter(p):
 	"""explicit_anonymous_function_parameter : type IDENTIFIER
 	"""	
 	p[0] = [p[1],p[2]]
-	
+
 # Compilation Unit
 def p_compilation_unit(p):
 	"""compilation_unit : using_directives_opt
 		| using_directives_opt namespace_member_declarations
 	"""
-
+	p[0] = [p[0]]
+	if len(p) == 3:
+		p[0].append(p[1])
 
 def p_using_directives_opt(p):
 	"""using_directives_opt : empty 
@@ -843,26 +845,34 @@ def p_namespace_member_declarations_opt(p):
 	"""
 	p[0] = p[1]
 def p_namespace_declaration(p):
-	"""namespace_declaration :  NAMESPACE qualified_identifier namespace_body comma_opt
+	"""namespace_declaration :  NAMESPACE qualified_identifier namespace_body stmt_term_opt
 	"""
-
-def p_comma_opt(p):
-	"""comma_opt : empty 
+	p[0] = create_namespace(p[2],p[3])
+def p_stmt_term_opt(p):
+	"""stmt_term_opt : empty 
 		| STMT_TERMINATOR
 	"""
-
+	p[0] = p[1]
 def p_qualified_identifier(p):
 	"""qualified_identifier : IDENTIFIER
 		| qualifier IDENTIFIER
 	"""
-
+	if len(p) == 2:
+		p[0] = p[1]
+	else:
+		p[0] = create_member(p[1], p[2])
 def p_qualifier(p):
 	"""qualifier : IDENTIFIER MEMBERACCESS 
 		| qualifier IDENTIFIER MEMBERACCESS 
 	"""
+	if len(p) == 3:
+		p[0] = [p[1]]
+	else:
+		p[0] = p[1].append(p[2])
 def p_namespace_body(p):
 	"""namespace_body : LBRACE using_directives_opt namespace_member_declarations_opt RBRACE
 	"""
+	p[0] = create_namespace_body(p[2],p[3])
 def p_using_directives(p):
 	"""using_directives : using_directive
 		| using_directives using_directive
@@ -875,12 +885,15 @@ def p_using_directive(p):
 	"""using_directive : using_alias_directive
 		| using_namespace_directive
 	"""
+	p[0] = p[1]
 def p_using_alias_directive(p):
 	"""using_alias_directive : USING IDENTIFIER EQUALS qualified_identifier STMT_TERMINATOR
 	"""
+	p[0] = create_identifier_alias(p[2], p[4])
 def p_using_namespace_directive(p):
 	"""using_namespace_directive : USING namespace_name STMT_TERMINATOR
 	"""
+	p[0] = create_using_namespace_directive(p[2])
 def p_namespace_member_declarations(p):
 	"""namespace_member_declarations : namespace_member_declaration
 		| namespace_member_declarations namespace_member_declaration
@@ -935,8 +948,10 @@ def p_modifier(p):
 	p[0] = p[1]
 # C.2.6 Classes 
 def p_class_declaration(p):
-	"""class_declaration :  modifiers_opt CLASS IDENTIFIER class_base_opt class_body comma_opt
+	"""class_declaration :  modifiers_opt CLASS IDENTIFIER class_base_opt class_body stmt_term_opt
 	"""
+	# create_class(modifiers, identifier, base, body)
+	p[0] = create_class(p[1], p[3], p[4], p[5])
 def p_class_base_opt(p):
 	"""class_base_opt : empty 
 		| class_base
@@ -945,9 +960,11 @@ def p_class_base_opt(p):
 def p_class_base(p):
 	"""class_base : COLON class_type
 	"""
+	p[0] = p[2]
 def p_class_body(p):
 	"""class_body : LBRACE class_member_declarations_opt RBRACE
 	"""
+	p[0] = p[2]
 def p_class_member_declarations_opt(p):
 	"""class_member_declarations_opt : empty 
 		| class_member_declarations
@@ -974,17 +991,20 @@ def p_class_member_declaration(p):
 def p_constant_declaration(p):
 	"""constant_declaration :  modifiers_opt CONST type constant_declarators STMT_TERMINATOR
 	"""
+	p[0] = create_constant(p[1],p[3],p[4])
 def p_field_declaration(p):
 	"""field_declaration :  modifiers_opt type variable_declarators STMT_TERMINATOR
 	"""
+	p[0] = create_field(p[1],p[2],p[3])
 def p_method_declaration(p):
 	"""method_declaration : method_header method_body
 	"""
-
+	p[0] = create_method(p[1],p[2])
 def p_method_header(p):
 	"""method_header :  modifiers_opt type qualified_identifier LPAREN formal_parameter_list_opt RPAREN
-		|  modifiers_opt VOID qualified_identifier LPAREN formal_parameter_list_opt RPAREN
+					 |  modifiers_opt VOID qualified_identifier LPAREN formal_parameter_list_opt RPAREN
 	"""
+	p[0] = create_method_header(p[1], p[2], p[3], p[5])
 def p_formal_parameter_list_opt(p):
 	"""formal_parameter_list_opt : empty 
 		| formal_parameter_list
@@ -1009,36 +1029,41 @@ def p_formal_parameter_list(p):
 	else:
 		p[0] = p[1].append(p[2])
 def p_formal_parameter(p):
-	"""formal_parameter : fixed_parameter
-		| parameter_array
+	"""formal_parameter : parameter_array
 	"""
 	p[0] = p[1]
-def p_fixed_parameter(p):
-	"""fixed_parameter :  parameter_modifier_opt type IDENTIFIER
-	"""
-def p_parameter_modifier_opt(p):
-	"""parameter_modifier_opt : empty 
-		| REF
-		| OUT
-	"""
+
+# def p_fixed_parameter(p):
+# 	"""fixed_parameter :  parameter_modifier_opt type IDENTIFIER
+# 	"""
+# def p_parameter_modifier_opt(p):
+# 	"""parameter_modifier_opt : empty 
+# 		| REF
+# 		| OUT
+# 	"""
+
 	p[0] = p[1]
 def p_parameter_array(p):
 	"""parameter_array :  PARAMS type IDENTIFIER
 	"""
-
+	p[0] = [p[2],p[3]]
  
 def p_operator_declaration(p):
 	"""operator_declaration :  modifiers_opt operator_declarator operator_body
 	"""
+	p[0] = create_operator_declaration(p[1], p[2], p[3])
 def p_operator_declarator(p):
 	"""operator_declarator : overloadable_operator_declarator
-		| conversion_operator_declarator
 	"""
 	p[0] = p[1]
 def p_overloadable_operator_declarator(p):
 	"""overloadable_operator_declarator : type OPERATOR overloadable_operator LPAREN type IDENTIFIER RPAREN
-		| type OPERATOR overloadable_operator LPAREN type IDENTIFIER COMMA type IDENTIFIER RPAREN
+										| type OPERATOR overloadable_operator LPAREN type IDENTIFIER COMMA type IDENTIFIER RPAREN
 	"""
+	if len(p) == 8:
+		p[0] = create_overloadable_unary_operator_declarator(p[1], p[3], p[5], p[6])
+	else:
+		p[0] = create_overloadable_binary_operator_declarator(p[1], p[3], p[5], p[6], p[8], p[9])
 def p_overloadable_operator(p):
 	"""overloadable_operator : PLUS 
 							| MINUS 
@@ -1064,16 +1089,18 @@ def p_overloadable_operator(p):
 							| LE
 	"""
 	p[0] = p[1]
-def p_conversion_operator_declarator(p):
-	"""conversion_operator_declarator : IMPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
-		| EXPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
-	"""
+# def p_conversion_operator_declarator(p):
+# 	"""conversion_operator_declarator : IMPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
+# 		| EXPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
+# 	"""
 def p_constructor_declaration(p):
 	"""constructor_declaration :  modifiers_opt constructor_declarator constructor_body
 	"""
+	p[0] = create_constructor(p[1], p[2], p[3])
 def p_constructor_declarator(p):
 	"""constructor_declarator : IDENTIFIER LPAREN formal_parameter_list_opt RPAREN constructor_initializer_opt
 	"""
+	p[0] = create_constructor_declarator(p[1], p[3], p[5])
 def p_constructor_initializer_opt(p):
 	"""constructor_initializer_opt : empty 
 		| constructor_initializer
@@ -1081,12 +1108,13 @@ def p_constructor_initializer_opt(p):
 	p[0] = p[1]
 def p_constructor_initializer(p):
 	"""constructor_initializer : COLON BASE LPAREN argument_list_opt RPAREN
-		| COLON THIS LPAREN argument_list_opt RPAREN
+							   | COLON THIS LPAREN argument_list_opt RPAREN
 	"""
-
+	p[0] = create_constructor_initializer(p[2], p[4])
 def p_destructor_declaration(p):
 	"""destructor_declaration :  modifiers_opt NOT IDENTIFIER LPAREN RPAREN block
 	"""
+	p[0] = create_destructor(p[1], p[3], p[6])
 def p_operator_body(p):
 	"""operator_body : block
 		| STMT_TERMINATOR
@@ -1099,9 +1127,9 @@ def p_constructor_body(p):
 	p[0] = p[1]
 # C.2.7 Structs 
 def p_struct_declaration(p):
-	"""struct_declaration :  modifiers_opt STRUCT IDENTIFIER struct_body comma_opt
+	"""struct_declaration :  modifiers_opt STRUCT IDENTIFIER struct_body stmt_term_opt
 	"""
-
+	p[0] = create_struct(p[1], p[3], p[4])
 def p_struct_body(p):
 	"""struct_body : LBRACE struct_member_declarations_opt RBRACE
 	"""
@@ -1131,8 +1159,9 @@ def p_struct_member_declaration(p):
 # C.2.8 Arrays 
 def p_array_initializer(p):
 	"""array_initializer : LBRACE variable_initializer_list_opt RBRACE
-		| LBRACE variable_initializer_list COMMA RBRACE
+						 | LBRACE variable_initializer_list COMMA RBRACE
 	"""
+	p[0] = p[2]
 def p_variable_initializer_list_opt(p):
 	"""variable_initializer_list_opt : empty 
 		| variable_initializer_list
@@ -1148,8 +1177,9 @@ def p_variable_initializer_list(p):
 		p[0] = p[1].append(p[2])
 # C.2.10 Enums 
 def p_enum_declaration(p):
-	"""enum_declaration :  modifiers_opt ENUM IDENTIFIER enum_base_opt enum_body comma_opt
+	"""enum_declaration :  modifiers_opt ENUM IDENTIFIER enum_base_opt enum_body stmt_term_opt
 	"""
+	p[0] = create_enum(p[1], p[3], p[4], p[5])
 def p_enum_base_opt(p):
 	"""enum_base_opt : empty 
 		| enum_base
@@ -1158,10 +1188,12 @@ def p_enum_base_opt(p):
 def p_enum_base(p):
 	"""enum_base : COLON integral_type
 	"""
+	p[0] = p[2]
 def p_enum_body(p):
 	"""enum_body : LBRACE enum_member_declarations_opt RBRACE
-		| LBRACE enum_member_declarations COMMA RBRACE
+				 | LBRACE enum_member_declarations COMMA RBRACE
 	"""
+	p[0] = p[2]
 def p_enum_member_declarations_opt(p):
 	"""enum_member_declarations_opt : empty 
 		| enum_member_declarations
@@ -1179,13 +1211,16 @@ def p_enum_member_declaration(p):
 	"""enum_member_declaration :  IDENTIFIER
 		|  IDENTIFIER EQUALS constant_expression
 	"""
+	if len(p) == 2:
+		p[0] = p[1]
+	else:
+		p[0] = [p[1], p[3]]
 
 # C.2.11 Delegates 
 def p_delegate_declaration(p):
 	"""delegate_declaration :  modifiers_opt DELEGATE return_type IDENTIFIER LPAREN formal_parameter_list_opt RPAREN STMT_TERMINATOR
 	"""
-
-# Anonymous Functions
+	p[0] = create_delegate(p[1], p[3], p[4], p[6])
 
 
 def p_empty(p):
