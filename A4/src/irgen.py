@@ -39,7 +39,11 @@ class pointer:
 	def __init__(typ):
 		self.sub_typ = typ
 		self.size = 4
-	 
+count = 0
+TAC=[]
+def emit(lineir):
+	TAC.append(lineir)
+
 def create_array_from_basic(typ, dims, init):
 	pass
 
@@ -87,7 +91,24 @@ def pre_decrement_expression(expr):
 	pass
 
 def expression(operand1, operator, operand2):
-	pass
+	count = count + 1
+	#Check for operand1 and operand2 in symtab
+	#vartype = operand1
+	op1_l = lookup(operand1)
+	op2_l = lookup(operand2)
+	if op1_l is None:
+		print("Error: Variable "+ operand1 + " not delared!")
+		exit()
+	if op2_l is None:
+		print("Error: Variable "+ operand2 + " not delared!")
+		exit()
+	tvar = "t"+str(count)
+	tvar_type = op1_l[1]
+	tvar_size = max(op1_l[3], op2_l[3])
+	insert(tvar, tvar_type, None, None, category="temp")
+	temp = str(operator)+", " + tvar +", " + str(operand1)+", " + str(operand2)
+	emit(temp)
+	return tvar
 
 def create_and_expression(and_expr, clause):
 	pass
