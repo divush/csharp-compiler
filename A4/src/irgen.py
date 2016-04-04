@@ -1,9 +1,5 @@
 #!/usr/bin/python3
-# Parser for C# in Python
-
-# Grammar Specification Reference
-# https://msdn.microsoft.com/en-in/library/aa664812(v=vs.71).aspx
-# With some modifications to resolve conflicts
+# Interediate Code Generator
 
 # Authors: Divyanshu Shende, Pranshu Gupta, Prashant Kumar, Rahul Tudu
 # Compiler Design: CS335A, Group 25, Indian Institute of Technology, Kanpur
@@ -136,4 +132,19 @@ def create_class(modifiers, identifier, base, body):
 	pass
 
 def create_method(header, body):
+	pass
+
+def create_operator_declaration(modifiers, declarator, body):
+	pass
+
+def create_constructor(modifiers, declarator, body):
+	pass
+
+def create_destructor(modifiers, identifier, body):
+	pass
+
+def create_struct(modifiers, identifier, body):
+	pass
+
+def create_enum(modifiers, identifier, base, body):
 	pass

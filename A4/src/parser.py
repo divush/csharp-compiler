@@ -1068,9 +1068,9 @@ def p_overloadable_operator_declarator(p):
 										| type OPERATOR overloadable_operator LPAREN type IDENTIFIER COMMA type IDENTIFIER RPAREN
 	"""
 	if len(p) == 8:
-		p[0] = create_overloadable_unary_operator_declarator(p[1], p[3], p[5], p[6])
+		p[0] = [p[1], p[3], p[5], p[6]]
 	else:
-		p[0] = create_overloadable_binary_operator_declarator(p[1], p[3], p[5], p[6], p[8], p[9])
+		p[0] = [p[1], p[3], p[5], p[6], p[8], p[9]]
 def p_overloadable_operator(p):
 	"""overloadable_operator : PLUS 
 							| MINUS 
@@ -1107,7 +1107,7 @@ def p_constructor_declaration(p):
 def p_constructor_declarator(p):
 	"""constructor_declarator : IDENTIFIER LPAREN formal_parameter_list_opt RPAREN constructor_initializer_opt
 	"""
-	p[0] = create_constructor_declarator(p[1], p[3], p[5])
+	p[0] = [p[1], p[3], p[5]]
 def p_constructor_initializer_opt(p):
 	"""constructor_initializer_opt : empty 
 		| constructor_initializer
@@ -1117,7 +1117,7 @@ def p_constructor_initializer(p):
 	"""constructor_initializer : COLON BASE LPAREN argument_list_opt RPAREN
 							   | COLON THIS LPAREN argument_list_opt RPAREN
 	"""
-	p[0] = create_constructor_initializer(p[2], p[4])
+	p[0] = [p[2], p[4]]
 def p_destructor_declaration(p):
 	"""destructor_declaration :  modifiers_opt NOT IDENTIFIER LPAREN RPAREN block
 	"""
@@ -1224,10 +1224,10 @@ def p_enum_member_declaration(p):
 		p[0] = [p[1], p[3]]
 
 # C.2.11 Delegates 
-def p_delegate_declaration(p):
-	"""delegate_declaration :  modifiers_opt DELEGATE return_type IDENTIFIER LPAREN formal_parameter_list_opt RPAREN STMT_TERMINATOR
-	"""
-	p[0] = create_delegate(p[1], p[3], p[4], p[6])
+# def p_delegate_declaration(p):
+# 	"""delegate_declaration :  modifiers_opt DELEGATE return_type IDENTIFIER LPAREN formal_parameter_list_opt RPAREN STMT_TERMINATOR
+# 	"""
+# 	p[0] = create_delegate(p[1], p[3], p[4], p[6])
 
 
 def p_empty(p):
