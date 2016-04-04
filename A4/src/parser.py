@@ -513,9 +513,9 @@ def p_embedded_statement(p):
 	"""
 	p[0] = deepcopy(p[1])
 def p_block(p):
-	"""block : LBRACE statement_list_opt RBRACE
+	"""block : LBRACE push_scope statement_list_opt pop_scope RBRACE
 	"""
-	p[0] = deepcopy(p[2])
+	p[0] = deepcopy(p[3])
 def p_statement_list_opt(p):
 	"""statement_list_opt : empty 
 		| statement_list
@@ -616,9 +616,9 @@ def p_switch_statement(p):
 	"""
 	p[0] = create_switch_statement(p[3], p[5])
 def p_switch_block(p):
-	"""switch_block : LBRACE switch_sections_opt RBRACE
+	"""switch_block : LBRACE push_scope switch_sections_opt pop_scope RBRACE
 	"""
-	p[0] = deepcopy(p[2])
+	p[0] = deepcopy(p[3])
 def p_switch_sections_opt(p):
 	"""switch_sections_opt : empty 
 		| switch_sections
@@ -877,9 +877,9 @@ def p_qualifier(p):
 	else:
 		p[0] = deepcopy(p[1]) + [p[2]]
 def p_namespace_body(p):
-	"""namespace_body : LBRACE using_directives_opt namespace_member_declarations_opt RBRACE
+	"""namespace_body : LBRACE push_scope using_directives_opt namespace_member_declarations_opt pop_scope RBRACE
 	"""
-	p[0] = [p[2],p[3]]
+	p[0] = [p[3],p[4]]
 def p_using_directives(p):
 	"""using_directives : using_directive
 		| using_directives using_directive
@@ -969,9 +969,9 @@ def p_class_base(p):
 	"""
 	p[0] = deepcopy(p[2])
 def p_class_body(p):
-	"""class_body : LBRACE class_member_declarations_opt RBRACE
+	"""class_body : LBRACE push_scope class_member_declarations_opt pop_scope RBRACE
 	"""
-	p[0] = deepcopy(p[2])
+	p[0] = deepcopy(p[3])
 def p_class_member_declarations_opt(p):
 	"""class_member_declarations_opt : empty 
 		| class_member_declarations
@@ -1138,9 +1138,9 @@ def p_struct_declaration(p):
 	"""
 	p[0] = create_struct(p[1], p[3], p[4])
 def p_struct_body(p):
-	"""struct_body : LBRACE struct_member_declarations_opt RBRACE
+	"""struct_body : LBRACE push_scope struct_member_declarations_opt pop_scope RBRACE
 	"""
-	p[0] = deepcopy(p[2])
+	p[0] = deepcopy(p[3])
 def p_struct_member_declarations_opt(p):
 	"""struct_member_declarations_opt : empty 
 		| struct_member_declarations
@@ -1165,10 +1165,10 @@ def p_struct_member_declaration(p):
 	p[0] = deepcopy(p[1])
 # C.2.8 Arrays 
 def p_array_initializer(p):
-	"""array_initializer : LBRACE variable_initializer_list_opt RBRACE
-						 | LBRACE variable_initializer_list COMMA RBRACE
+	"""array_initializer : LBRACE push_scope variable_initializer_list_opt pop_scope RBRACE
+						 | LBRACE push_scope variable_initializer_list COMMA pop_scope RBRACE
 	"""
-	p[0] = deepcopy(p[2])
+	p[0] = deepcopy(p[3])
 def p_variable_initializer_list_opt(p):
 	"""variable_initializer_list_opt : empty 
 		| variable_initializer_list
@@ -1197,10 +1197,10 @@ def p_enum_base(p):
 	"""
 	p[0] = deepcopy(p[2])
 def p_enum_body(p):
-	"""enum_body : LBRACE enum_member_declarations_opt RBRACE
-				 | LBRACE enum_member_declarations COMMA RBRACE
+	"""enum_body : LBRACE push_scope enum_member_declarations_opt pop_scope RBRACE
+				 | LBRACE push_scope enum_member_declarations COMMA pop_scope RBRACE
 	"""
-	p[0] = deepcopy(p[2])
+	p[0] = deepcopy(p[3])
 def p_enum_member_declarations_opt(p):
 	"""enum_member_declarations_opt : empty 
 		| enum_member_declarations
@@ -1229,6 +1229,15 @@ def p_enum_member_declaration(p):
 # 	"""
 # 	p[0] = create_delegate(p[1], p[3], p[4], p[6])
 
+def p_push_scope(p):
+	"""push_scope : empty
+	"""
+	push_scope()
+
+def p_pop_scope():
+	"""pop_scope : empty
+	"""
+	pop_scope()
 
 def p_empty(p):
 	"""empty :"""
