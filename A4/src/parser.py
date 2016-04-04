@@ -166,7 +166,7 @@ def p_argument_list(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[3])
+		p[0] = p[1] + [p[3]]
 def p_argument(p):
 	"""argument : expression
 		| REF variable_reference
@@ -239,7 +239,7 @@ def p_expression_list(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[3])
+		p[0] = p[1] + [p[3]]
 def p_this_access(p):
 	"""this_access : THIS
 	"""
@@ -356,7 +356,7 @@ def p_type_quals(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 def p_type_qual (p):
 	"""type_qual  : rank_specifier 
 		| dereferencer
@@ -528,7 +528,7 @@ def p_statement_list(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 def p_empty_statement(p):
 	"""empty_statement : STMT_TERMINATOR
 	"""
@@ -631,7 +631,7 @@ def p_switch_sections(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 def p_switch_section(p):
 	"""switch_section : switch_labels statement_list
 	"""
@@ -643,7 +643,7 @@ def p_switch_labels(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 def p_switch_label(p):
 	"""switch_label : CASE constant_expression COLON
 		| DEFAULT COLON
@@ -704,7 +704,7 @@ def p_statement_expression_list(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[3])
+		p[0] = p[1] + [p[3]]
 
 def p_jump_statement(p):
 	"""jump_statement : break_statement
@@ -827,7 +827,7 @@ def p_explicit_anonymous_function_parameter_list(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 def p_explicit_anonymous_function_parameter(p):
 	"""explicit_anonymous_function_parameter : type IDENTIFIER
 	"""	
@@ -838,7 +838,7 @@ def p_compilation_unit(p):
 	"""compilation_unit : using_directives_opt
 		| using_directives_opt namespace_member_declarations
 	"""
-	p[0] = [p[0]]
+	p[0] = [p[1]]
 	if len(p) == 3:
 		p[0].append(p[1])
 
@@ -876,7 +876,7 @@ def p_qualifier(p):
 	if len(p) == 3:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 def p_namespace_body(p):
 	"""namespace_body : LBRACE using_directives_opt namespace_member_declarations_opt RBRACE
 	"""
@@ -888,7 +888,7 @@ def p_using_directives(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 def p_using_directive(p):
 	"""using_directive : using_alias_directive
 		| using_namespace_directive
@@ -909,7 +909,7 @@ def p_namespace_member_declarations(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 def p_namespace_member_declaration(p):
 	"""namespace_member_declaration : namespace_declaration
 		| type_declaration
@@ -936,7 +936,7 @@ def p_modifiers(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 def p_modifier(p):
 	"""modifier : ABSTRACT
 		| EXTERN
@@ -985,7 +985,7 @@ def p_class_member_declarations(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 def p_class_member_declaration(p):
 	"""class_member_declaration : constant_declaration
 		| field_declaration
@@ -1035,7 +1035,7 @@ def p_formal_parameter_list(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 def p_formal_parameter(p):
 	"""formal_parameter : parameter_array
 	"""
@@ -1154,7 +1154,7 @@ def p_struct_member_declarations(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 def p_struct_member_declaration(p):
 	"""struct_member_declaration : constant_declaration
 		| field_declaration
@@ -1182,7 +1182,7 @@ def p_variable_initializer_list(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 # C.2.10 Enums 
 def p_enum_declaration(p):
 	"""enum_declaration :  modifiers_opt ENUM IDENTIFIER enum_base_opt enum_body stmt_term_opt
@@ -1214,7 +1214,7 @@ def p_enum_member_declarations(p):
 	if len(p) == 2:
 		p[0] = [p[1]]
 	else:
-		p[0] = p[1].append(p[2])
+		p[0] = p[1] + [p[2]]
 def p_enum_member_declaration(p):
 	"""enum_member_declaration :  IDENTIFIER
 		|  IDENTIFIER EQUALS constant_expression
