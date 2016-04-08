@@ -21,7 +21,7 @@ registers = registers.fromkeys(reglist)
 
 # Mathematical Operators
 mathops = ['+', '-', '*', '/', '%']
-
+relops = ['&&', '||', '~']
 # Variable 
 varlist = []
 addressDescriptor = {}
@@ -617,6 +617,162 @@ def translate(instruction):
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
 
+	elif operator == "&&":
+		#Line, &&, result, op1, op2
+		result = instruction[2]
+		operand1 = instruction[3]		#num
+		operand2 = instruction[4]		#count
+		if isnumber(operand1) and isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			assembly = assembly + "movl $" + str(int(operand1) and int(operand2)) + ", " + regdest + "\n"
+			# Update the address descriptor entry for result variable to say where it is stored no
+			setregister(regdest, result)
+			setlocation(result, regdest)
+		elif isnumber(operand1) and not isnumber(operand2):
+			#case result = 0 && x
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc2 = getlocation(operand2)
+			# Move 5 to result, result = 5
+			assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
+			#perform logical and, result = result >> x
+			if loc2 != "mem":
+				assembly = assembly + "and " + loc2 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "and " + operand2 + ", " + regdest + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and isnumber(operand2):
+			#case result = a && 2
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc1 = getlocation(operand1)
+			# Move a to regdest, result = a
+			if loc1 != "mem":
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+			# Perform Logical and result = result && 2
+			assembly = assembly + "and $" + operand2 + ", " + regdest + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and not isnumber(operand2):
+			#case result = a && b
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			# Get the locations of the operands
+			loc1 = getlocation(operand1)
+			loc2 = getlocation(operand2)
+			if loc1 != "mem" and loc2 != "mem":
+				#result = a and result = result && b
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "and " + loc2 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "and " + operand2 + ", " + regdest + "\n"
+			elif loc1 != "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "and " + loc2 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "and " + operand2 + ", " + regdest + "\n"					
+			# Update the register descriptor entry for regdest to say that it contains the result
+			setregister(regdest, result)
+			# Update the address descriptor entry for result variable to say where it is stored now
+			setlocation(result, regdest)
+
+	elif operator == "||":
+		#Line, ||, result, op1, op2
+		result = instruction[2]
+		operand1 = instruction[3]		#op1
+		operand2 = instruction[4]		#op2
+		if isnumber(operand1) and isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			assembly = assembly + "movl $" + str(int(operand1) or int(operand2)) + ", " + regdest + "\n"
+			# Update the address descriptor entry for result variable to say where it is stored no
+			setregister(regdest, result)
+			setlocation(result, regdest)
+		elif isnumber(operand1) and not isnumber(operand2):
+			#case result = 0 || x
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc2 = getlocation(operand2)
+			# Move 5 to result, result = 5
+			assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
+			#perform logical and, result = result || x
+			if loc2 != "mem":
+				assembly = assembly + "or " + loc2 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "or " + operand2 + ", " + regdest + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and isnumber(operand2):
+			#case result = a || 2
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc1 = getlocation(operand1)
+			# Move a to regdest, result = a
+			if loc1 != "mem":
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+			# Perform Logical and result = result || 2
+			assembly = assembly + "or $" + operand2 + ", " + regdest + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and not isnumber(operand2):
+			#case result = a || b
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			# Get the locations of the operands
+			loc1 = getlocation(operand1)
+			loc2 = getlocation(operand2)
+			if loc1 != "mem" and loc2 != "mem":
+				#result = a and result = result || b
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "or " + loc2 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "or " + operand2 + ", " + regdest + "\n"
+			elif loc1 != "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "or " + loc2 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "or " + operand2 + ", " + regdest + "\n"					
+			# Update the register descriptor entry for regdest to say that it contains the result
+			setregister(regdest, result)
+			# Update the address descriptor entry for result variable to say where it is stored now
+			setlocation(result, regdest)
+
+	elif operator == "~":
+		#Line, not, result, op1
+		result = instruction[2]
+		operand1 = instruction[3]		#num
+		if isnumber(operand1):
+			#Case : result = !(1)
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			assembly = assembly + "movl $" + str(not(int(operand1))) + ", " + regdest + "\n"
+			# Update the address descriptor entry for result variable to say where it is stored no
+			setregister(regdest, result)
+			setlocation(result, regdest)
+		elif not isnumber(operand1):
+			#case result = !(a)
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc1 = getlocation(operand1)
+			# Move a to regdest, result = a
+			if loc1 != "mem":
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+			# Perform Logical and result = !(result)
+			assembly = assembly + "not $" + operand2 + ", " + regdest + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)
 	# Return the assembly code
 	return assembly
 
