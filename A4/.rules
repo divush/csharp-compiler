@@ -1,0 +1,416 @@
+# C.2.7 Structs 
+# def p_struct_declaration(p):
+# 	"""struct_declaration :  STRUCT IDENTIFIER struct_body comma_opt
+# 	"""
+# def p_struct_body(p):
+# 	"""struct_body : LBRACE struct_member_declarations_opt RBRACE
+# 	"""
+# def p_struct_member_declarations_opt(p):
+# 	"""struct_member_declarations_opt : empty 
+# 		| struct_member_declarations
+# 	"""
+# def p_struct_member_declarations(p):
+# 	"""struct_member_declarations : struct_member_declaration
+# 		| struct_member_declarations struct_member_declaration
+# 	"""
+# def p_struct_member_declaration(p):
+# 	"""struct_member_declaration : field_declaration
+# 		| method_declaration
+# 		| constructor_declaration
+# 		| type_declaration
+# 	"""
+
+# # C.2.10 Enums 
+# def p_enum_declaration(p):
+# 	"""enum_declaration :  ENUM IDENTIFIER enum_base_opt enum_body comma_opt
+# 	"""
+# def p_enum_base_opt(p):
+# 	"""enum_base_opt : empty 
+# 		| enum_base
+# 	"""
+# def p_enum_base(p):
+# 	"""enum_base : COLON integral_type
+# 	"""
+# def p_enum_body(p):
+# 	"""enum_body : LBRACE enum_member_declarations_opt RBRACE
+# 		| LBRACE enum_member_declarations COMMA RBRACE
+# 	"""
+# def p_enum_member_declarations_opt(p):
+# 	"""enum_member_declarations_opt : empty 
+# 		| enum_member_declarations
+# 	"""
+# def p_enum_member_declarations(p):
+# 	"""enum_member_declarations : enum_member_declaration
+# 		| enum_member_declarations COMMA enum_member_declaration
+# 	"""
+# def p_enum_member_declaration(p):
+# 	"""enum_member_declaration :  IDENTIFIER
+# 		|  IDENTIFIER EQUALS constant_expression
+# 	"""
+
+# C.2.11 Delegates 
+# def p_delegate_declaration(p):
+# 	"""delegate_declaration :  DELEGATE return_type IDENTIFIER LPAREN formal_parameter_list_opt RPAREN STMT_TERMINATOR
+# 	"""
+
+# def p_destructor_declaration(p):
+# 	"""destructor_declaration :  NOT IDENTIFIER LPAREN RPAREN block
+# 	"""
+
+# 	"""
+# def p_parameter_modifier_opt(p):
+# 	"""parameter_modifier_opt : empty 
+# 		| REF
+# 		| OUT
+# 	"""
+ 
+# def p_operator_declaration(p):
+# 	"""operator_declaration :  operator_declarator operator_body
+# 	"""
+# def p_operator_declarator(p):
+# 	"""operator_declarator : overloadable_operator_declarator
+# 		| conversion_operator_declarator
+# 	"""
+# def p_overloadable_operator_declarator(p):
+# 	"""overloadable_operator_declarator : type OPERATOR overloadable_operator LPAREN type IDENTIFIER RPAREN
+# 		| type OPERATOR overloadable_operator LPAREN type IDENTIFIER COMMA type IDENTIFIER RPAREN
+# 	"""
+# def p_overloadable_operator(p):
+# 	"""overloadable_operator : PLUS 
+# 							| MINUS 
+# 							| LNOT 
+# 							| NOT 
+# 							| INCREMENT 
+# 							| DECREMENT 
+# 							| TRUE 
+# 							| FALSE
+# 							| TIMES 
+# 							| DIVIDE 
+# 							| MOD 
+# 							| AND 
+# 							| OR 
+# 							| XOR 
+# 							| LSHIFT 
+# 							| RSHIFT 
+# 							| EQ
+# 							| NE
+# 							| GT 
+# 							| LT 
+# 							| GE
+# 							| LE
+# 	"""
+# def p_conversion_operator_declarator(p):
+# 	"""conversion_operator_declarator : IMPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
+# 		| EXPLICIT OPERATOR type LPAREN type IDENTIFIER RPAREN
+# 	"""
+# def p_operator_body(p):
+# 	"""operator_body : block
+# 		| STMT_TERMINATOR
+# 	"""
+# def p_constant_declaration(p):
+# 	"""constant_declaration :  modifiers_opt CONST type constant_declarators STMT_TERMINATOR
+# 	"""
+# def p_class_base_opt(p):
+# 	"""class_base_opt : empty 
+# 		| class_base
+# 	"""
+# def p_class_base(p):
+# 	"""class_base : COLON class_type
+# 	"""
+
+# Modifiers
+ 
+# def p_modifiers_opt(p):
+# 	"""modifiers_opt : empty 
+# 		| modifiers
+# 	"""
+# def p_modifiers(p):
+# 	"""modifiers : modifier
+# 		| modifiers modifier
+# 	"""
+# def p_modifier(p):
+# 	"""modifier : ABSTRACT
+# 		| EXTERN
+# 		| INTERNAL
+# 		| NEW
+# 		| OVERRIDE
+# 		| PRIVATE
+# 		| PROTECTED
+# 		| PUBLIC
+# 		| READONLY
+# 		| SEALED
+# 		| STATIC
+# 		| UNSAFE
+# 		| VIRTUAL
+# 		| VOLATILE
+# 	"""
+
+# def p_throw_statement(p):
+# 	"""throw_statement : THROW expression_opt STMT_TERMINATOR
+# 	"""
+# def p_try_statement(p):
+# 	"""try_statement : TRY block catch_clauses
+# 		| TRY block finally_clause
+# 		| TRY block catch_clauses finally_clause
+# 	"""
+# def p_catch_clauses(p):
+# 	"""catch_clauses : catch_clause
+# 		| catch_clauses catch_clause
+# 	"""
+# def p_catch_clause(p):
+# 	"""catch_clause : CATCH LPAREN class_type identifier_opt RPAREN block
+# 		| CATCH LPAREN type_name identifier_opt RPAREN block
+# 		| CATCH block
+# 	"""
+# def p_identifier_opt(p):
+# 	"""identifier_opt : empty 
+# 		| IDENTIFIER
+# 	"""
+# def p_finally_clause(p):
+# 	"""finally_clause : FINALLY block
+# 	"""
+# def p_checked_statement(p):
+# 	"""checked_statement : CHECKED block
+# 	"""
+# def p_unchecked_statement(p):
+# 	"""unchecked_statement : UNCHECKED block
+# 	"""
+# def p_lock_statement(p):
+# 	"""lock_statement : LOCK LPAREN expression RPAREN embedded_statement
+# 	"""
+# def p_using_statement(p):
+# 	"""using_statement : USING LPAREN resource_acquisition RPAREN embedded_statement
+# 	"""
+# def p_resource_acquisition(p):
+# 	"""resource_acquisition : local_variable_declaration
+# 		| expression
+# 	"""
+# def p_fixed_statement(p):
+# 	"""fixed_statement : FIXED LPAREN	type fixed_pointer_declarators RPAREN embedded_statement
+# 	"""
+# def p_fixed_pointer_declarators(p):
+# 	"""fixed_pointer_declarators : fixed_pointer_declarator
+# 		| fixed_pointer_declarators COMMA fixed_pointer_declarator
+# 	"""
+# def p_fixed_pointer_declarator(p):
+# 	"""fixed_pointer_declarator : IDENTIFIER EQUALS expression
+# 	"""
+
+# Anonymous Method Expression
+# def p_anonymous_method_expression(p):
+# 	"""anonymous_method_expression : DELEGATE explicit_anonymous_function_signature_opt block
+# 	"""
+# def p_explicit_anonymous_function_signature_opt(p):
+# 	"""explicit_anonymous_function_signature_opt : explicit_anonymous_function_signature
+# 												| empty
+# 	"""
+
+# Lambda Expressions
+# def p_lambda_expression(p):
+# 	"""lambda_expression : explicit_anonymous_function_signature LAMBDADEC block
+# 						| explicit_anonymous_function_signature LAMBDADEC expression
+# 	"""
+# def p_explicit_anonymous_function_signature(p):
+# 	"""explicit_anonymous_function_signature : LPAREN explicit_anonymous_function_parameter_list_opt RPAREN
+# 	"""
+# def p_explicit_anonymous_function_parameter_list_opt(p):
+# 	"""explicit_anonymous_function_parameter_list_opt : explicit_anonymous_function_parameter_list
+# 														| empty
+# 	"""
+# def p_explicit_anonymous_function_parameter_list(p):
+# 	"""explicit_anonymous_function_parameter_list : explicit_anonymous_function_parameter
+# 													| explicit_anonymous_function_parameter_list COMMA explicit_anonymous_function_parameter
+# 	"""
+# def p_explicit_anonymous_function_parameter(p):
+# 	"""explicit_anonymous_function_parameter : type IDENTIFIER
+# 	"""	
+
+# def p_foreach_statement(p):
+# 	"""foreach_statement : FOREACH LPAREN type IDENTIFIER IN expression RPAREN embedded_statement
+# 	"""
+
+# def p_for_initializer_opt(p):
+# 	"""for_initializer_opt : empty 
+# 		| for_initializer
+# 	"""
+# def p_for_condition_opt(p):
+# 	"""for_condition_opt : empty 
+# 		| for_condition
+# 	"""
+# def p_for_iterator_opt(p):
+# 	"""for_iterator_opt : empty 
+# 		| for_iterator
+# 	"""
+
+# def p_do_statement(p):
+# 	"""do_statement : DO embedded_statement WHILE LPAREN boolean_expression RPAREN STMT_TERMINATOR
+# 	"""
+# def p_unsafe_statement(p):
+# 	"""unsafe_statement : UNSAFE block
+# 	"""
+
+# def p_switch_statement(p):
+# 	"""switch_statement : SWITCH LPAREN expression RPAREN switch_block
+# 	"""
+# def p_switch_block(p):
+# 	"""switch_block : LBRACE switch_sections_opt RBRACE
+# 	"""
+# def p_switch_sections_opt(p):
+# 	"""switch_sections_opt : empty 
+# 		| switch_sections
+# 	"""
+# def p_switch_sections(p):
+# 	"""switch_sections : switch_section
+# 		| switch_sections switch_section
+# 	"""
+# def p_switch_section(p):
+# 	"""switch_section : switch_labels statement_list
+# 	"""
+# def p_switch_labels(p):
+# 	"""switch_labels : switch_label
+# 		| switch_labels switch_label
+# 	"""
+# def p_switch_label(p):
+# 	"""switch_label : CASE constant_expression COLON
+# 		| DEFAULT COLON
+# 	"""
+
+# def p_stackalloc_initializer(p):
+# 	"""stackalloc_initializer : STACKALLOC type LBRACKET expression RBRACKET
+# 	""" 
+
+
+# -------------------------------------------------------------------------------------------------
+# CONSTANT DECLARATION
+# def p_local_constant_declaration(p):
+# 	"""local_constant_declaration : CONST type constant_declarators
+# 	"""
+	# Implement variable declaration here
+
+
+
+# -------------------------------------------------------------------------------------------------
+
+# def p_constant_declarators(p):
+# 	"""constant_declarators : constant_declarator
+# 		| constant_declarators COMMA constant_declarator
+# 	"""
+# 	if len(p) == 2:
+# 		p[0] = [deepcopy(p[1])]
+# 	else:
+# 		p[0] = deepcopy(p[1])
+# 		p[0].append(deepcopy(p[3]))
+
+# def p_constant_declarator(p):
+# 	"""constant_declarator : IDENTIFIER EQUALS constant_expression
+# 	"""
+# 	p[0] = [p[1], deepcopy(p[3])]
+
+# def p_empty_statement(p):
+# 	"""empty_statement : STMT_TERMINATOR
+# 	"""
+# def p_labeled_statement(p):
+# 	"""labeled_statement : IDENTIFIER COLON statement
+# 	"""
+# def p_cast_expression(p):
+# 	"""cast_expression : LPAREN expression RPAREN unary_expression_not_plusminus
+# 		| LPAREN multiplicative_expression TIMES RPAREN unary_expression 
+# 		| LPAREN qualified_identifier rank_specifier type_quals_opt RPAREN unary_expression	
+# 		| LPAREN primitive_type type_quals_opt RPAREN unary_expression
+# 		| LPAREN class_type type_quals_opt RPAREN unary_expression
+# 		| LPAREN VOID type_quals_opt RPAREN unary_expression
+# 	"""
+# def p_type_quals_opt(p):
+# 	"""type_quals_opt : empty 
+# 		| type_quals
+# 	"""
+# def p_type_quals(p):
+# 	"""type_quals : type_qual
+# 		| type_quals type_qual
+# 	"""
+
+# def p_type_qual (p):
+# 	"""type_qual  : rank_specifier 
+# 		| TIMES
+# 	"""
+
+# def p_addressof_expression(p):
+# 	"""addressof_expression : AND unary_expression
+# 	"""
+
+# def p_typeof_expression(p):
+# 	"""typeof_expression : TYPEOF LPAREN type RPAREN
+# 		| TYPEOF LPAREN VOID RPAREN
+# 	"""
+# def p_checked_expression(p):
+# 	"""checked_expression : CHECKED LPAREN expression RPAREN
+# 	"""
+# def p_unchecked_expression(p):
+# 	"""unchecked_expression : UNCHECKED LPAREN expression RPAREN
+# 	"""
+# def p_sizeof_expression(p):
+# 	"""sizeof_expression : SIZEOF LPAREN type RPAREN
+# 	"""
+
+# def p_this_access(p):
+# 	"""this_access : THIS
+# 	"""
+# def p_base_access(p):
+# 	"""base_access : BASE MEMBERACCESS IDENTIFIER
+# 		| BASE LBRACKET expression_list RBRACKET
+# 	"""
+# def p_post_increment_expression(p):
+# 	"""post_increment_expression : postfix_expression INCREMENT
+# 	"""
+# def p_post_decrement_expression(p):
+# 	"""post_decrement_expression : postfix_expression DECREMENT
+# 	"""
+
+# # C.2.3 Variables 
+# def p_variable_reference(p):
+# 	"""variable_reference : expression
+# 	"""
+# 	p[0] = deepcopy(p[1])
+
+# def p_dim_separators_opt(p): 
+# 	"""dim_separators_opt : empty 
+# 			| dim_separators"""
+
+# def p_class_type(p):
+# 	"""class_type : OBJECT 
+# 					| STRING
+# 	"""
+
+# def p_type_name(p):
+# 	"""type_name : qualified_identifier
+# 	"""
+# 	p[0] = deepcopy(p[1])
+# def p_qualified_identifier(p):
+# 	"""qualified_identifier : IDENTIFIER
+# 		| qualifier IDENTIFIER
+# 	"""
+# def p_qualifier(p):
+# 	"""qualifier : IDENTIFIER MEMBERACCESS 
+# 		| qualifier IDENTIFIER MEMBERACCESS 
+# 	"""
+
+# def p_using_directives(p):
+# 	"""using_directives : using_directive
+# 		| using_directives using_directive
+# 	"""
+# def p_using_directive(p):
+# 	"""using_directive : using_alias_directive
+# 		| using_namespace_directive
+# 	"""
+# def p_using_alias_directive(p):
+# 	"""using_alias_directive : USING IDENTIFIER EQUALS qualified_identifier STMT_TERMINATOR
+# 	"""
+# def p_using_namespace_directive(p):
+# 	"""using_namespace_directive : USING namespace_name STMT_TERMINATOR
+# 	"""
+
+# def p_using_directives_opt(p):
+# 	"""using_directives_opt : empty 
+# 		| using_directives
+# 	"""
+1. Rank specifier can not be empty

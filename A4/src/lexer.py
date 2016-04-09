@@ -26,6 +26,7 @@ reserved = {
 	'typeof' : 'TYPEOF',
 	'unsafe' : 'UNSAFE',
 	'void' : 'VOID',
+	'as' : 'AS',
 	'byte' : 'BYTE',
 	'checked' : 'CHECKED',
 	'decimal' : 'DECIMAL',
@@ -34,6 +35,7 @@ reserved = {
 	'fixed' : 'FIXED',
 	'goto' : 'GOTO',
 	'in' : 'IN',
+	'is' : 'IS',
 	'new' : 'NEW',
 	'out' : 'OUT',
 	'private' : 'PRIVATE',
@@ -127,10 +129,6 @@ def t_NEWLINE(t):
 	r'\n+'
 	t.lexer.lineno += len(t.value)
 
-def find_tok_column(t):
-    last_cr = lexer.lexdata.rfind('\n', 0, token.lexpos)
-    return token.lexpos - last_cr
-
 # Operators
 t_MEMBERACCESS		= r'\.'
 t_CONDMEMBACCESS	= r'\?\.'
@@ -201,6 +199,7 @@ t_CHCONST = r'(L)?\'([^\\\n]|(\\.))*?\''
 def t_COMMENT(t):
 	r' /\*(.|\n)*?\*/'
 	t.lineno += t.value.count('\n')
+	pass
 
 # Preprocessor directive (ignored)
 def t_PREPROCESSOR(t):
