@@ -87,15 +87,18 @@ Otherwise scope might be misunterstood by the compiler
     - relops                            -> 1, <, res, a, b
         the truth value (0 or 1) will be stored in variable res
 
+    - function parameters               -> 1, param, val
+        the function parameter val will be pushed on the stack. This ir will 
+        be followed by a function call or another param ir
+    
     - function call                     -> 1, call, func, arg_num, ret
         the function func will be called and the value returned by it will be 
         stored in ret. arg_num is the number of arguments that the function 
         expects. The arguments must have already been pushed on the stack
     
-    - function parameters               -> 1, param, val
-        the function parameter val will be pushed on the stack. This ir will 
-        be followed by a function call or another param ir
-    
+    - pop                               -> 1, pop, var
+        store the value on stack into var, to be used as function parameter value
+        
     - label                             -> 1, label, l
         a label is introduced
     
@@ -138,8 +141,6 @@ Otherwise scope might be misunterstood by the compiler
 
     - array declaration                 -> 1, array, int, len, name
 
-    - pop                               -> 1, pop, var
-        store the value on stack into var, to be used as function parameter value
 
 
 

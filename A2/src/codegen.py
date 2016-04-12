@@ -144,7 +144,6 @@ def translate(instruction):
 				setregister(regdest, result)
 				# Update the address descriptor entry for result variable to say where it is stored now
 				setlocation(result, regdest)				
-
 		# Subtraction
 		elif operator == '-':
 			if isnumber(operand1) and isnumber(operand2):
@@ -201,8 +200,6 @@ def translate(instruction):
 				setregister(regdest, result)
 				# Update the address descriptor entry for result variable to say where it is stored now
 				setlocation(result, regdest)				
-
-
 		# Multiplication
 		elif operator == '*':
 			if registers['%eax'] != None:
@@ -316,9 +313,23 @@ def translate(instruction):
 				assembly = assembly + "movl $" + str(ansmod) + ", %edx \n"
 				setlocation(result, '%edx')
 
-	# Generating assembly code if the tac is a functin call
+	elif operator == "param":
+		#LineNo, param, val
+		val = instruction[2]
+		if isnumber(val):
+			val = "$" + val
+		else:
+			loc2 = getlocation(val)
+			if loc2 != "mem":
+				val = addressDescriptor[val]
+		assembly = assembly + "pushl " + val + "\n"
+
+
+	# Generating assembly code if the tac is a function call
 	elif operator == "call":
+		#Lno., call, func_name, arg_num, ret
 		# Add code to write all the variables to the memory
+		arg_num = instruction[3]
 		for var in varlist:
 			loc = getlocation(var)
 			if loc != "mem":
@@ -388,19 +399,20 @@ def translate(instruction):
 			if loc != "mem":
 				assembly = assembly + "movl " + loc + ", " + var + "\n"
 				setlocation(var, "mem")
-
+		if isnumber(label):
+			label = "L" + label
 		if operator == "<=":
-			assembly = assembly + "jle L" + label + "\n"
+			assembly = assembly + "jle " + label + "\n"
 		elif operator == ">=":
-			assembly = assembly + "jge L" + label + "\n" 
+			assembly = assembly + "jge " + label + "\n" 
 		elif operator == "==":
-			assembly = assembly + "je L" + label + "\n" 
+			assembly = assembly + "je " + label + "\n" 
 		elif operator == "<":
-			assembly = assembly + "jl L" + label + "\n" 
+			assembly = assembly + "jl " + label + "\n" 
 		elif operator == ">":
-			assembly = assembly + "jg L" + label + "\n" 
+			assembly = assembly + "jg " + label + "\n" 
 		elif operator == "!=":
-			assembly = assembly + "jne L" + label + "\n"
+			assembly = assembly + "jne " + label + "\n"
 
 	# Generating assembly code if the tac is a goto statement
 	elif operator == "goto":
@@ -412,7 +424,10 @@ def translate(instruction):
 				setlocation(var, "mem")
 		
 		label = instruction[2]
-		assembly = assembly + "jmp L" + label + "\n"
+		if isnumber(label):
+			assembly = assembly + "jmp L" + label + "\n"
+		else:
+			assembly = assembly + "jmp " + label + "\n"
 
 	# Generating assembly code if the tac is a return statement
 	elif operator == "exit":
@@ -477,9 +492,33 @@ def translate(instruction):
 		assembly = assembly + function_name + ":\n"
 		assembly = assembly + "pushl %ebp\n"
 		assembly = assembly + "movl %esp, %ebp\n"
+
 		
+	elif operator == "arg":
+		#Lno, arg, i, a_i -----> Move parameter i to var a_i
+		i = instruction[2]
+		a = instruction[3]
+		displacement = 4*i + 4
+		assembly = assembly + "movl " + str(displacement) + "(%ebp), " + a + "\n"
+
+	elif operator == "pop":
+		#LNo, pop, n
+		n = instruction[2]
+		assembly = assembly + "addl $4, $esp\n"
+
 	# Generating the conclude of the function
 	elif operator == "return":
+		#LNo, return, val
+		val = instruction[2]
+		for var in varlist:
+			loc = getlocation(var)
+			if loc == "%eax":
+				assembly = assembly + "movl " + loc + ", " + var + "\n"
+				setlocation(var, "mem")
+				break
+		if isnumber(val):
+			val = "$" + val
+		assembly = assembly + "movl " + val + ", %eax\n"
 		assembly = assembly + "movl %ebp, %esp\n"
 		assembly = assembly + "popl %ebp\n"
 		assembly = assembly + "ret\n"
