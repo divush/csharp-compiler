@@ -83,7 +83,8 @@ reserved = {
 	'switch' : 'SWITCH',
 	'try' : 'TRY',
 	'unchecked' : 'UNCHECKED',
-	'virtual' : 'VIRTUAL'
+	'virtual' : 'VIRTUAL',
+	'Writeline' : 'WRITELINE'
 }
 
 # THE LIST OF TOKENS

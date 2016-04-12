@@ -48,6 +48,8 @@ Group 25
     d. switch case and do while
     e. float and double type
     f. multidimensional arrays
+    g. OOP
+    h. op/func overloading
 
 NOTE:
 Braces required in blocks (even if single statement) for if, else, while, for etc.
@@ -56,14 +58,8 @@ Otherwise scope might be misunterstood by the compiler
 
 ###############################################################################
 
-TEST FILES
+# Intermediate Code Specification
 
-test1.cs : array usage, arithmetical/logical expressions, conditions
-test2.cs : nested loops, for as well as while
-test3.cs : scope of local variables test (k)
-test4.cs : recursion (factorial)
-test5.cs : function parameters
 
-USAGE:
-> make
-> bin/irgen test/test1.cs
+
+###############################################################################

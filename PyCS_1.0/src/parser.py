@@ -433,6 +433,7 @@ def p_boolean_expression(p):
 def p_statement(p):
 	"""statement : declaration_statement
 		| embedded_statement
+		| print_statement
 	"""
 	p[0] = deepcopy(p[1])
 def p_embedded_statement(p):
@@ -551,6 +552,13 @@ def p_variable_initializer_list(p):
 	else:
 		p[0] = deepcopy(p[1]) + [deepcopy(p[3])]
 
+
+def p_print_statement(p):
+	"""print_statement : WRITELINE LPAREN argument RPAREN
+	"""
+	p[0] = {'code':None, 'value':None}
+	p[0]['code'] = p[3]['code']
+	p[0]['code'] += ['print, ' + p[3]['value']]
 
 
 def p_expression_statement(p):

@@ -160,8 +160,3 @@ class environ:
 		for c in t.children:
 			self.print_symbol_table(c)
 		 
-
-
-
-
-
