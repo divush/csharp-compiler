@@ -138,7 +138,8 @@ Otherwise scope might be misunterstood by the compiler
 
     - array declaration                 -> 1, array, int, len, name
 
-    - 
+    - pop                               -> 1, pop, var
+        store the value on stack into var, to be used as function parameter value
 
 
 
