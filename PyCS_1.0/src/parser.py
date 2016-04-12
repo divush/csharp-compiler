@@ -126,6 +126,7 @@ def p_literal(p):
 	p[0] = {}
 	p[0]['code'] = [""]
 	p[0]['value'] = p[1]
+	p[0]['category'] = 'literal'
 
 def p_parenthesized_expression(p):
 	"""parenthesized_expression : LPAREN expression RPAREN
@@ -147,14 +148,14 @@ def p_invocation_expression(p):
 				if arg_cnt > 0:
 					for arg in p[3]:
 						p[0]['code'] += arg['code']
-					for i in range(len(p[3])-1, -1, -1)
+					for i in range(len(p[3])-1, -1, -1):
 						p[0]['code'] += ['param, ' + p[3][i]['value']]
 				if name['type'] != 'void':
 					t = symbol_table.maketemp(name['type'], symbol_table.curr_table)
 					p[0]['value'] = t
-					p[0]['code'] += ['call, ' + p[1] + ', ' + str(arg_cnt) + ', ' + t]
+					p[0]['code'] += ['call, ' + p[1] + ', ' + t]
 				else:
-					p[0]['code'] += ['call, ' + p[1] + ', ' + str(arg_cnt)]
+					p[0]['code'] += ['call, ' + p[1]]
 			else:
 				print("ERROR L", p.lineno(1), "Function", p[1], "needs exactly", name['arg_num'], "parameters, given", len(p[3]))
 				print("Compilation Terminated")
@@ -401,6 +402,19 @@ def p_assignment(p):
 	"""assignment : unary_expression assignment_operator expression
 	"""
 	var = symbol_table.lookup(p[1]['value'], symbol_table.curr_table)
+	if 'category' in p[3]:
+		if p[3]['category'] != 'literal':
+			val = symbol_table.lookup(p[3]['value'], symbol_table.curr_table)
+			if val == None:
+				print('ERROR: symbol', p[3]['value'], 'used without declaration')
+				print('Compilation Terminated')
+				exit()
+	else:
+		val = symbol_table.lookup(p[3]['value'], symbol_table.curr_table)
+		if val == None:
+			print('ERROR: symbol', p[3]['value'], 'used without declaration')
+			print('Compilation Terminated')
+			exit()		
 	if var != None:
 		p[0] = {}
 		p[0]['value'] = p[1]['value']
@@ -813,7 +827,7 @@ def p_method_declaration(p):
 	if method_params != None:
 		for i in range(len(method_params)):
 			# parameters would have been pushed to the stack, so we just pop them off
-			p[0]['code'] += ['arg, ' + str(i) + method_params[i][1]]
+			p[0]['code'] += ['arg, ' + str(i+1) + ', ' + method_params[i][1]]
 	p[0]['code'] += p[2]['code']
 	# type, category, arg_num are the parameters needed in the symbol table entry against the function name
 	
