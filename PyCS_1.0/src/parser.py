@@ -147,8 +147,8 @@ def p_invocation_expression(p):
 				if arg_cnt > 0:
 					for arg in p[3]:
 						p[0]['code'] += arg['code']
-					for arg in p[3]:
-						p[0]['code'] += ['param, ' + arg['value']]
+					for i in range(len(p[3])-1, -1, -1)
+						p[0]['code'] += ['param, ' + p[3][i]['value']]
 				if name['type'] != 'void':
 					t = symbol_table.maketemp(name['type'], symbol_table.curr_table)
 					p[0]['value'] = t
@@ -811,9 +811,9 @@ def p_method_declaration(p):
 	p[0] = {'code':[], 'value':None}
 	p[0]['code'] += ['function, ' + method_name]
 	if method_params != None:
-		for param in method_params:
+		for i in range(len(method_params)):
 			# parameters would have been pushed to the stack, so we just pop them off
-			p[0]['code'] += ['pop, ' + param[1]]
+			p[0]['code'] += ['arg, ' + str(i) + method_params[i][1]]
 	p[0]['code'] += p[2]['code']
 	# type, category, arg_num are the parameters needed in the symbol table entry against the function name
 	
