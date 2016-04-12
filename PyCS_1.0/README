@@ -1,0 +1,69 @@
+###############################################################################
+PyCS - A C# Compiler written in Python 
+Authors: Pranshu Gupta, Divyanshu Shende, Prashant Kumar, Rahul Tudu
+Group 25
+###############################################################################
+
+# Language Features:
+    a.  Data Types - int, one dimensional arrays of int
+    b.  Operators
+            int:
+                - Unary -> !,-,~,+
+                - Relational ->  <, >, ==, !=
+                - Arithmetic -> +,-,/,%
+                - Bitwise -> <<,>>,&,|,^
+                - Logical ops -> &&,||
+                - Assignment -> = 
+            bool (realized as int 0 and 1):
+                - Unary-> !
+                - Logical -> &&,||
+                - Assignment -> =
+            Arrays:
+            	- Same as int
+
+    c.  Loops -> for, while
+    d.  Selection Statements -> if, if-else
+    e.  Namespaces
+    	- Only one namespace allowed in the program
+    f.  Arrays -> 1-D arrays of types - {int}
+    g.  Classes
+    	- Only one class allowed in the program
+        - Data members can only be of simple or array of simple types.
+    h.  Functions
+        - Allowed return types -> int
+        - Allowed argument types -> int
+    i.  Scoping
+    	- Imlemented as a tree of symbol tables
+    j.  boolean expressions realized as integer 0 and 1 wit relational operators
+    k.	pre increment/decrement
+    l.	RECURSION
+    m.  Multiple Declarations and Sequential Assignments
+        - Multiple Declarations  -> int a,b,c=3;
+        - Sequential Assignments -> a=b=c=3;
+
+# Features not supported:
+    a. post increment/decrement
+    b. structs and enums, pointers
+    c. comments
+    d. switch case and do while
+    e. float and double type
+    f. multidimensional arrays
+
+NOTE:
+Braces required in blocks (even if single statement) for if, else, while, for etc.
+Otherwise scope might be misunterstood by the compiler
+
+
+###############################################################################
+
+TEST FILES
+
+test1.cs : array usage, arithmetical/logical expressions, conditions
+test2.cs : nested loops, for as well as while
+test3.cs : scope of local variables test (k)
+test4.cs : recursion (factorial)
+test5.cs : function parameters
+
+USAGE:
+> make
+> bin/irgen test/test1.cs
