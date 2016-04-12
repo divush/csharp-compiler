@@ -27,7 +27,7 @@ varlist = []
 addressDescriptor = {}
 
 assembly = ""
-
+relcount = 1
 # Three address code keywords
 tackeywords = ['ifgoto', 'goto', 'return', 'call', 'print', 'label', '<=', '>=', '==', '>', '<', '!=', '=', 'function', 'exit'] + mathops
 
@@ -144,7 +144,6 @@ def translate(instruction):
 				setregister(regdest, result)
 				# Update the address descriptor entry for result variable to say where it is stored now
 				setlocation(result, regdest)				
-
 		# Subtraction
 		elif operator == '-':
 			if isnumber(operand1) and isnumber(operand2):
@@ -201,8 +200,6 @@ def translate(instruction):
 				setregister(regdest, result)
 				# Update the address descriptor entry for result variable to say where it is stored now
 				setlocation(result, regdest)				
-
-
 		# Multiplication
 		elif operator == '*':
 			if registers['%eax'] != None:
@@ -316,9 +313,23 @@ def translate(instruction):
 				assembly = assembly + "movl $" + str(ansmod) + ", %edx \n"
 				setlocation(result, '%edx')
 
-	# Generating assembly code if the tac is a functin call
+	elif operator == "param":
+		#LineNo, param, val
+		val = instruction[2]
+		if isnumber(val):
+			val = "$" + val
+		else:
+			loc2 = getlocation(val)
+			if loc2 != "mem":
+				val = addressDescriptor[val]
+		assembly = assembly + "pushl " + val + "\n"
+
+
+	# Generating assembly code if the tac is a function call
 	elif operator == "call":
+		#Lno., call, func_name, arg_num, ret
 		# Add code to write all the variables to the memory
+		arg_num = instruction[3]
 		for var in varlist:
 			loc = getlocation(var)
 			if loc != "mem":
@@ -388,19 +399,20 @@ def translate(instruction):
 			if loc != "mem":
 				assembly = assembly + "movl " + loc + ", " + var + "\n"
 				setlocation(var, "mem")
-
+		if isnumber(label):
+			label = "L" + label
 		if operator == "<=":
-			assembly = assembly + "jle L" + label + "\n"
+			assembly = assembly + "jle " + label + "\n"
 		elif operator == ">=":
-			assembly = assembly + "jge L" + label + "\n" 
+			assembly = assembly + "jge " + label + "\n" 
 		elif operator == "==":
-			assembly = assembly + "je L" + label + "\n" 
+			assembly = assembly + "je " + label + "\n" 
 		elif operator == "<":
-			assembly = assembly + "jl L" + label + "\n" 
+			assembly = assembly + "jl " + label + "\n" 
 		elif operator == ">":
-			assembly = assembly + "jg L" + label + "\n" 
+			assembly = assembly + "jg " + label + "\n" 
 		elif operator == "!=":
-			assembly = assembly + "jne L" + label + "\n"
+			assembly = assembly + "jne " + label + "\n"
 
 	# Generating assembly code if the tac is a goto statement
 	elif operator == "goto":
@@ -412,7 +424,10 @@ def translate(instruction):
 				setlocation(var, "mem")
 		
 		label = instruction[2]
-		assembly = assembly + "jmp L" + label + "\n"
+		if isnumber(label):
+			assembly = assembly + "jmp L" + label + "\n"
+		else:
+			assembly = assembly + "jmp " + label + "\n"
 
 	# Generating assembly code if the tac is a return statement
 	elif operator == "exit":
@@ -477,9 +492,33 @@ def translate(instruction):
 		assembly = assembly + function_name + ":\n"
 		assembly = assembly + "pushl %ebp\n"
 		assembly = assembly + "movl %esp, %ebp\n"
+
 		
+	elif operator == "arg":
+		#Lno, arg, i, a_i -----> Move parameter i to var a_i
+		i = instruction[2]
+		a = instruction[3]
+		displacement = 4*i + 4
+		assembly = assembly + "movl " + str(displacement) + "(%ebp), " + a + "\n"
+
+	elif operator == "pop":
+		#LNo, pop, n
+		n = instruction[2]
+		assembly = assembly + "addl $4, $esp\n"
+
 	# Generating the conclude of the function
 	elif operator == "return":
+		#LNo, return, val
+		val = instruction[2]
+		for var in varlist:
+			loc = getlocation(var)
+			if loc == "%eax":
+				assembly = assembly + "movl " + loc + ", " + var + "\n"
+				setlocation(var, "mem")
+				break
+		if isnumber(val):
+			val = "$" + val
+		assembly = assembly + "movl " + val + ", %eax\n"
 		assembly = assembly + "movl %ebp, %esp\n"
 		assembly = assembly + "popl %ebp\n"
 		assembly = assembly + "ret\n"
@@ -774,6 +813,499 @@ def translate(instruction):
 			setregister(regdest, result)
 			setlocation(result, regdest)
 	# Return the assembly code
+
+	elif operator == '<=':
+		result = instruction[2]
+		operand1 = instruction[3]
+		operand2 = instruction[4]
+		LT = "LT"+str(relcount)
+		NLT = "NLT"+str(relcount)
+		if isnumber(operand1) and isnumber(operand2):
+			#case: result = 4 < 5
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			assembly = assembly + "movl $" + str(int(int(operand1)<=int(operand2))) + ", " + regdest + "\n"
+			# Update the address descriptor entry for result variable to say where it is stored no
+			setregister(regdest, result)
+			setlocation(result, regdest)
+		elif isnumber(operand1) and not isnumber(operand2):
+			#case: result = 5 < x
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc2 = getlocation(operand2)
+			# Move the first operand to the destination register
+			assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
+			if loc2 != "mem":
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "cmpl " + operand2 + ", " + regdest + "\n"
+			assembly = assembly + "jle " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc1 = getlocation(operand1)
+			# Move the first operand to the destination register
+			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
+			# Add the other operand to the register content
+			if loc1 != "mem":
+				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"
+			assembly = assembly + "jle " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and not isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			# Get the locations of the operands
+			loc1 = getlocation(operand1)
+			loc2 = getlocation(operand2)
+			if loc1 != "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			elif loc1 != "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"					
+			# Update the register descriptor entry for regdest to say that it contains the result
+			assembly = assembly + "jle " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			# Update the address descriptor entry for result variable to say where it is stored now
+			setlocation(result, regdest)
+		relcount = relcount + 1
+
+	elif operator == '>=':
+		result = instruction[2]
+		operand1 = instruction[3]
+		operand2 = instruction[4]
+		LT = "LT"+str(relcount)
+		NLT = "NLT"+str(relcount)
+		if isnumber(operand1) and isnumber(operand2):
+			#case: result = 4 < 5
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			assembly = assembly + "movl $" + str(int(int(operand1)>=int(operand2))) + ", " + regdest + "\n"
+			# Update the address descriptor entry for result variable to say where it is stored no
+			setregister(regdest, result)
+			setlocation(result, regdest)
+		elif isnumber(operand1) and not isnumber(operand2):
+			#case: result = 5 < x
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc2 = getlocation(operand2)
+			# Move the first operand to the destination register
+			assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
+			if loc2 != "mem":
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "cmpl " + operand2 + ", " + regdest + "\n"
+			assembly = assembly + "jge " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc1 = getlocation(operand1)
+			# Move the first operand to the destination register
+			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
+			# Add the other operand to the register content
+			if loc1 != "mem":
+				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"
+			assembly = assembly + "jge " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and not isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			# Get the locations of the operands
+			loc1 = getlocation(operand1)
+			loc2 = getlocation(operand2)
+			if loc1 != "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			elif loc1 != "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"					
+			# Update the register descriptor entry for regdest to say that it contains the result
+			assembly = assembly + "jge " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			# Update the address descriptor entry for result variable to say where it is stored now
+			setlocation(result, regdest)
+		relcount = relcount + 1
+
+	elif operator == '==':
+		result = instruction[2]
+		operand1 = instruction[3]
+		operand2 = instruction[4]
+		LT = "LT"+str(relcount)
+		NLT = "NLT"+str(relcount)
+		if isnumber(operand1) and isnumber(operand2):
+			#case: result = 4 < 5
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			assembly = assembly + "movl $" + str(int(int(operand1)==int(operand2))) + ", " + regdest + "\n"
+			# Update the address descriptor entry for result variable to say where it is stored no
+			setregister(regdest, result)
+			setlocation(result, regdest)
+		elif isnumber(operand1) and not isnumber(operand2):
+			#case: result = 5 < x
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc2 = getlocation(operand2)
+			# Move the first operand to the destination register
+			assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
+			if loc2 != "mem":
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "cmpl " + operand2 + ", " + regdest + "\n"
+			assembly = assembly + "je " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc1 = getlocation(operand1)
+			# Move the first operand to the destination register
+			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
+			# Add the other operand to the register content
+			if loc1 != "mem":
+				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"
+			assembly = assembly + "je " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and not isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			# Get the locations of the operands
+			loc1 = getlocation(operand1)
+			loc2 = getlocation(operand2)
+			if loc1 != "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			elif loc1 != "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"					
+			# Update the register descriptor entry for regdest to say that it contains the result
+			assembly = assembly + "je " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			# Update the address descriptor entry for result variable to say where it is stored now
+			setlocation(result, regdest)
+		relcount = relcount + 1
+
+	elif operator == '!=':
+		result = instruction[2]
+		operand1 = instruction[3]
+		operand2 = instruction[4]
+		LT = "LT"+str(relcount)
+		NLT = "NLT"+str(relcount)
+		if isnumber(operand1) and isnumber(operand2):
+			#case: result = 4 < 5
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			assembly = assembly + "movl $" + str(int(int(operand1)!=int(operand2))) + ", " + regdest + "\n"
+			# Update the address descriptor entry for result variable to say where it is stored no
+			setregister(regdest, result)
+			setlocation(result, regdest)
+		elif isnumber(operand1) and not isnumber(operand2):
+			#case: result = 5 < x
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc2 = getlocation(operand2)
+			# Move the first operand to the destination register
+			assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
+			if loc2 != "mem":
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "cmpl " + operand2 + ", " + regdest + "\n"
+			assembly = assembly + "jne " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc1 = getlocation(operand1)
+			# Move the first operand to the destination register
+			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
+			# Add the other operand to the register content
+			if loc1 != "mem":
+				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"
+			assembly = assembly + "jne " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and not isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			# Get the locations of the operands
+			loc1 = getlocation(operand1)
+			loc2 = getlocation(operand2)
+			if loc1 != "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			elif loc1 != "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"					
+			# Update the register descriptor entry for regdest to say that it contains the result
+			assembly = assembly + "jne " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			# Update the address descriptor entry for result variable to say where it is stored now
+			setlocation(result, regdest)
+		relcount = relcount + 1
+
+	elif operator == '<':
+		result = instruction[2]
+		operand1 = instruction[3]
+		operand2 = instruction[4]
+		LT = "LT"+str(relcount)
+		NLT = "NLT"+str(relcount)
+		if isnumber(operand1) and isnumber(operand2):
+			#case: result = 4 < 5
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			assembly = assembly + "movl $" + str(int(int(operand1)<int(operand2))) + ", " + regdest + "\n"
+			# Update the address descriptor entry for result variable to say where it is stored no
+			setregister(regdest, result)
+			setlocation(result, regdest)
+		elif isnumber(operand1) and not isnumber(operand2):
+			#case: result = 5 < x
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc2 = getlocation(operand2)
+			# Move the first operand to the destination register
+			assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
+			if loc2 != "mem":
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "cmpl " + operand2 + ", " + regdest + "\n"
+			assembly = assembly + "jl " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc1 = getlocation(operand1)
+			# Move the first operand to the destination register
+			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
+			# Add the other operand to the register content
+			if loc1 != "mem":
+				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"
+			assembly = assembly + "jl " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and not isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			# Get the locations of the operands
+			loc1 = getlocation(operand1)
+			loc2 = getlocation(operand2)
+			if loc1 != "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			elif loc1 != "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"					
+			# Update the register descriptor entry for regdest to say that it contains the result
+			assembly = assembly + "jl " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			# Update the address descriptor entry for result variable to say where it is stored now
+			setlocation(result, regdest)
+		relcount = relcount + 1
+		
+	elif operator == '>':
+		result = instruction[2]
+		operand1 = instruction[3]
+		operand2 = instruction[4]
+		LT = "LT"+str(relcount)
+		NLT = "NLT"+str(relcount)
+		if isnumber(operand1) and isnumber(operand2):
+			#case: result = 4 < 5
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			assembly = assembly + "movl $" + str(int(int(operand1)>int(operand2))) + ", " + regdest + "\n"
+			# Update the address descriptor entry for result variable to say where it is stored no
+			setregister(regdest, result)
+			setlocation(result, regdest)
+		elif isnumber(operand1) and not isnumber(operand2):
+			#case: result = 5 < x
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc2 = getlocation(operand2)
+			# Move the first operand to the destination register
+			assembly = assembly + "movl $" + operand1 + ", " + regdest + "\n"
+			if loc2 != "mem":
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "cmpl " + operand2 + ", " + regdest + "\n"
+			assembly = assembly + "jg " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			loc1 = getlocation(operand1)
+			# Move the first operand to the destination register
+			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
+			# Add the other operand to the register content
+			if loc1 != "mem":
+				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+			else:
+				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"
+			assembly = assembly + "jg " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			setlocation(result, regdest)				
+		elif not isnumber(operand1) and not isnumber(operand2):
+			# Get the register to store the result
+			regdest = getReg(result, line)
+			# Get the locations of the operands
+			loc1 = getlocation(operand1)
+			loc2 = getlocation(operand2)
+			if loc1 != "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 != "mem":
+				assembly = assembly + "movl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
+			elif loc1 != "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+			elif loc1 == "mem" and loc2 == "mem":
+				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"					
+			# Update the register descriptor entry for regdest to say that it contains the result
+			assembly = assembly + "jg " + LT + "\n"
+			assembly = assembly + "movl $0, " + regdest + "\n"
+			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + LT + ":" + "\n"
+			assembly = assembly + "movl $1, " + regdest + "\n"
+			assembly = assembly + NLT + ":" + "\n"
+			setregister(regdest, result)
+			# Update the address descriptor entry for result variable to say where it is stored now
+			setlocation(result, regdest)
+		relcount = relcount + 1
+
 	return assembly
 
 ###################################################################################################
