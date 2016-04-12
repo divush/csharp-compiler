@@ -491,7 +491,7 @@ def p_local_variable_declaration(p):
 					p[0]['code'] += [var_type.name + ", " + identifier]
 				elif var_type.isarray and var_type.elem_type.isbasic:
 					symbol_table.insert_array(var_type, identifier)
-					p[0]['code'] += ["array, " + var_type.elem_type + ", " + var_type.length + ", " + identifier]
+					p[0]['code'] += ["array, " + var_type.elem_type.type_name() + ", " + var_type.length + ", " + identifier]
 			else:
 				if var_type.isbasic:
 					symbol_table.insert_variable(var_type, identifier)
