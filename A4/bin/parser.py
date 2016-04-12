@@ -687,7 +687,7 @@ def p_compilation_unit(p):
 	# print("----------------------------------------------------------------------")
 	# print("SYMBOL TABLE")
 	# print("----------------------------------------------------------------------")
-	# symbol_table.print_symbol_table(symtab.base_table)
+	symbol_table.print_symbol_table(symtab.base_table)
 	# print("")
 	# print("----------------------------------------------------------------------")
 	# print("THREE ADDRESS CODE")

@@ -1,0 +1,3 @@
+#!/bin/bash
+python3 bin/parser.py $1 2> t
+rm t
