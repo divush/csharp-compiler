@@ -79,6 +79,7 @@ def nextuse(variable, line):
 
 # The function to translate a single line tac to x86 assembly
 def translate(instruction):
+	global relcount
 	assembly = ""
 	line = int(instruction[0])
 	# assembly = assembly + str(line) + "\n"
@@ -367,9 +368,9 @@ def translate(instruction):
 			else:
 				assembly = assembly + "movl " + operand1 + ", " + reg1 + "\n"
 			if loc2 != "mem":
-				assembly = assembly + "cmp " + loc2 + ", " + reg1 + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", " + reg1 + "\n"
 			else:
-				assembly = assembly + "cmp " + operand2 + ", " + reg1 + "\n"
+				assembly = assembly + "cmpl " + operand2 + ", " + reg1 + "\n"
 			#updating the registor & address descriptors
 			setregister(reg1, operand1)
 			setlocation(operand1, reg1)
@@ -378,19 +379,19 @@ def translate(instruction):
 			#Get the location of the 1st operand
 			loc1 = getlocation(operand1)
 			if loc1 != "mem":
-				assembly = assembly + "cmp $" + operand2 + ", " + loc1 + "\n"
+				assembly = assembly + "cmpl $" + operand2 + ", " + loc1 + "\n"
 			else:
-				assembly = assembly + "cmp $" + operand2 + ", " + operand1 + "\n"
+				assembly = assembly + "cmpl $" + operand2 + ", " + operand1 + "\n"
 		elif isnumber(operand1) and not isnumber(operand2): #only operand2 is variables
 			#Get the location of the 1st operand
 			loc2 = getlocation(operand2)
 			if loc2 != "mem":
-				assembly = assembly + "cmp " + loc2 + ", $" + operand1 + "\n"
+				assembly = assembly + "cmpl " + loc2 + ", $" + operand1 + "\n"
 			else:
-				assembly = assembly + "cmp " + operand2 + ", $" + operand1 + "\n"
+				assembly = assembly + "cmpl " + operand2 + ", $" + operand1 + "\n"
 		elif isnumber(operand1) and isnumber(operand2): #none of the operandsare variables
 			#generate assembly instructions
-			assembly = assembly + "cmp $" + operand2 + ", $" + operand1 + "\n"
+			assembly = assembly + "cmpl $" + operand2 + ", $" + operand1 + "\n"
 
 		# Add code to write all the variables to the memory
 		for var in varlist:
@@ -1336,7 +1337,7 @@ nextuseTable = [None for i in range(len(instrlist))]
 # Construct the variable list and the address discriptor table
 for instr in instrlist:
 	templist = instr.split(', ')
-	if templist[1] not in ['label', 'call', 'function']:
+	if templist[1] not in ['label', 'call', 'function', 'ifgoto', 'goto']:
 		varlist = varlist + templist 
 varlist = list(set(varlist))
 varlist = [x for x in varlist if not isnumber(x)]
@@ -1351,10 +1352,10 @@ leaders = [1,]
 for i in range(len(instrlist)):
 	instrlist[i] = instrlist[i].split(', ')
 	if 'ifgoto' in instrlist[i]:
-		leaders.append(int(instrlist[i][-1]))
+		# leaders.append(int(instrlist[i][-1]))
 		leaders.append(int(instrlist[i][0])+1)
 	elif 'goto' in instrlist[i]:
-		leaders.append(int(instrlist[i][-1]))
+		# leaders.append(int(instrlist[i][-1]))
 		leaders.append(int(instrlist[i][0])+1)
 	elif 'function' in instrlist[i]:
 		leaders.append(int(instrlist[i][0]))
