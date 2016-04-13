@@ -1427,7 +1427,7 @@ bss_section = ".section .bss\n"
 text_section = ".section .text\n" + ".globl main\n" + "main:\n"
 
 for node in nodes:
-	text_section = text_section + "L" + str(node[0]) + ":\n"
+	# text_section = text_section + "L" + str(node[0]) + ":\n"
 	for n in node:
 		text_section = text_section + translate(instrlist[n-1])
 
