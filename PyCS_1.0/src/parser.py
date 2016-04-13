@@ -147,13 +147,20 @@ def p_invocation_expression(p):
 			if name['arg_num'] == arg_cnt:
 				if arg_cnt > 0:
 					for arg in p[3]:
+						targ = symbol_table.lookup(arg['value'], symbol_table.curr_table)
+						if targ == None and arg['category'] != 'literal':
+							print('ERROR L', p.lineno(1), ': argument', arg['value'], 'used without declaration')
+							print('Compilation Terminated')
+							exit()
 						p[0]['code'] += arg['code']
 					for i in range(len(p[3])-1, -1, -1):
 						p[0]['code'] += ['param, ' + p[3][i]['value']]
 				if name['type'] != 'void':
 					t = symbol_table.maketemp(name['type'], symbol_table.curr_table)
 					p[0]['value'] = t
-					p[0]['code'] += ['call, ' + p[1] + ', ' + t]
+					p[0]['code'] += ['call, ' + p[1]]
+					# Add a line here to get the value from eax register
+					p[0]['code'] += ['retval, ' + t]
 				else:
 					p[0]['code'] += ['call, ' + p[1]]
 			else:
