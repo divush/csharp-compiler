@@ -1372,19 +1372,39 @@ def translate(instruction):
 		name = instruction[3]
 		offset = instruction[4]
 		regdest = getReg(result, line)
-		assembly = assembly + "movl " + name + "(" + offset + "), " + regdest +"\n"		
+		off = getReg(offset, line)		
+		
+		assembly = assembly + "movl " + name + "(%eax), " +regdest +"\n"
+
+		setregister(off, offset)
+		setlocation(offset, off)
+
 		setregister(regdest, result)
 		setlocation(result, regdest)
-
+	
 	#Storing a particular array element in a variable
 	elif operator == "update":
 		input_ = instruction[2]
 		name = instruction[3]
 		offset = instruction[4]
-		regdest = getReg(input_, line)
-		assembly = assembly + "movl " + regdest + ", " + name + "(" + offest + ")\n"
-		setregister(regdest, result)
-		setlocation(result, regdest)
+		off = getReg(offset, line)
+		
+		if(isnumber(input_)):
+			assembly = assembly + "movl $" + input_ + ", " + name + "(%eax)\n"
+		else:
+			loc2 = getlocation(input_)
+			if(loc2 != "mem"):
+				assembly = assembly + "movl " + loc2 + ", " + name + "(%eax)\n"
+			else:
+				regdest = getReg(input_, line)
+				assembly = assembly + "movl " + loc2 + ", " + regdest + "\n"
+				setregister(regdest, input_)
+
+				setlocation(input_, regdest)
+				assembly = assembly + "movl " + regdest + ", " + name + "(%eax)\n"
+
+		setregister(off, offset)
+		setlocation(offset, off)
 
 	return assembly
 
@@ -1404,7 +1424,7 @@ nextuseTable = [None for i in range(len(instrlist))]
 # Construct the variable list and the address discriptor table
 for instr in instrlist:
 	templist = instr.split(', ')
-	if templist[1] not in ['label', 'call', 'function', 'ifgoto', 'goto', 'array']:
+	if templist[1] not in ['label', 'call', 'function', 'ifgoto', 'goto', 'array', 'member', 'update']:
 		varlist = varlist + templist 
 varlist = list(set(varlist))
 varlist = [x for x in varlist if not isnumber(x)]
