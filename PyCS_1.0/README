@@ -27,6 +27,7 @@ Source Code: https://bitbucket.org/divyanshu_shende/csharp_in_python
     e.  Namespaces
     	- Only one namespace allowed in the program
     f.  Arrays -> 1-D arrays of types - {int}
+        - Format allowed for initialization, int[] a = {1,2,3,4};
     g.  Classes
     	- Only one class allowed in the program
         - Data members can only be of simple or array of simple types.
@@ -143,3 +144,7 @@ Otherwise scope might be misunterstood by the compiler
 
 
 ###############################################################################
+
+Usage : 
+$./compile test/test1.cs
+$./a.out

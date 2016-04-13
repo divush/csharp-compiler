@@ -476,6 +476,7 @@ def p_statement(p):
 	"""statement : declaration_statement
 		| embedded_statement
 		| print_statement
+		| read_statement
 	"""
 	p[0] = deepcopy(p[1])
 def p_embedded_statement(p):
@@ -607,6 +608,12 @@ def p_print_statement(p):
 	p[0]['code'] = p[3]['code']
 	p[0]['code'] += ['print, ' + p[3]['value']]
 
+def p_read_statement(p):
+	"""read_statement : READLINE LPAREN argument RPAREN STMT_TERMINATOR
+	"""
+	p[0] = {'code':[], 'value':None}
+	
+	p[0]['code'] += ['read, ' + p[3]['value'] + ', int']
 
 def p_expression_statement(p):
 	"""expression_statement : statement_expression STMT_TERMINATOR

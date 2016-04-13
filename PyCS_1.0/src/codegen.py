@@ -30,7 +30,7 @@ addressDescriptor = {}
 assembly = ""
 relcount = 1
 # Three address code keywords
-tackeywords = ['update', 'member', 'array', 'param', 'retval', 'arg', 'ifgoto', 'goto', 'return', 'call', 'print', 'label', '<=', '>=', '==', '>', '<', '!=', '=', 'function', 'exit'] + mathops
+tackeywords = ['read', 'update', 'member', 'array', 'param', 'retval', 'arg', 'ifgoto', 'goto', 'return', 'call', 'print', 'label', '<=', '>=', '==', '>', '<', '!=', '=', 'function', 'exit'] + mathops
 
 ###################################################################################################
 
@@ -1358,6 +1358,21 @@ def translate(instruction):
 			setlocation(result, regdest)
 		relcount = relcount + 1
 
+	# For reading terminal input value into variable
+	elif operator == "read":
+		for var in varlist:
+			loc = getlocation(var)
+			if loc != "mem":
+				assembly = assembly + "movl " + loc + ", " + var + "\n"
+				setlocation(var, "mem")
+		result = instruction[2]
+		assembly = assembly + "movl $3, %eax\n"
+		assembly = assembly + "movl $0, %ebx\n"
+		assembly = assembly + "movl $" + result +", %ecx\n"
+		assembly = assembly + "movl $1, %edx\n"
+		assembly = assembly + "int $0x80\n"
+		assembly = assembly + "subl $48, " + result + "\n"
+
 	#Array declaration
 	elif operator == "array":
 		type_of_array = instruction[2]
@@ -1397,7 +1412,7 @@ def translate(instruction):
 				assembly = assembly + "movl " + loc2 + ", " + name + "(%eax)\n"
 			else:
 				regdest = getReg(input_, line)
-				assembly = assembly + "movl " + loc2 + ", " + regdest + "\n"
+				assembly = assembly + "movl " + input_ + ", " + regdest + "\n"
 				setregister(regdest, input_)
 
 				setlocation(input_, regdest)
@@ -1512,6 +1527,7 @@ data_section = data_section + "str:\n.ascii \"%d\\n\\0\"\n"
 
 bss_section = ".section .bss\n"
 text_section = ".section .text\n" + ".globl main\n" + "main:\n"
+text_section += "movl $0, %eax\nmovl $0, %ebx\nmovl $0, %ecx\nmovl $0, %edx\nmovl $0, %edi\nmovl $0, %esi\n"
 
 for node in nodes:
 	# text_section = text_section + "L" + str(node[0]) + ":\n"
@@ -1519,7 +1535,7 @@ for node in nodes:
 		text_section = text_section + translate(instrlist[n-1])
 
 for (var, length) in array_list:
-	data_section = data_section + var + ":\n\t.int " 
+	data_section = data_section + var + ":\n.int " 
 	for i in range(1,(length+1)):
 		if(i != length):
 			data_section = data_section + "0, "
