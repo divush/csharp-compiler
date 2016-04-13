@@ -24,12 +24,13 @@ mathops = ['+', '-', '*', '/', '%']
 relops = ['&&', '||', '~']
 # Variable 
 varlist = []
+array_list = []
 addressDescriptor = {}
 
 assembly = ""
 relcount = 1
 # Three address code keywords
-tackeywords = ['param', 'retval', 'arg', 'ifgoto', 'goto', 'return', 'call', 'print', 'label', '<=', '>=', '==', '>', '<', '!=', '=', 'function', 'exit'] + mathops
+tackeywords = ['update', 'member', 'array', 'param', 'retval', 'arg', 'ifgoto', 'goto', 'return', 'call', 'print', 'label', '<=', '>=', '==', '>', '<', '!=', '=', 'function', 'exit'] + mathops
 
 ###################################################################################################
 
@@ -43,6 +44,7 @@ def setregister(register, content):
 
 # getreg function... return register for the variable. spilling implemented here.
 def getReg(variable, instrno):
+	global assembly
 	#instrno is the line number!
 	if variable in registers.values():
 		for x in registers.keys():
@@ -370,7 +372,8 @@ def translate(instruction):
 			if loc2 != "mem":
 				assembly = assembly + "cmpl " + loc2 + ", " + reg1 + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand2 + ", " + reg1 + "\n"
+				assembly = assembly + "movl " + operand2 + ", " + "%edi\n"
+				assembly = assembly + "cmpl %edi, " + reg1 + "\n"
 			#updating the registor & address descriptors
 			setregister(reg1, operand1)
 			setlocation(operand1, reg1)
@@ -378,17 +381,33 @@ def translate(instruction):
 		elif not isnumber(operand1) and isnumber(operand2): #only operand1 is variables
 			#Get the location of the 1st operand
 			loc1 = getlocation(operand1)
+			reg1 = getReg(operand1, line)
+			#generating assembly instructions
 			if loc1 != "mem":
-				assembly = assembly + "cmpl $" + operand2 + ", " + loc1 + "\n"
+				assembly = assembly + "movl " + loc1 + ", " + reg1 + "\n"
 			else:
-				assembly = assembly + "cmpl $" + operand2 + ", " + operand1 + "\n"
+				assembly = assembly + "movl " + operand1 + ", " + reg1 + "\n"
+			assembly = assembly + "movl $" + operand2 + ", %edi\n"
+			assembly = assembly + "cmpl %edi, " + reg1 + "\n"
+			#updating the registor & address descriptors
+			setregister(reg1, operand1)
+			setlocation(operand1, reg1)
+
 		elif isnumber(operand1) and not isnumber(operand2): #only operand2 is variables
 			#Get the location of the 1st operand
 			loc2 = getlocation(operand2)
+			reg2 = getReg(operand2, line)
+			#generating assembly instructions
 			if loc2 != "mem":
-				assembly = assembly + "cmpl " + loc2 + ", $" + operand1 + "\n"
+				assembly = assembly + "movl " + loc2 + ", " + reg2 + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand2 + ", $" + operand1 + "\n"
+				assembly = assembly + "movl " + operand2 + ", " + reg2 + "\n"
+			assembly = assembly + "movl $" + operand1 + ", %edi\n"
+			assembly = assembly + "cmpl %edi, " + reg2 + "\n"
+			#updating the registor & address descriptors
+			setregister(reg2, operand2)
+			setlocation(operand2, reg2)
+
 		elif isnumber(operand1) and isnumber(operand2): #none of the operandsare variables
 			#generate assembly instructions
 			assembly = assembly + "cmpl $" + operand2 + ", $" + operand1 + "\n"
@@ -513,7 +532,9 @@ def translate(instruction):
 	elif operator == "pop":
 		#LNo, pop, n
 		n = instruction[2]
-		assembly = assembly + "addl $4, $esp\n"
+		assembly = assembly + "movl $4, %edi\n"
+		for i in range(int(n)):
+			assembly = assembly + "addl %edi, %esp\n"
 
 	elif operator == 'retval':
 		val = instruction[2]
@@ -851,7 +872,8 @@ def translate(instruction):
 			if loc2 != "mem":
 				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "movl " + operand2 + ", %edi"
+				assembly = assembly + "cmpl %edi, " + regdest + "\n"
 			assembly = assembly + "jle " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -864,13 +886,14 @@ def translate(instruction):
 			# Get the register to store the result
 			regdest = getReg(result, line)
 			loc1 = getlocation(operand1)
-			# Move the first operand to the destination register
+			# Move the operand to the destination register
 			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 			# Add the other operand to the register content
 			if loc1 != "mem":
 				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			else:
-				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"
+				assembly = assembly + "movl " + operand1 + ", %edi\n" 
+				assembly = assembly + "cmpl " + regdest + ", %edi\n"
 			assembly = assembly + "jle " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -896,7 +919,8 @@ def translate(instruction):
 				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			elif loc1 == "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"					
+				assembly = assembly + "movl " + operand1 + ", %edi\n"
+				assembly = assembly + "cmpl " + regdest + ", %edi\n"					
 			# Update the register descriptor entry for regdest to say that it contains the result
 			assembly = assembly + "jle " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
@@ -933,7 +957,8 @@ def translate(instruction):
 			if loc2 != "mem":
 				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "movl " + operand2 + ", %edi"
+				assembly = assembly + "cmpl %edi, " + regdest + "\n"
 			assembly = assembly + "jge " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -946,13 +971,14 @@ def translate(instruction):
 			# Get the register to store the result
 			regdest = getReg(result, line)
 			loc1 = getlocation(operand1)
-			# Move the first operand to the destination register
+			# Move the operand to the destination register
 			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 			# Add the other operand to the register content
 			if loc1 != "mem":
 				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			else:
-				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"
+				assembly = assembly + "movl " + operand1 + ", %edi\n" 
+				assembly = assembly + "cmpl " + regdest + ", %edi\n"
 			assembly = assembly + "jge " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -978,7 +1004,8 @@ def translate(instruction):
 				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			elif loc1 == "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"					
+				assembly = assembly + "movl " + operand1 + ", %edi\n"
+				assembly = assembly + "cmpl " + regdest + ", %edi\n"					
 			# Update the register descriptor entry for regdest to say that it contains the result
 			assembly = assembly + "jge " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
@@ -1015,7 +1042,8 @@ def translate(instruction):
 			if loc2 != "mem":
 				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "movl " + operand2 + ", %edi"
+				assembly = assembly + "cmpl %edi, " + regdest + "\n"
 			assembly = assembly + "je " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -1028,13 +1056,14 @@ def translate(instruction):
 			# Get the register to store the result
 			regdest = getReg(result, line)
 			loc1 = getlocation(operand1)
-			# Move the first operand to the destination register
+			# Move the operand to the destination register
 			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 			# Add the other operand to the register content
 			if loc1 != "mem":
 				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			else:
-				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"
+				assembly = assembly + "movl " + operand1 + ", %edi\n" 
+				assembly = assembly + "cmpl " + regdest + ", %edi\n"
 			assembly = assembly + "je " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -1060,7 +1089,8 @@ def translate(instruction):
 				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			elif loc1 == "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"					
+				assembly = assembly + "movl " + operand1 + ", %edi\n"
+				assembly = assembly + "cmpl " + regdest + ", %edi\n"					
 			# Update the register descriptor entry for regdest to say that it contains the result
 			assembly = assembly + "je " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
@@ -1097,7 +1127,8 @@ def translate(instruction):
 			if loc2 != "mem":
 				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "movl " + operand2 + ", %edi"
+				assembly = assembly + "cmpl %edi, " + regdest + "\n"
 			assembly = assembly + "jne " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -1110,13 +1141,14 @@ def translate(instruction):
 			# Get the register to store the result
 			regdest = getReg(result, line)
 			loc1 = getlocation(operand1)
-			# Move the first operand to the destination register
+			# Move the operand to the destination register
 			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 			# Add the other operand to the register content
 			if loc1 != "mem":
 				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			else:
-				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"
+				assembly = assembly + "movl " + operand1 + ", %edi\n" 
+				assembly = assembly + "cmpl " + regdest + ", %edi\n"
 			assembly = assembly + "jne " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -1142,7 +1174,8 @@ def translate(instruction):
 				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			elif loc1 == "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"					
+				assembly = assembly + "movl " + operand1 + ", %edi\n"
+				assembly = assembly + "cmpl " + regdest + ", %edi\n"					
 			# Update the register descriptor entry for regdest to say that it contains the result
 			assembly = assembly + "jne " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
@@ -1179,7 +1212,8 @@ def translate(instruction):
 			if loc2 != "mem":
 				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "movl " + operand2 + ", %edi"
+				assembly = assembly + "cmpl %edi, " + regdest + "\n"
 			assembly = assembly + "jl " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -1192,13 +1226,14 @@ def translate(instruction):
 			# Get the register to store the result
 			regdest = getReg(result, line)
 			loc1 = getlocation(operand1)
-			# Move the first operand to the destination register
+			# Move the operand to the destination register
 			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 			# Add the other operand to the register content
 			if loc1 != "mem":
 				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			else:
-				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"
+				assembly = assembly + "movl " + operand1 + ", %edi\n" 
+				assembly = assembly + "cmpl " + regdest + ", %edi\n"
 			assembly = assembly + "jl " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -1224,7 +1259,8 @@ def translate(instruction):
 				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			elif loc1 == "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"					
+				assembly = assembly + "movl " + operand1 + ", %edi\n"
+				assembly = assembly + "cmpl " + regdest + ", %edi\n"					
 			# Update the register descriptor entry for regdest to say that it contains the result
 			assembly = assembly + "jl " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
@@ -1261,7 +1297,8 @@ def translate(instruction):
 			if loc2 != "mem":
 				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand2 + ", " + regdest + "\n"
+				assembly = assembly + "movl " + operand2 + ", %edi"
+				assembly = assembly + "cmpl %edi, " + regdest + "\n"
 			assembly = assembly + "jg " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -1274,13 +1311,14 @@ def translate(instruction):
 			# Get the register to store the result
 			regdest = getReg(result, line)
 			loc1 = getlocation(operand1)
-			# Move the first operand to the destination register
+			# Move the operand to the destination register
 			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 			# Add the other operand to the register content
 			if loc1 != "mem":
 				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			else:
-				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"
+				assembly = assembly + "movl " + operand1 + ", %edi\n" 
+				assembly = assembly + "cmpl " + regdest + ", %edi\n"
 			assembly = assembly + "jg " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -1306,7 +1344,8 @@ def translate(instruction):
 				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			elif loc1 == "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"					
+				assembly = assembly + "movl " + operand1 + ", %edi\n"
+				assembly = assembly + "cmpl " + regdest + ", %edi\n"					
 			# Update the register descriptor entry for regdest to say that it contains the result
 			assembly = assembly + "jg " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
@@ -1318,6 +1357,26 @@ def translate(instruction):
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
 		relcount = relcount + 1
+
+	#Array declaration
+	elif operator == "array":
+		type_of_array = instruction[2]
+		length = instruction[3]
+		name = instruction[4]
+		if type_of_array == "int":
+			array_list.append((name,int(length)))
+
+	#Accessing array element
+	elif operator == "member":
+		result = instruction[2]
+		name = instruction[3]
+		offset = instruction[4]
+		regdest = getReg(result, line)
+                
+		assembly = assembly + "movl " + name + ", " +"%esi\n"
+		assembly = assembly + "movl dword ptr[ %esi + " + offset + " ], " + regdest + " \n"
+		setregister(regdest, result)
+		setlocation(result, regdest)
 
 	return assembly
 
@@ -1337,7 +1396,7 @@ nextuseTable = [None for i in range(len(instrlist))]
 # Construct the variable list and the address discriptor table
 for instr in instrlist:
 	templist = instr.split(', ')
-	if templist[1] not in ['label', 'call', 'function', 'ifgoto', 'goto']:
+	if templist[1] not in ['label', 'call', 'function', 'ifgoto', 'goto', 'array']:
 		varlist = varlist + templist 
 varlist = list(set(varlist))
 varlist = [x for x in varlist if not isnumber(x)]
@@ -1431,6 +1490,13 @@ for node in nodes:
 	for n in node:
 		text_section = text_section + translate(instrlist[n-1])
 
+for (var, length) in array_list:
+	data_section = data_section + var + ":\n\t.int " 
+	for i in range(1,(length+1)):
+		if(i != length):
+			data_section = data_section + "0, "
+		else:
+			data_section = data_section + "0\n"
 #--------------------------------------------------------------------------------------------------
 
 # Priniting the final output

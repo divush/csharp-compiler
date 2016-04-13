@@ -14,6 +14,7 @@ from lexer import *
 from copy import deepcopy
 import symtab
 import tac
+import codegen
 
 symbol_table = symtab.environ()
 ###################################################################################################
@@ -139,15 +140,18 @@ def p_invocation_expression(p):
 	"""
 	p[0] = {'code':[], 'value':None}
 	name = symbol_table.lookup(p[1], symbol_table.curr_table)
+	# print(name)
 	if name != None:
 		if name['category'] == 'function':
 			arg_cnt = 0
 			if p[3] != None:
 				arg_cnt = len(p[3])
 			if name['arg_num'] == arg_cnt:
+				# print(name['arg_num'], arg_cnt)
 				if arg_cnt > 0:
 					for arg in p[3]:
 						targ = symbol_table.lookup(arg['value'], symbol_table.curr_table)
+						# print(arg, targ, p[1])
 						if targ == None and arg['category'] != 'literal':
 							print('ERROR L', p.lineno(1), ': argument', arg['value'], 'used without declaration')
 							print('Compilation Terminated')
@@ -160,10 +164,12 @@ def p_invocation_expression(p):
 					t = symbol_table.maketemp(name['type'], symbol_table.curr_table)
 					p[0]['value'] = t
 					p[0]['code'] += ['call, ' + p[1]]
+					p[0]['code'] += ['pop, ' + str(arg_cnt)]
 					# Add a line here to get the value from eax register
 					p[0]['code'] += ['retval, ' + t]
 				else:
 					p[0]['code'] += ['call, ' + p[1]]
+					p[0]['code'] += ['pop, ' + str(arg_cnt)]
 			else:
 				print("ERROR L", p.lineno(1), "Function", p[1], "needs exactly", name['arg_num'], "parameters, given", len(p[3]))
 				print("Compilation Terminated")
