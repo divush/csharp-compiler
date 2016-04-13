@@ -1310,7 +1310,7 @@ def translate(instruction):
 			# Update the register descriptor entry for regdest to say that it contains the result
 			assembly = assembly + "jg " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
-			assembly = assembly + "jmp NLT" + "\n"
+			assembly = assembly + "jmp " + NLT + "\n"
 			assembly = assembly + LT + ":" + "\n"
 			assembly = assembly + "movl $1, " + regdest + "\n"
 			assembly = assembly + NLT + ":" + "\n"
