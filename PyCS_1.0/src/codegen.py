@@ -498,6 +498,15 @@ def translate(instruction):
 		i = instruction[2]
 		a = instruction[3]
 		displacement = 4*int(i) + 4
+		# get the location of the variable a and move it to register if it is in memory
+		loc = getlocation(a)
+		if loc == 'mem':
+			regdest = getReg(a, line)
+			assembly = assembly + "movl " + a + ", " + regdest + "\n"
+			# Update the address descriptor entry for result variable to say where it is stored no
+			setregister(regdest, a)
+			setlocation(a, regdest)
+
 		assembly = assembly + "movl " + str(displacement) + "(%ebp), " + a + "\n"
 
 	elif operator == "pop":
@@ -1327,7 +1336,6 @@ nextuseTable = [None for i in range(len(instrlist))]
 # Construct the variable list and the address discriptor table
 for instr in instrlist:
 	templist = instr.split(', ')
-	print(templist)
 	if templist[1] not in ['label', 'call', 'function']:
 		varlist = varlist + templist 
 varlist = list(set(varlist))
