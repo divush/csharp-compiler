@@ -507,7 +507,7 @@ def translate(instruction):
 			setregister(regdest, a)
 			setlocation(a, regdest)
 
-		assembly = assembly + "movl " + str(displacement) + "(%ebp), " + a + "\n"
+		assembly = assembly + "movl " + str(displacement) + "(%ebp), " + regdest + "\n"
 
 	elif operator == "pop":
 		#LNo, pop, n

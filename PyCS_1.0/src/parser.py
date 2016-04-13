@@ -152,7 +152,7 @@ def p_invocation_expression(p):
 							print('ERROR L', p.lineno(1), ': argument', arg['value'], 'used without declaration')
 							print('Compilation Terminated')
 							exit()
-				
+
 						p[0]['code'] += arg['code']
 					for i in range(len(p[3])-1, -1, -1):
 						p[0]['code'] += ['param, ' + p[3][i]['value']]
@@ -576,7 +576,7 @@ def p_variable_initializer_list(p):
 
 
 def p_print_statement(p):
-	"""print_statement : WRITELINE LPAREN argument RPAREN
+	"""print_statement : WRITELINE LPAREN argument RPAREN STMT_TERMINATOR
 	"""
 	p[0] = {'code':None, 'value':None}
 	p[0]['code'] = p[3]['code']
