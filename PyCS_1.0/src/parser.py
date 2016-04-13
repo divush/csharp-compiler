@@ -14,7 +14,6 @@ from lexer import *
 from copy import deepcopy
 import symtab
 import tac
-import codegen
 
 symbol_table = symtab.environ()
 ###################################################################################################
@@ -195,7 +194,7 @@ def p_element_access(p):
 	"""element_access : IDENTIFIER LBRACKET expression RBRACKET
 	"""
 	# Element Access for a 1D array
-	p[0] = {'code':[], 'value':None}
+	p[0] = {'code':[], 'value':None, 'array_element':True}
 	arr = symbol_table.lookup(p[1], symbol_table.curr_table)
 	if arr != None:
 		if arr['category'] == 'array':
@@ -415,30 +414,45 @@ def p_conditional_expression(p):
 def p_assignment(p):
 	"""assignment : unary_expression assignment_operator expression
 	"""
-	var = symbol_table.lookup(p[1]['value'], symbol_table.curr_table)
-	if 'category' in p[3]:
-		if p[3]['category'] != 'literal':
+	# print(p[1], p[2], p[3])
+	if 'array_element' not in p[1]:
+		var = symbol_table.lookup(p[1]['value'], symbol_table.curr_table)
+		if 'category' in p[3]:
+			if p[3]['category'] != 'literal':
+				val = symbol_table.lookup(p[3]['value'], symbol_table.curr_table)
+				if val == None:
+					print('ERROR: symbol', p[3]['value'], 'used without declaration')
+					print('Compilation Terminated')
+					exit()
+		else:
 			val = symbol_table.lookup(p[3]['value'], symbol_table.curr_table)
 			if val == None:
 				print('ERROR: symbol', p[3]['value'], 'used without declaration')
 				print('Compilation Terminated')
-				exit()
+				exit()		
+		if var != None:
+			p[0] = {}
+			p[0]['value'] = p[1]['value']
+			p[0]['code'] = p[3]['code']
+			p[0]['code'] += p[1]['code']
+			p[0]['code'] += ['=, ' + p[1]['value'] + ", " + p[3]['value']]
+		else:
+			print("ERROR: symbol", p[1]['value'], " used without declaration")
+			print("Compilation Terminated")
+			exit()
 	else:
-		val = symbol_table.lookup(p[3]['value'], symbol_table.curr_table)
-		if val == None:
-			print('ERROR: symbol', p[3]['value'], 'used without declaration')
-			print('Compilation Terminated')
-			exit()		
-	if var != None:
-		p[0] = {}
-		p[0]['value'] = p[1]['value']
+		# The assignment is to an array element
+		# print("\n\n", 'member' in p[1]['code'][-1], "\n\n")
+		s = p[1]['code'][-1].split(', ')
+		s[0] = 'update'
+		s[1] = p[3]['value']
+		a = [s[0] + ", " + s[1] + ", " + s[2] + ", " + s[3]]
+		# print(a)
+		# print("\n\n", p[1]['code'][-1], "\n\n")
+		p[0] = {'code':None, 'value':None}
 		p[0]['code'] = p[3]['code']
-		p[0]['code'] += p[1]['code']
-		p[0]['code'] += ['=, ' + p[1]['value'] + ", " + p[3]['value']]
-	else:
-		print("ERROR: symbol", p[1]['value'], " used without declaration")
-		print("Compilation Terminated")
-		exit()
+		p[0]['code'] += p[1]['code'][:-1]
+		p[0]['code'] += a
 
 def p_assignment_operator(p):
 	"""assignment_operator : EQUALS 
@@ -534,7 +548,12 @@ def p_local_variable_declaration(p):
 					# Initialize the values in the array
 					for i in range(len(initializer)):
 						p[0]['code'] += initializer[i]['code']
-						p[0]['code'] += ['=, ' + identifier + ", " + str(i) + ", " + initializer[i]['value']]
+						t1 = symbol_table.maketemp('int', symbol_table.curr_table)
+						t2 = symbol_table.maketemp('int', symbol_table.curr_table)
+						p[0]['code'] += ['=, ' + t1 + ', ' + str(i)]
+						p[0]['code'] += ['*, ' + t2 + ', ' + t1 + ', ' + str(var_type.elem_type.width)]
+						p[0]['code'] += ['update, ' + initializer[i]['value'] + ', ' + identifier + ', ' + t2]						
+						# p[0]['code'] += ['=, ' + identifier + ", " + str(i) + ", " + initializer[i]['value']]
 		else:
 			print("ERROR L", line, ": ", identifier, " has been declared before in this scope")
 			print("Compilation Terminated")
@@ -729,7 +748,6 @@ def p_compilation_unit(p):
 	# print("THREE ADDRESS CODE")
 	# print("----------------------------------------------------------------------")
 	tac.print_tac(p[0])
-	print("")
 
 def p_namespace_member_declarations_opt(p):
 	"""namespace_member_declarations_opt : empty 

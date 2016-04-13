@@ -1372,9 +1372,17 @@ def translate(instruction):
 		name = instruction[3]
 		offset = instruction[4]
 		regdest = getReg(result, line)
-                
-		assembly = assembly + "movl " + name + ", " +"%esi\n"
-		assembly = assembly + "movl dword ptr[ %esi + " + offset + " ], " + regdest + " \n"
+		assembly = assembly + "movl " + name + "(" + offset + "), " + regdest +"\n"		
+		setregister(regdest, result)
+		setlocation(result, regdest)
+
+	#Storing a particular array element in a variable
+	elif operator == "update":
+		input_ = instruction[2]
+		name = instruction[3]
+		offset = instruction[4]
+		regdest = getReg(input_, line)
+		assembly = assembly + "movl " + regdest + ", " + name + "(" + offest + ")\n"
 		setregister(regdest, result)
 		setlocation(result, regdest)
 
