@@ -506,6 +506,10 @@ def translate(instruction):
 		n = instruction[2]
 		assembly = assembly + "addl $4, $esp\n"
 
+	elif operator == 'retval':
+		val = instruction[2]
+		assembly = assembly + "movl %eax, " + val + "\n"
+
 	# Generating the conclude of the function
 	elif operator == "return":
 		#LNo, return, val
