@@ -868,9 +868,9 @@ def translate(instruction):
 			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 			# Add the other operand to the register content
 			if loc1 != "mem":
-				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"
 			assembly = assembly + "jle " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -893,10 +893,10 @@ def translate(instruction):
 				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
 			elif loc1 != "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			elif loc1 == "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"					
+				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"					
 			# Update the register descriptor entry for regdest to say that it contains the result
 			assembly = assembly + "jle " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
@@ -950,9 +950,9 @@ def translate(instruction):
 			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 			# Add the other operand to the register content
 			if loc1 != "mem":
-				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"
 			assembly = assembly + "jge " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -975,10 +975,10 @@ def translate(instruction):
 				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
 			elif loc1 != "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			elif loc1 == "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"					
+				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"					
 			# Update the register descriptor entry for regdest to say that it contains the result
 			assembly = assembly + "jge " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
@@ -1032,9 +1032,9 @@ def translate(instruction):
 			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 			# Add the other operand to the register content
 			if loc1 != "mem":
-				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"
 			assembly = assembly + "je " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -1057,10 +1057,10 @@ def translate(instruction):
 				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
 			elif loc1 != "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			elif loc1 == "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"					
+				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"					
 			# Update the register descriptor entry for regdest to say that it contains the result
 			assembly = assembly + "je " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
@@ -1114,9 +1114,9 @@ def translate(instruction):
 			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 			# Add the other operand to the register content
 			if loc1 != "mem":
-				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"
 			assembly = assembly + "jne " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -1139,10 +1139,10 @@ def translate(instruction):
 				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
 			elif loc1 != "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			elif loc1 == "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"					
+				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"					
 			# Update the register descriptor entry for regdest to say that it contains the result
 			assembly = assembly + "jne " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
@@ -1196,9 +1196,9 @@ def translate(instruction):
 			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 			# Add the other operand to the register content
 			if loc1 != "mem":
-				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"
 			assembly = assembly + "jl " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -1221,10 +1221,10 @@ def translate(instruction):
 				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
 			elif loc1 != "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			elif loc1 == "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"					
+				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"					
 			# Update the register descriptor entry for regdest to say that it contains the result
 			assembly = assembly + "jl " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
@@ -1278,9 +1278,9 @@ def translate(instruction):
 			assembly = assembly + "movl $" + operand2 + ", " + regdest + "\n"
 			# Add the other operand to the register content
 			if loc1 != "mem":
-				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			else:
-				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"
 			assembly = assembly + "jg " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
 			assembly = assembly + "jmp " + NLT + "\n"
@@ -1303,10 +1303,10 @@ def translate(instruction):
 				assembly = assembly + "cmpl " + loc2 + ", " + regdest + "\n"
 			elif loc1 != "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + loc1 + ", " + regdest + "\n"
+				assembly = assembly + "cmpl " + regdest + ", " + loc1 + "\n"
 			elif loc1 == "mem" and loc2 == "mem":
 				assembly = assembly + "movl " + operand2 + ", " + regdest + "\n"
-				assembly = assembly + "cmpl " + operand1 + ", " + regdest + "\n"					
+				assembly = assembly + "cmpl " + regdest + ", " + operand1 + "\n"					
 			# Update the register descriptor entry for regdest to say that it contains the result
 			assembly = assembly + "jg " + LT + "\n"
 			assembly = assembly + "movl $0, " + regdest + "\n"
