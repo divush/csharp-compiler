@@ -1,5 +1,4 @@
 def print_tac(pclass):
-	print("")
 	print("1, call, Main")
 	print("2, exit")
 	c = 3

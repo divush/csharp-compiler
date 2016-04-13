@@ -29,7 +29,7 @@ addressDescriptor = {}
 assembly = ""
 relcount = 1
 # Three address code keywords
-tackeywords = ['ifgoto', 'goto', 'return', 'call', 'print', 'label', '<=', '>=', '==', '>', '<', '!=', '=', 'function', 'exit'] + mathops
+tackeywords = ['param', 'retval', 'arg', 'ifgoto', 'goto', 'return', 'call', 'print', 'label', '<=', '>=', '==', '>', '<', '!=', '=', 'function', 'exit'] + mathops
 
 ###################################################################################################
 
@@ -329,7 +329,6 @@ def translate(instruction):
 	elif operator == "call":
 		#Lno., call, func_name, arg_num, ret
 		# Add code to write all the variables to the memory
-		arg_num = instruction[3]
 		for var in varlist:
 			loc = getlocation(var)
 			if loc != "mem":
@@ -498,7 +497,7 @@ def translate(instruction):
 		#Lno, arg, i, a_i -----> Move parameter i to var a_i
 		i = instruction[2]
 		a = instruction[3]
-		displacement = 4*i + 4
+		displacement = 4*int(i) + 4
 		assembly = assembly + "movl " + str(displacement) + "(%ebp), " + a + "\n"
 
 	elif operator == "pop":
@@ -1328,6 +1327,7 @@ nextuseTable = [None for i in range(len(instrlist))]
 # Construct the variable list and the address discriptor table
 for instr in instrlist:
 	templist = instr.split(', ')
+	print(templist)
 	if templist[1] not in ['label', 'call', 'function']:
 		varlist = varlist + templist 
 varlist = list(set(varlist))

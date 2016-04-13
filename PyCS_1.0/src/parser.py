@@ -152,6 +152,7 @@ def p_invocation_expression(p):
 							print('ERROR L', p.lineno(1), ': argument', arg['value'], 'used without declaration')
 							print('Compilation Terminated')
 							exit()
+				
 						p[0]['code'] += arg['code']
 					for i in range(len(p[3])-1, -1, -1):
 						p[0]['code'] += ['param, ' + p[3][i]['value']]
