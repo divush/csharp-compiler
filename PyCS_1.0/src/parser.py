@@ -335,6 +335,8 @@ def p_relational_expression(p):
 	"""relational_expression : shift_expression
 		| relational_expression LT shift_expression
 		| relational_expression GT shift_expression
+		| relational_expression GE shift_expression
+		| relational_expression LE shift_expression
 	"""
 	if len(p) == 2:
 		p[0] = deepcopy(p[1])
@@ -343,10 +345,7 @@ def p_relational_expression(p):
 		t = symbol_table.maketemp('int', symbol_table.curr_table)
 		p[0]['value'] = t
 		p[0]['code'] = p[1]['code'] + p[3]['code']
-		if p[2] == '<':
-			p[0]['code'] += ["<, " + t + ", " + p[1]['value'] + ", " + p[3]['value']]
-		elif p[2] == '>':
-			p[0]['code'] += [">, " + t + ", " + p[1]['value'] + ", " + p[3]['value']]
+		p[0]['code'] += [p[2] + ", " + t + ", " + p[1]['value'] + ", " + p[3]['value']]
 
 def p_equality_expression(p):
 	"""equality_expression : relational_expression

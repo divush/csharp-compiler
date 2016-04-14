@@ -30,7 +30,7 @@ addressDescriptor = {}
 assembly = ""
 relcount = 1
 # Three address code keywords
-tackeywords = ['read', 'update', 'member', 'array', 'param', 'retval', 'arg', 'ifgoto', 'goto', 'return', 'call', 'print', 'label', '<=', '>=', '==', '>', '<', '!=', '=', 'function', 'exit'] + mathops
+tackeywords = ['read', 'update', 'member', 'array', 'param', 'pop', 'retval', 'arg', 'ifgoto', 'goto', 'return', 'call', 'print', 'label', '<=', '>=', '==', '>', '<', '!=', '=', 'function', 'exit', '>>', '<<', '&&', '||', '!', '~'] + mathops
 
 ###################################################################################################
 
@@ -64,7 +64,7 @@ def getReg(variable, instrno):
 			break;
 	#regspill contais register to be spilled!!
 	assembly = assembly + "movl " + regspill + ", " + var + "\n"
-
+	addressDescriptor[var] = "mem"
 	return regspill
 
 # Returns the location of the variable from the addrss descriptor table
@@ -146,7 +146,8 @@ def translate(instruction):
 				# Update the register descriptor entry for regdest to say that it contains the result
 				setregister(regdest, result)
 				# Update the address descriptor entry for result variable to say where it is stored now
-				setlocation(result, regdest)				
+				setlocation(result, regdest)	
+			assembly = assembly + "movl " + regdest + ", " + result + "\n"			
 		# Subtraction
 		elif operator == '-':
 			if isnumber(operand1) and isnumber(operand2):
@@ -202,7 +203,8 @@ def translate(instruction):
 				# Update the register descriptor entry for regdest to say that it contains the result
 				setregister(regdest, result)
 				# Update the address descriptor entry for result variable to say where it is stored now
-				setlocation(result, regdest)				
+				setlocation(result, regdest)
+			assembly = assembly + "movl " + regdest + ", " + result + "\n"				
 		# Multiplication
 		elif operator == '*':
 			if registers['%eax'] != None:
@@ -237,6 +239,7 @@ def translate(instruction):
 				ansmul = int(operand1)*int(operand2)
 				assembly = assembly + "movl $" + str(ansmul) + ", %eax \n"
 				setlocation(result, '%eax')
+			assembly = assembly + "movl %eax, " + result + "\n"
 		# Division
 		elif operator == '/':
 			if registers['%eax'] != None:
@@ -276,11 +279,12 @@ def translate(instruction):
 				ansdiv = int(int(operand1)/int(operand2))
 				assembly = assembly + "movl $" + str(ansdiv) + ", %eax \n"
 				setlocation(result, '%eax')
+			assembly = assembly + "movl %eax, " + result + "\n"
 		# Modulus
 		elif operator == '%':
 			if registers['%eax'] != None:
 				assembly = assembly + "movl %eax, " + registers['%eax'] + "\n"
-				setlocation(registers['eax'], "mem")
+				setlocation(registers['%eax'], "mem")
 			if registers['%edx'] != None:
 				assembly = assembly + "movl %edx, " + registers['%edx'] + "\n"
 				setlocation(registers['%edx'], "mem")
@@ -315,7 +319,7 @@ def translate(instruction):
 				ansmod = int(int(operand1)/int(operand2))
 				assembly = assembly + "movl $" + str(ansmod) + ", %edx \n"
 				setlocation(result, '%edx')
-
+			assembly = assembly + "movl %edx, " + result + "\n"
 	elif operator == "param":
 		#LineNo, param, val
 		val = instruction[2]
@@ -522,12 +526,13 @@ def translate(instruction):
 		loc = getlocation(a)
 		if loc == 'mem':
 			regdest = getReg(a, line)
-			assembly = assembly + "movl " + a + ", " + regdest + "\n"
 			# Update the address descriptor entry for result variable to say where it is stored no
 			setregister(regdest, a)
 			setlocation(a, regdest)
+			loc = regdest
 
-		assembly = assembly + "movl " + str(displacement) + "(%ebp), " + regdest + "\n"
+		assembly = assembly + "movl " + str(displacement) + "(%ebp), " + loc + "\n"
+		assembly = assembly + "movl " + loc + ", " + a + "\n"
 
 	elif operator == "pop":
 		#LNo, pop, n
@@ -622,7 +627,7 @@ def translate(instruction):
 			setregister(regdest, result)
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
-
+		assembly = assembly + "movl " + regdest + ", " + result + "\n"
 
 	#Logical Right Shift : TAC Syntax ---> Line No, >>, result, num, count
 	#corres to result = num >> count
@@ -689,6 +694,7 @@ def translate(instruction):
 			setregister(regdest, result)
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
+		assembly = assembly + "movl " + regdest + ", " + result + "\n"
 
 	elif operator == "&&":
 		#Line, &&, result, op1, op2
@@ -754,6 +760,7 @@ def translate(instruction):
 			setregister(regdest, result)
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
+		assembly = assembly + "movl " + regdest + ", " + result + "\n"
 
 	elif operator == "||":
 		#Line, ||, result, op1, op2
@@ -819,6 +826,7 @@ def translate(instruction):
 			setregister(regdest, result)
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
+		assembly = assembly + "movl " + regdest + ", " + result + "\n"
 
 	elif operator == "~":
 		#Line, not, result, op1
@@ -846,6 +854,7 @@ def translate(instruction):
 			assembly = assembly + "not $" + operand2 + ", " + regdest + "\n"
 			setregister(regdest, result)
 			setlocation(result, regdest)
+		assembly = assembly + "movl " + regdest + ", " + result + "\n"
 	# Return the assembly code
 
 	elif operator == '<=':
@@ -932,6 +941,7 @@ def translate(instruction):
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
 		relcount = relcount + 1
+		assembly = assembly + "movl " + regdest + ", " + result + "\n"
 
 	elif operator == '>=':
 		result = instruction[2]
@@ -1017,6 +1027,7 @@ def translate(instruction):
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
 		relcount = relcount + 1
+		assembly = assembly + "movl " + regdest + ", " + result + "\n"
 
 	elif operator == '==':
 		result = instruction[2]
@@ -1102,6 +1113,7 @@ def translate(instruction):
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
 		relcount = relcount + 1
+		assembly = assembly + "movl " + regdest + ", " + result + "\n"
 
 	elif operator == '!=':
 		result = instruction[2]
@@ -1187,6 +1199,7 @@ def translate(instruction):
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
 		relcount = relcount + 1
+		assembly = assembly + "movl " + regdest + ", " + result + "\n"
 
 	elif operator == '<':
 		result = instruction[2]
@@ -1272,6 +1285,7 @@ def translate(instruction):
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
 		relcount = relcount + 1
+		assembly = assembly + "movl " + regdest + ", " + result + "\n"
 		
 	elif operator == '>':
 		result = instruction[2]
@@ -1357,6 +1371,7 @@ def translate(instruction):
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
 		relcount = relcount + 1
+		assembly = assembly + "movl " + regdest + ", " + result + "\n"
 
 	# For reading terminal input value into variable
 	elif operator == "read":
@@ -1396,7 +1411,7 @@ def translate(instruction):
 
 		setregister(regdest, result)
 		setlocation(result, regdest)
-	
+		assembly = assembly + "movl " + regdest + ", " + result + "\n"
 	#Storing a particular array element in a variable
 	elif operator == "update":
 		input_ = instruction[2]
@@ -1439,7 +1454,7 @@ nextuseTable = [None for i in range(len(instrlist))]
 # Construct the variable list and the address discriptor table
 for instr in instrlist:
 	templist = instr.split(', ')
-	if templist[1] not in ['label', 'call', 'function', 'ifgoto', 'goto', 'array', 'member', 'update']:
+	if templist[1] not in ['label', 'call', 'ifgoto', 'goto', 'array', 'member', 'update', 'function']:
 		varlist = varlist + templist 
 varlist = list(set(varlist))
 varlist = [x for x in varlist if not isnumber(x)]
@@ -1527,7 +1542,7 @@ data_section = data_section + "str:\n.ascii \"%d\\n\\0\"\n"
 
 bss_section = ".section .bss\n"
 text_section = ".section .text\n" + ".globl main\n" + "main:\n"
-text_section += "movl $0, %eax\nmovl $0, %ebx\nmovl $0, %ecx\nmovl $0, %edx\nmovl $0, %edi\nmovl $0, %esi\n"
+# text_section += "movl $0, %eax\nmovl $0, %ebx\nmovl $0, %ecx\nmovl $0, %edx\nmovl $0, %edi\nmovl $0, %esi\n"
 
 for node in nodes:
 	# text_section = text_section + "L" + str(node[0]) + ":\n"
