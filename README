@@ -1,14 +1,165 @@
-IMPLEMENTING C# IN PYTHON (3)
-===========================================================================
+###############################################################################
+PyCS - A C# Compiler written in Python 
+Authors: Pranshu Gupta, Divyanshu Shende, Prashant Kumar, Rahul Tudu
+Group 25
+Source Code: https://bitbucket.org/divyanshu_shende/csharp_in_python
+###############################################################################
+#About:
+    This compiler was built by 4 third year undergraduate students at Indian Institute of Technology Kanpur as a prt of their course project in CS335 - Compiler Design. This is a very basic compiler for C# that was built using PLY(Python Lex-Yacc) and only implements the most basic features (still Turing-complete :) ). The list of features that do work can be found below in this README. About the folders : 
+    A1 - This was the first assignment. Building a Lexer for C#
+    A2 - IR to Assembly Code Generator.
+    A3 - Parser for C#.
+    A4 - Semantic Analysis and IR Generation.
+    PyCS - An end-to-end compiler for C#.
 
-A1
----------------------------------------------------------------------------
-Lexical Analyser
+    If you wish to contribute or extend it, feel free to send a pull request.
 
-A2
----------------------------------------------------------------------------
-Code Generator
+# Language Features:
+    a.  Data Types - int, one dimensional arrays of int
+    b.  Operators
+            int:
+                - Unary -> !,-,~,+
+                - Relational ->  <, >, ==, !=
+                - Arithmetic -> +,-,/,%
+                - Bitwise -> <<,>>,&,|,^
+                - Logical ops -> &&,||
+                - Assignment -> = 
+            bool (realized as int 0 and 1):
+                - Unary-> !
+                - Logical -> &&,||
+                - Assignment -> =
+            Arrays:
+            	- Same as int
 
-A3
----------------------------------------------------------------------------
-Parser Generator
+    c.  Loops -> for, while
+    d.  Selection Statements -> if, if-else
+    e.  Namespaces
+    	- Only one namespace allowed in the program
+    f.  Arrays -> 1-D arrays of types - {int}
+        - Format allowed for initialization, int[] a = {1,2,3,4};
+    g.  Classes
+    	- Only one class allowed in the program
+        - Data members can only be of simple or array of simple types.
+    h.  Functions
+        - Allowed return types -> int
+        - Allowed argument types -> int
+    i.  Scoping
+    	- Imlemented as a tree of symbol tables
+    j.  boolean expressions realized as integer 0 and 1 wit relational operators
+    k.	pre increment/decrement
+    l.  read from stdin
+    m.  Multiple Declarations and Sequential Assignments
+        - Multiple Declarations  -> int a,b,c=3;
+        - Sequential Assignments -> a=b=c=3;
+
+# Features not supported:
+    a. post increment/decrement
+    b. structs and enums, pointers
+    c. comments
+    d. switch case and do while
+    e. float and double type
+    f. multidimensional arrays
+    g. OOP
+    h. op/func overloading
+
+NOTE:
+Braces required in blocks (even if single statement) for if, else, while, for etc.
+Otherwise scope might be misunterstood by the compiler
+
+
+###############################################################################
+
+# Intermediate Code Specification
+    The generated IR code begins with a call to main function followed by a 
+    call to exit. So, the input program must have a main and only one main 
+    function in it. 
+
+    - print statement                   -> 1, print, var
+        var will be printed on the standard output
+    
+    - assignment statement              -> 1, =, a, b
+        value of b will be assigned to a
+    
+    - addition                          -> 1, +, a, b, c
+        the sum of a and b will be stored in c
+    
+    - subtraction                       -> 1, -, a, b, c
+        b-a will be stored in c
+    
+    - multiplication                    -> 1, *, a, b, c
+        the product of a and b will be stored in c
+    
+    - division                          -> 1, /, a, b, c
+        the value of a/b will be stored in c
+    
+    - modulo                            -> 1, %, a, b, c
+        the value of a%b will be stored in c
+    
+    - relops                            -> 1, <, res, a, b
+        the truth value (0 or 1) will be stored in variable res
+
+    - function parameters               -> 1, param, val
+        the function parameter val will be pushed on the stack. This ir will 
+        be followed by a function call or another param ir
+    
+    - function call                     -> 1, call, func, arg_num, ret
+        the function func will be called and the value returned by it will be 
+        stored in ret. arg_num is the number of arguments that the function 
+        expects. The arguments must have already been pushed on the stack
+    
+    - pop                               -> 1, pop, var
+        store the value on stack into var, to be used as function parameter value
+        
+    - label                             -> 1, label, l
+        a label is introduced
+    
+    - ifgoto                            -> 1, ifgoto, relop, arg1, arg2, l
+        if the arg1 relop arg2 is true then the control will jump to label l. 
+        otherwise to the next line of the IR
+    
+    - goto                              -> 1, goto, l
+        control will jump to label l
+    
+    - exit                              -> 1, exit
+        exit syscall will be made
+    
+    - function definition               -> 1, function, func
+        marks the beginning of the definition of func
+    
+    - return                            -> 1, return, val
+        returns the value of val from a function
+    
+    - shift expressions                 -> 1, >>, result, num, count
+        num will be shifted count places and the result will be stored in the 
+        variable 'result'.
+        Similarly for left shift
+    
+    - logical and                       -> 1, &&, result, op1, op2
+    
+    - logical or                        -> 1, ||, result, op1, op2
+    
+    - bitwise not                       -> 1, ~, var
+        perform bitwise not on var
+    
+    - logical not                       -> 1, !, var
+        perform logical not on var
+
+    - array element                     -> 1, member, var, array_name, offset
+        store the value at offset distance from the address of the array 
+        array_name into var
+
+    - declaration                       -> 1, int, var
+
+    - array declaration                 -> 1, array, int, len, name
+
+    - retval
+
+    - arg                               -> 1, arg, 1, x
+        move the first argument on the stack in the variable x
+
+
+###############################################################################
+
+Usage : 
+$./compile test/test1.cs
+$./a.out

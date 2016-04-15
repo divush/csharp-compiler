@@ -5,6 +5,7 @@ namespace test
 		int Main() 
 		{
 			int i = 0;
+			char j="charvar";
 			int[] a = {1,2,3};
 			if (i < 4)
 				++a[i];
@@ -12,6 +13,7 @@ namespace test
 				--a[i];
 			else 
 				a[i] = 1;
+			Writeline(a[i]);
 		}
 	}
 }

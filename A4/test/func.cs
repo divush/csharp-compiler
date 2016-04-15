@@ -2,16 +2,19 @@ namespace HelloWorld
 {
 	class Hello 
 	{
-		int foo()
+		int fact(int n)
 		{
-			int i = 1;
-			return 0;
+			int ans=1;
+			for(int j=2; j<=n; ++j)
+			{
+				ans = ans * j;
+			}
+			return ans;
 		}
 		int Main() 
 		{
-			int i = foo();
-			char j = "hujfty";
-			i = j;
+			int f = fact(5);
+			Writeline(f);
 			return 0;
 		}
 	}
