@@ -1,18 +1,15 @@
 ###############################################################################
 PyCS - A C# Compiler written in Python 
 Authors: Pranshu Gupta, Divyanshu Shende, Prashant Kumar, Rahul Tudu
-Group 25
-Source Code: https://github.com/divush/csharp-compiler
 ###############################################################################
-#About:
-    This compiler was built by 4 third year undergraduate students at Indian Institute of Technology Kanpur as a prt of their course project in CS335 - Compiler Design. This is a very basic compiler for C# that was built using PLY(Python Lex-Yacc) and only implements the most basic features (still Turing-complete :) ). The list of features that do work can be found below in this README. About the folders : 
-    A1 - This was the first assignment. Building a Lexer for C#
-    A2 - IR to Assembly Code Generator.
-    A3 - Parser for C#.
-    A4 - Semantic Analysis and IR Generation.
-    PyCS - An end-to-end compiler for C#.
 
-    If you wish to contribute or extend it, feel free to send a pull request.
+# About:
+This compiler was built as a course project in CS335 - Compiler Design at Indian 
+Institute of Technology - Kanpur, India
+This is a simple compiler for C# that was built using PLY(Python Lex-Yacc) and 
+implements the features given below:
+
+If you wish to contribute or extend it, feel free to send a pull request.
 
 # Language Features:
     a.  Data Types - int, one dimensional arrays of int
@@ -66,6 +63,12 @@ NOTE:
 Braces required in blocks (even if single statement) for if, else, while, for etc.
 Otherwise scope might be misunterstood by the compiler
 
+# Components:
+A1 - This was the first assignment. Building a Lexer for C#
+A2 - IR to Assembly Code Generator.
+A3 - Parser for C#.
+A4 - Semantic Analysis and IR Generation.
+PyCS - An end-to-end compiler for C#.
 
 ###############################################################################
 
