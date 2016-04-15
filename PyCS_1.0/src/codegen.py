@@ -204,7 +204,9 @@ def translate(instruction):
 				setregister(regdest, result)
 				# Update the address descriptor entry for result variable to say where it is stored now
 				setlocation(result, regdest)
-			assembly = assembly + "movl " + regdest + ", " + result + "\n"				
+			assembly = assembly + "movl " + regdest + ", " + result + "\n"
+			registers[regdest] = None
+			addressDescriptor[result] = 'mem'			
 		# Multiplication
 		elif operator == '*':
 			if registers['%eax'] != None:
@@ -240,6 +242,8 @@ def translate(instruction):
 				assembly = assembly + "movl $" + str(ansmul) + ", %eax \n"
 				setlocation(result, '%eax')
 			assembly = assembly + "movl %eax, " + result + "\n"
+			registers['%eax'] = None
+			addressDescriptor[result] = 'mem'
 		# Division
 		elif operator == '/':
 			if registers['%eax'] != None:
@@ -280,6 +284,8 @@ def translate(instruction):
 				assembly = assembly + "movl $" + str(ansdiv) + ", %eax \n"
 				setlocation(result, '%eax')
 			assembly = assembly + "movl %eax, " + result + "\n"
+			registers['%eax'] = None
+			addressDescriptor[result] = 'mem'
 		# Modulus
 		elif operator == '%':
 			if registers['%eax'] != None:
@@ -320,6 +326,8 @@ def translate(instruction):
 				assembly = assembly + "movl $" + str(ansmod) + ", %edx \n"
 				setlocation(result, '%edx')
 			assembly = assembly + "movl %edx, " + result + "\n"
+			registers['%edx'] = None
+			addressDescriptor[result] = 'mem'
 	elif operator == "param":
 		#LineNo, param, val
 		val = instruction[2]
@@ -533,6 +541,8 @@ def translate(instruction):
 
 		assembly = assembly + "movl " + str(displacement) + "(%ebp), " + loc + "\n"
 		assembly = assembly + "movl " + loc + ", " + a + "\n"
+		registers[loc] = None
+		addressDescriptor[a] = 'mem'
 
 	elif operator == "pop":
 		#LNo, pop, n
@@ -628,7 +638,8 @@ def translate(instruction):
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
 		assembly = assembly + "movl " + regdest + ", " + result + "\n"
-
+		registers[regdest] = None
+		addressDescriptor[result] = 'mem'
 	#Logical Right Shift : TAC Syntax ---> Line No, >>, result, num, count
 	#corres to result = num >> count
 	elif operator == ">>":
@@ -695,6 +706,8 @@ def translate(instruction):
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
 		assembly = assembly + "movl " + regdest + ", " + result + "\n"
+		registers[regdest] = None
+		addressDescriptor[result] = 'mem'
 
 	elif operator == "&&":
 		#Line, &&, result, op1, op2
@@ -761,6 +774,8 @@ def translate(instruction):
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
 		assembly = assembly + "movl " + regdest + ", " + result + "\n"
+		registers[regdest] = None
+		addressDescriptor[result] = 'mem'
 
 	elif operator == "||":
 		#Line, ||, result, op1, op2
@@ -827,6 +842,8 @@ def translate(instruction):
 			# Update the address descriptor entry for result variable to say where it is stored now
 			setlocation(result, regdest)
 		assembly = assembly + "movl " + regdest + ", " + result + "\n"
+		registers[regdest] = None
+		addressDescriptor[result] = 'mem'
 
 	elif operator == "~":
 		#Line, not, result, op1
@@ -855,6 +872,8 @@ def translate(instruction):
 			setregister(regdest, result)
 			setlocation(result, regdest)
 		assembly = assembly + "movl " + regdest + ", " + result + "\n"
+		registers[regdest] = None
+		addressDescriptor[result] = 'mem'
 	# Return the assembly code
 
 	elif operator == '<=':
@@ -942,6 +961,8 @@ def translate(instruction):
 			setlocation(result, regdest)
 		relcount = relcount + 1
 		assembly = assembly + "movl " + regdest + ", " + result + "\n"
+		registers[regdest] = None
+		addressDescriptor[result] = 'mem'
 
 	elif operator == '>=':
 		result = instruction[2]
@@ -1028,6 +1049,8 @@ def translate(instruction):
 			setlocation(result, regdest)
 		relcount = relcount + 1
 		assembly = assembly + "movl " + regdest + ", " + result + "\n"
+		registers[regdest] = None
+		addressDescriptor[result] = 'mem'
 
 	elif operator == '==':
 		result = instruction[2]
@@ -1114,6 +1137,8 @@ def translate(instruction):
 			setlocation(result, regdest)
 		relcount = relcount + 1
 		assembly = assembly + "movl " + regdest + ", " + result + "\n"
+		registers[regdest] = None
+		addressDescriptor[result] = 'mem'
 
 	elif operator == '!=':
 		result = instruction[2]
@@ -1200,6 +1225,8 @@ def translate(instruction):
 			setlocation(result, regdest)
 		relcount = relcount + 1
 		assembly = assembly + "movl " + regdest + ", " + result + "\n"
+		registers[regdest] = None
+		addressDescriptor[result] = 'mem'
 
 	elif operator == '<':
 		result = instruction[2]
@@ -1286,7 +1313,9 @@ def translate(instruction):
 			setlocation(result, regdest)
 		relcount = relcount + 1
 		assembly = assembly + "movl " + regdest + ", " + result + "\n"
-		
+		registers[regdest] = None
+		addressDescriptor[result] = 'mem'
+
 	elif operator == '>':
 		result = instruction[2]
 		operand1 = instruction[3]
@@ -1372,6 +1401,8 @@ def translate(instruction):
 			setlocation(result, regdest)
 		relcount = relcount + 1
 		assembly = assembly + "movl " + regdest + ", " + result + "\n"
+		registers[regdest] = None
+		addressDescriptor[result] = 'mem'
 
 	# For reading terminal input value into variable
 	elif operator == "read":
@@ -1412,6 +1443,9 @@ def translate(instruction):
 		setregister(regdest, result)
 		setlocation(result, regdest)
 		assembly = assembly + "movl " + regdest + ", " + result + "\n"
+		registers[regdest] = None
+		addressDescriptor[result] = 'mem'
+
 	#Storing a particular array element in a variable
 	elif operator == "update":
 		input_ = instruction[2]
@@ -1445,9 +1479,16 @@ irfile = open(filename, 'r')
 ircode = irfile.read()
 ircode = ircode.strip('\n')
 
+
+
 # Consruct the instruction list
 instrlist = []
 instrlist = ircode.split('\n')
+
+# if len(instrlist) < 3:
+# 	print(ircode)
+# 	exit()
+
 
 nextuseTable = [None for i in range(len(instrlist))]
 

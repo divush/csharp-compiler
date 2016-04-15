@@ -1,4 +1,11 @@
 #!/bin/bash
 src/parser.py $1 2> t > temp.ir
+lines=$(cat temp.ir | wc -l)
+if (($lines < 3))
+	then
+	cat temp.ir
+	exit
+fi
 src/codegen.py temp.ir > temp.s
+
 gcc -m32 -g temp.s -o a.out

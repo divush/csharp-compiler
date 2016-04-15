@@ -832,7 +832,7 @@ def p_field_declaration(p):
 					p[0]['code'] += [var_type.name + ", " + identifier]
 				elif var_type.isarray and var_type.elem_type.isbasic:
 					symbol_table.insert_array(var_type, identifier)
-					p[0]['code'] += ["array, " + var_type.elem_type + ", " + var_type.length + ", " + identifier]
+					p[0]['code'] += ["array, " + var_type.elem_type.type_name() + ", " + var_type.length + ", " + identifier]
 			else:
 				if var_type.isbasic:
 					symbol_table.insert_variable(var_type, identifier)
@@ -847,7 +847,12 @@ def p_field_declaration(p):
 					# Initialize the values in the array
 					for i in range(len(initializer)):
 						p[0]['code'] += initializer[i]['code']
-						p[0]['code'] += ['=, ' + identifier + ", " + str(i) + ", " + initializer[i]['value']]
+						t1 = symbol_table.maketemp('int', symbol_table.curr_table)
+						t2 = symbol_table.maketemp('int', symbol_table.curr_table)
+						p[0]['code'] += ['=, ' + t1 + ', ' + str(i)]
+						p[0]['code'] += ['*, ' + t2 + ', ' + t1 + ', ' + str(var_type.elem_type.width)]
+						p[0]['code'] += ['update, ' + initializer[i]['value'] + ', ' + identifier + ', ' + t2]						
+						# p[0]['code'] += ['=, ' + identifier + ", " + str(i) + ", " + initializer[i]['value']]
 		else:
 			print("ERROR L", line, ": ", identifier, " has been declared before in this scope")
 			print("Compilation Terminated")
@@ -860,6 +865,15 @@ def p_method_declaration(p):
 	method_name = p[1][1]
 	method_params = p[1][2]
 	method_body = p[2]
+
+	for i in range(len(p[2]['code'])):
+		if method_name in p[2]['code'][i]:
+			if method_params != None:
+				for j in range(len(method_params)):
+					# parameters would have been pushed to the stack, so we just pop them off
+					p[2]['code'] = p[2]['code'][:i+1] + ['arg, ' + str(j+1) + ', ' + method_params[j][1]] + p[2]['code'][i+1:]
+
+
 	p[0] = {'code':[], 'value':None}
 	p[0]['code'] += ['function, ' + method_name]
 	if method_params != None:
